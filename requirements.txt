@@ -1,0 +1,12 @@
+streamlit
+pandas
+numpy
+matplotlib
+seaborn
+plotly
+scikit-learn
+graphviz
+requests
+python-dotenv
+
+#pip install streamlit-echarts
