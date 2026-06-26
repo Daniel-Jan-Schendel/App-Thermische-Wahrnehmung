@@ -3,7 +3,9 @@ import streamlit as st
 st.set_page_config(page_title="Welcome", layout="wide",initial_sidebar_state="expanded")
 import streamlit as st
 
-st.title("SmartBuilding-Analytics: Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen")
+st.title("SmartBuilding-Analytics")
+st.header("Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen")
+st.image("introduction_ashrae.png", width=700)
 
 
 st.header("👥 Über uns")
@@ -27,7 +29,7 @@ with col1:
 
 with col2:
     st.subheader("Dianela")
-    st.image("informatic_engineering.png", width=250, )
+    st.image("informatic_engineering.png", width=250)
     st.write("**Informatikingenieurin**")
     st.write("Data Analyst")
 
@@ -55,13 +57,13 @@ st.sidebar.subheader("Tools")
 st.header("🧰 Data Science & Analytics Werkzeuge")
 
 st.write("""
-- **Excel**  
+- Excel 
 - **Python**  
-- **SQL**  
-- **EDA (Exploratory Data Analysis)**  
+- SQL  
+- **EDA (Explorative Datenanalyse)**  
 - **Power BI**  
-- **AWS Cloud**  
-- **Scrum**  
+- AWS Cloud 
+- Scrum
 - **Machine Learning**
 """)
 
