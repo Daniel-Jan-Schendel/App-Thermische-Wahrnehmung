@@ -3,6 +3,7 @@ import streamlit as st
 st.set_page_config(page_title="Welcome", layout="wide",initial_sidebar_state="expanded")
 import streamlit as st
 
+st.title("SmartBuilding-Analytics: Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen")
 
 st.header("👥 Team Members")
 
