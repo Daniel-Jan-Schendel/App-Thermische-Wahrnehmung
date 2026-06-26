@@ -11,7 +11,7 @@ apply_styles()
 
 pg = st.navigation(
     [
-        st.Page("welcome.py", title="Welcome", icon=":material/groups:"),
+        st.Page("welcome.py", title="Willkommen", icon=":material/groups:"),
         st.Page("introduction.py", title="Main Menu", icon=":material/home:"),
         st.Page("dashboard.py", title="Dashboard", icon=":material/menu_book:"),
         st.Page("database.py", title="Database", icon=":material/dashboard:"),

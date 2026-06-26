@@ -1,7 +1,6 @@
 import streamlit as st
 
 st.set_page_config(page_title="Willkommen", layout="wide",initial_sidebar_state="expanded")
-import streamlit as st
 
 st.title("SmartBuilding-Analytics")
 st.header("Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen")
@@ -32,6 +31,7 @@ with col1:
 
 with col2:
     st.image("introduction_ashrae.png", width=900)
+    st.caption("Hinweis: Dieses Bild wurde mit KI generiert.")
 
 
 st.header("👥 Über uns")
@@ -81,7 +81,7 @@ with col4:
 st.sidebar.subheader("Tools")
 st.text("test")
 
-st.header("🧰 Data Science & Analytics Werkzeuge")
+st.header("🧰 Data Science & Analytics Tools")
 
 st.write("""
 - Excel 
