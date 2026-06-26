@@ -115,6 +115,7 @@ with tab_dataset:
     st.subheader("Dataset overview")
 
     st.text("Here both tables are mixed to have a unique table for our analysis")
+    
 
 
 #     # Cargar las dos hojas del archivo Excel
@@ -183,31 +184,32 @@ with tab_erd:
 # ---------------------------------------------------------
 with tab_map:
     st.subheader("🌍 Global Distribution of ASHRAE Field Studies")
+    st.write("build a map")
 
-    df_map = pd.read_csv("ashrae_db201.csv")
-    country_data = df_map["Country"].value_counts().to_dict()
-    data_list = [{"name": c, "value": v} for c, v in country_data.items()]
+    # df_map = pd.read_csv("ashrae_db201.csv")
+    # country_data = df_map["Country"].value_counts().to_dict()
+    # data_list = [{"name": c, "value": v} for c, v in country_data.items()]
 
-    option_map = {
-        "tooltip": {"trigger": "item"},
-        "visualMap": {
-            "min": 0,
-            "max": max(country_data.values()),
-            "text": ["More studies", "Fewer"],
-            "calculable": True,
-            "inRange": {"color": ["#D6EAF8", "#2E86C1"]},
-        },
-        "series": [
-            {
-                "name": "Studies per country",
-                "type": "map",
-                "map": "world",
-                "roam": True,
-                "data": data_list,
-            }
-        ],
-    }
-    st_echarts(option_map, height="600px")
+    # option_map = {
+    #     "tooltip": {"trigger": "item"},
+    #     "visualMap": {
+    #         "min": 0,
+    #         "max": max(country_data.values()),
+    #         "text": ["More studies", "Fewer"],
+    #         "calculable": True,
+    #         "inRange": {"color": ["#D6EAF8", "#2E86C1"]},
+    #     },
+    #     "series": [
+    #         {
+    #             "name": "Studies per country",
+    #             "type": "map",
+    #             "map": "world",
+    #             "roam": True,
+    #             "data": data_list,
+    #         }
+    #     ],
+    # }
+    # st_echarts(option_map, height="600px")
 
 
 
