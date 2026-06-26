@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Welcome", layout="wide",initial_sidebar_state="expanded")
+st.set_page_config(page_title="Willkommen", layout="wide",initial_sidebar_state="expanded")
 import streamlit as st
 
 st.title("SmartBuilding-Analytics")
@@ -65,5 +65,9 @@ st.write("""
 - AWS Cloud 
 - Scrum
 - **Machine Learning**
+- Jupyter
+- Numpy
+- Streamlit
+- Pandas
 """)
 
