@@ -5,43 +5,54 @@ import streamlit as st
 
 st.title("SmartBuilding-Analytics: Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen")
 
-st.header("👥 Team Members")
 
-st.write("""
-We are a multidisciplinary group with backgrounds in:
+st.header("👥 Über uns")
+#st.write("""
+# We are a multidisciplinary group with backgrounds in:
+# **• Mirtha – Physicist**  
+# **• Daniel – Mechanical Engineer**  
+# **• Sabrina – Expert in Psychology / Art / Tourism**  
+# **• Dianela – Computer Engineer**
+# Our diverse academic profiles allow us to approach thermal comfort analysis 
+# from scientific, technical, and human-centered perspectives.
+# """)'
 
-**• Mirtha – Physicist**  
-**• Daniel – Mechanical Engineer**  
-**• Sabrina – Expert in Psychology / Art / Tourism**  
-**• Dianela – Computer Engineer**
+# --- Teammitglieder ---
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.subheader("Sabrina")
+    st.image("psychology.png", width=250)
+    st.write("**Psychologe**")
+    st.write("Data Analyst")
 
-Our diverse academic profiles allow us to approach thermal comfort analysis 
-from scientific, technical, and human-centered perspectives.
-""")
+with col2:
+    st.subheader("Dianela")
+    st.image("informatic_engineering.png", width=250, )
+    st.write("**Informatikingenieurin**")
+    st.write("Data Analyst")
 
-st.subheader("🎯 Project Context")
+with col3:
+    st.subheader("Mirtha")
+    st.image("physicist.png", width=250)
+    st.write("**Physikerin**")
+    st.write("Data Scientist")
 
-st.write("""
-This project is part of the closing assignment for:
+with col4:
+    st.subheader("Daniel")
+    st.image("civil_engineering.png", width=250)
+    st.write("**Bauingenieur**")
+    st.write("Data Scientist")
 
-- **Data Science** (Mirtha, Daniel)  
-- **Data Analytics** (Sabrina, Dianela)
 
-It is designed to be presented to fellow colleagues as an example of how 
-interdisciplinary teams can collaborate to explore complex datasets and 
-generate meaningful insights.
-""")
-
-st.subheader("📫 Contact")
-
-st.write("""
-For questions or collaboration inquiries, please reach out through the project repository.
-""")
+# st.subheader("📫 Contact")
+# st.write("""
+# For questions or collaboration inquiries, please reach out through the project repository.
+# """)
 
 
 st.sidebar.subheader("Tools")
 
-st.header("🧰 Data Science & Analytics Tools")
+st.header("🧰 Data Science & Analytics Werkzeuge")
 
 st.write("""
 - **Excel**  
@@ -53,3 +64,4 @@ st.write("""
 - **Scrum**  
 - **Machine Learning**
 """)
+
