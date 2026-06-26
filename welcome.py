@@ -5,7 +5,33 @@ import streamlit as st
 
 st.title("SmartBuilding-Analytics")
 st.header("Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen")
-st.image("introduction_ashrae.png", width=700)
+#st.image("introduction_ashrae.png", width=700)
+
+col1, col2 = st.columns([1, 1])
+
+with col1:
+    st.markdown(
+        """
+        <div style="
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 5px solid #4B9CD3;
+            font-size: 20px;
+            line-height: 1.5;
+            margin-top: 20px;
+        ">
+            Dieses Projekt analysiert Gebäudedaten, um Energieeffizienz,
+            Komfort und Nachhaltigkeit in klimatisierten Infrastrukturen zu verbessern.
+            Hier findest du Dashboards, Datenpipelines und Machine-Learning-Modelle,
+            die unser Smart-Building-Konzept unterstützen.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col2:
+    st.image("introduction_ashrae.png", width=900)
 
 
 st.header("👥 Über uns")
@@ -53,6 +79,7 @@ with col4:
 
 
 st.sidebar.subheader("Tools")
+st.text("test")
 
 st.header("🧰 Data Science & Analytics Werkzeuge")
 
