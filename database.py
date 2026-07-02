@@ -20,7 +20,8 @@ df = load_data()
 # ---------------------------------------------------------
 # MAIN PAGE TITLE
 # ---------------------------------------------------------
-st.title(":material/bar_chart: Exploring the ASHRAE Database")
+st.title(":material/bar_chart: Die ASHRAE Global Thermal Comfort Database II")
+st.markdown("Eine umfassende Datenbank, die sich auf die Untersuchung von Thermalkomfort in verschiedenen Gebäuden konzentriert.")
 
 st.markdown(
     """
@@ -34,35 +35,27 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(
-    """
-    <div style='font-size:18px; line-height:1.4;'>
-        This page offers a simple and interactive way to explore the ASHRAE thermal 
-        comfort database, helping users understand indoor environments worldwide.
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
 # ---------------------------------------------------------
 # TABS (ONLY ON MAIN PAGE)
 # ---------------------------------------------------------
-tab_description,  tab_dataset, tab_overview, tab_erd, tab_map, tab_explorer = st.tabs(
-    ["📘 Description", "📄 Dataset", "📊 Overview", "🗂️ ERD", "🌍 Map",  "📊 Explorer"]
+tab_structure,  tab_dataset, tab_overview, tab_erd, tab_map, tab_explorer = st.tabs(
+    ["📘 Strukture", "📄 Datenbankdaten", "📊 Overview", "🗂️ ERD", "🌍 Map",  "📊 Explorer"]
 )
 
 # ---------------------------------------------------------
 # SOURCE TAB
 # ---------------------------------------------------------
-with tab_description:
+with tab_structure:
     #st.subheader("")
     st.markdown(
         """
-        - Compiles field studies conducted worldwide between **1995 and 2016**
+    - Zusammenstellung weltweit durchgeführter Feldstudien aus dem Zeitraum 1995 bis 2016
 
-        - **81,846** new validated records containing paired subjective comfort votes and objective environmental measurements  
-        - Integration of **25,617** new entries from the Database I (ASHRAE RP-884 Adaptive Model project, 1998 - 2000)
-        - A final combined dataset of **107,463** high-quality records (Database II)  
+    - 81.846 neue, validierte Datensätze mit gepaarten Angaben zum subjektiven Komfortempfinden und objektiven Messwerten der Umgebungsbedingungen
+
+    - Integration von 25.617 neuen Einträgen aus Datenbank I (Projekt ASHRAE RP-884 „Adaptive Model“, 1998–2000)
+
+    - Ein abschließender, zusammengeführter Datensatz mit 107.463 hochwertigen Datensätzen (Datenbank II)
 
         """
     )
@@ -87,34 +80,50 @@ with tab_description:
     }
     st_echarts(option1, height="400px")
 
+    st.subheader("Datensatz")
 
+    st.markdown(
+    """
+    Der Datensatz ist in zwei Haupttabellen gegliedert:
 
+    **`metadata` Tabelle**  
+    Enthält allgemeine Gebäude- und Studieninformationen. Bereitgestellt als Standard-**CSV file**.
+
+    **`measurements` Tabelle**  
+    Enthält alle Feldmessungen, einschließlich:
+    - Einzelne Fragebogenantworten, dargestellt als Zeile
+    - Instrumentelle Innenraummessungen
+    - Werte thermischer Indizes
+    - Meteorologische Außendaten (sofern verfügbar)
+    - Bereitgestellt als **komprimierte CSV-Datei (.csv.gz)** in UTF-8-Kodierung.
+    """
+    )
 
 # ---------------------------------------------------------
 # DATASET TAB
 # ---------------------------------------------------------
 with tab_dataset:
-    st.subheader("Dataset structure")
-    st.markdown(
-    """
-    The dataset is organized into two main tables:
+    # st.subheader("Dataset structure")
+    # st.markdown(
+    # """
+    # The dataset is organized into two main tables:
 
-    **• `metadata` table**  
-    Contains high‑level building and study information.  
-    Provided as a standard **CSV file**.
+    # **• `metadata` table**  
+    # Contains high‑level building and study information.  
+    # Provided as a standard **CSV file**.
 
-    **• `measurements` table**  
-    Contains all field measurements, including:  
-    - Individual questionnaire responses represented as a row  
-    - Instrumental indoor measurements  
-    - Thermal index values  
-    - Outdoor meteorological data (when available)  
-    - Provided as a **compressed CSV (.csv.gz)** using UTF‑8 encoding.  
-    """
-)
-    st.subheader("Dataset overview")
+    # **• `measurements` table**  
+    # Contains all field measurements, including:  
+    # - Individual questionnaire responses represented as a row  
+    # - Instrumental indoor measurements  
+    # - Thermal index values  
+    # - Outdoor meteorological data (when available)  
+    # - Provided as a **compressed CSV (.csv.gz)** using UTF‑8 encoding.  
+    # """
+    # )
+    st.subheader("Überblick Rohdaten")
 
-    st.text("Here both tables are mixed to have a unique table for our analysis")
+    st.text("Hier werden beide Tabellen zusammengeführt, um eine einheitliche Tabelle für unsere Analyse zu erhalten.")
     
 
 
@@ -137,9 +146,11 @@ with tab_dataset:
     st.dataframe(df.head())
     st.write(f"Rows: {df.shape[0]} | Columns: {df.shape[1]}")
 
+    # st.subheader("Column names and description")
+    # st.write("Column names:", list(df.columns))
 
-    st.subheader("Column names and description")
-    st.write("Column names:", list(df.columns))
+    st.markdown("### Spaltennamen:")
+    st.markdown(" | ".join([f"`{c}`" for c in df.columns]))
 
 
     #st.subheader("Parameter Description")

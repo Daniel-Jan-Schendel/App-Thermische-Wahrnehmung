@@ -8,5 +8,14 @@ scikit-learn
 graphviz
 requests
 python-dotenv
+scikit
+streamlit-echarts
 
 #pip install streamlit-echarts
+conda install -c anaconda scikit-learn 
+pip install scikit-learn
+
+conda install scikit-learn 
+
+
+
