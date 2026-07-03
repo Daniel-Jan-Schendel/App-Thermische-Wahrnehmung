@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from streamlit_echarts import st_echarts
+import matplotlib.pyplot as plt
 
 # ---------------------------------------------------------
 # PAGE CONFIG

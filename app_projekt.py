@@ -15,7 +15,7 @@ pg = st.navigation(
         st.Page("introduction.py", title="Einführung", icon=":material/info:"),
         st.Page("database.py", title="Datenbank", icon=":material/dashboard:"),
         st.Page("datenbereinigung.py", title="Datenbereinigung", icon=":material/menu_book:"),
-        st.Page("analytics.py", title="Analytics", icon=":material/analytics:"),
+        st.Page("analytics.py", title="Globale Datenanalyse", icon=":material/analytics:"),
         st.Page("machine_learning.py", title="Machine Learning", icon=":material/smart_toy:"),
         st.Page("ML_test_iris.py", title="Machine Learning Test", icon=":material/smart_toy:"),
         st.Page("ML_test_ASHRAE.py", title="Machine Learning Test 2", icon=":material/smart_toy:"),
