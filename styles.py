@@ -81,23 +81,7 @@ def apply_styles():
             font-weight: 700 !important;
         }
                 
-        /* ------------------------------
-           REDUCE TOP PADDING (TITLE HIGHER)
-        ------------------------------ */
-        .block-container {
-            padding-top: 1rem !important;
-        }
-                
-        /* ------------------------------
-        FIX: TITLE TOO LOW IN WIDE MODE
-        ------------------------------ */
-        .block-container {
-            padding-top: 0rem !important;
-        }
 
-        .main {
-            padding-top: 0rem !important;
-        }
 
         </style>
     """, unsafe_allow_html=True)

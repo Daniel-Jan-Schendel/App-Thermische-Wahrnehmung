@@ -3,11 +3,17 @@ import streamlit as st
 from styles import apply_styles
 import base64
 
+# -- Set page config
+apptitle = 'ASHRAE Data Analysis'
+#st.sidebar.image("logo.png", width=500)
+
+
 st.set_page_config(page_title="ASHRAE", layout="wide", initial_sidebar_state="expanded")
 
-apply_styles()
+#st.title("ASHRAE")
 
-#st.sidebar.image("logo.png", width=500)
+#apply_styles()
+
 
 pg = st.navigation(
     [
