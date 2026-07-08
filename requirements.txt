@@ -19,3 +19,9 @@ conda install scikit-learn
 
 
 
+sqlalchemy
+shap
+pickle
+imblearn
+multiprocessing
+joblib
