@@ -10,7 +10,7 @@ st.header("Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastruktur
 # -------------------------
 #       TABS
 # -------------------------
-tab1, tab2, tab3, tab4 = st.tabs(["📘 Projekt", "👥 Über uns", "🧰 Tools", "📝 Agenda"])
+tab1, tab2, tab3 = st.tabs(["📘 Projekt", "👥 Über uns", "🧰 Tools"])
 
 # -------------------------
 #       TAB 1 – PROJEKT
@@ -51,13 +51,14 @@ with tab1:
 # -------------------------
 with tab2:
     st.header("👥 Über uns")
+    st.text(" Wir sind vier Personen mit unterschliedichen berufliche Hintergrund. Unsere Grupe bestehlt aus zwei Dataanalyst und zwei Datascientist.")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.subheader("Sabrina")
         st.image("psychology.png", width=250)
-        st.write("**Psychologe**")
+        st.write("**Psychologe?**")
         st.write("Data Analyst")
 
     with col2:
@@ -70,6 +71,7 @@ with tab2:
         st.subheader("Mirtha")
         st.image("physicist.png", width=250)
         st.write("**Physikerin**")
+        st.write("**Experimental Semiconductor**")
         st.write("Data Scientist")
 
     with col4:
@@ -86,27 +88,13 @@ with tab3:
     st.header("🧰 Data Science & Analytics Tools")
 
     st.write("""
-    - Excel 
     - **Python**  
-    - SQL  
+    - **Postgre SQL Neon**
     - **EDA (Explorative Datenanalyse)**  
     - **Power BI**  
-    - AWS Cloud 
-    - Scrum
     - **Machine Learning**
-    - Jupyter
-    - Numpy
-    - Streamlit
-    - Pandas
-    """)
-
-# -------------------------
-#       TAB 3 – Agenda
-# -------------------------
-with tab4:
-    st.header("Agenda")
-    st.write("""
-    - a
-    - b
-    - c
+    - **Jupyter**
+    - **Numpy**
+    - **Pandas**
+    - **Streamlit**
     """)

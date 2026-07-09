@@ -4,6 +4,8 @@ import pydeck as pdk
 from streamlit_echarts import st_echarts
 import seaborn as sns
 import altair as alt
+import numpy as np
+import matplotlib.pyplot as plt 
 
 
 
@@ -17,12 +19,17 @@ df_bereinigt = pd.read_csv("db_bereinigt.csv")
 #st.line_chart(df_bereinigt["DB"])
 #st.dataframe(df_bereinigt)
 
-st.title("Datenverteilung nach geografischem Standort")
+st.title("Explorative Datenanalyse")
 
-tab1,tab2,tab3 = st.tabs(["Anzahl Einträge","Category","Thermal Comfort"])
+#st.header("Datenverteilung")
+
+# Klima / Building
+
+tab1,tab2,tab3,tab4 = st.tabs(["Datenverteilung nach Ort","Kategorie","Thermischer Komfort: Einflussgrößen", "Karte"])
 
 
 with tab1:
+
     col1, col2 = st.columns([2,1])
     col3, col4 = st.columns([2,1])
     col5, col6 = st.columns([2,1])
@@ -147,7 +154,7 @@ with tab1:
                 x=alt.X("Anzahl:Q", title="Anzahl Einträge"),
                 y=alt.Y("Stadt:N", sort="-x", title="Stadt"),
                 tooltip=["Stadt", "Anzahl", "Prozent"]
-            )
+            )   
             .properties(height=400)
         )
 
@@ -163,142 +170,337 @@ with tab1:
 #########################################################################################################
 
 with tab2:
-    col7, col8 = st.columns([1,2])
-    # --- Bild / Karte ---
-    with col5:
-
-        # --- Auswahl, welche Verteilung angezeigt werden soll ---
-        option = st.selectbox("Verteilung anzeigen nach:",["Region", "Land", "Stadt"])
-
-        # --- Dynamische Auswahl basierend auf Option ---
-        if option == "Region":
-            werte = df_bereinigt["region"].dropna()
-            auswahl = st.selectbox("Region auswählen", sorted(werte.unique()))
-            gefiltert = df_bereinigt[df_bereinigt["region"] == auswahl]
-
-        elif option == "Land":
-            werte = df_bereinigt["country"].dropna()
-            auswahl = st.selectbox("Land auswählen", sorted(werte.unique()))
-            gefiltert = df_bereinigt[df_bereinigt["country"] == auswahl]
-
-        elif option == "Stadt":
-            werte = df_bereinigt["city"].dropna()
-            auswahl = st.selectbox("Stadt auswählen", sorted(werte.unique()))
-            gefiltert = df_bereinigt[df_bereinigt["city"] == auswahl]
-
-        # --- Prozentuale Verteilung ---
-        st.markdown("### Prozentuale Verteilung")
-        gesamt = len(df_bereinigt)
-        anteil = len(gefiltert)
-        prozent = round((anteil / gesamt) * 100, 2)
-
-        st.write(f"**Auswahl:** {auswahl}")
-        st.write(f"**Anzahl Einträge:** {anteil}")
-        st.write(f"**Prozentualer Anteil:** {prozent} %")
 
 
+    # ---------------------------------------------------------
+    # Daten laden
+    # ---------------------------------------------------------
+    df = pd.read_csv("db_bereinigt_fertig.csv")
 
-    with col6:
-        # --- Balkendiagramm: Verteilung innerhalb der Kategorie ---
-        st.markdown(f"### Verteilung innerhalb von {option}")
-        st.bar_chart(werte.value_counts())
+    # ---------------------------------------------------------
+    # Plot-Funktion
+    # ---------------------------------------------------------
+    def plot_column(data, colname, color="steelblue"):
+        """Erzeugt automatisch den passenden Plot für eine Spalte."""
+        fig, ax = plt.subplots()
 
-        st.markdown(f"### Karte – {option}: {auswahl}")
-        if "latitude" in gefiltert.columns and "longitude" in gefiltert.columns:
-            st.map(gefiltert[["latitude", "longitude"]])
+        # Numerische Spalte → Histogramm
+        if pd.api.types.is_numeric_dtype(data):
+            ax.hist(data, bins=20, color=color, edgecolor="black")
+            ax.set_xlabel(colname)
+            ax.set_ylabel("Anzahl")
+            ax.set_title(f"Verteilung von {colname}")
+
+        # Binäre Spalte (0/1) → Balkendiagramm
+        elif set(data.unique()).issubset({0, 1}):
+            counts = data.value_counts().sort_index()
+            ax.bar(["0", "1"], counts.values, color=["tomato", "seagreen"])
+            ax.set_xlabel(colname)
+            ax.set_ylabel("Anzahl")
+            ax.set_title(f"{colname}: 0/1 Verteilung")
+
+        # Kategorische Spalte → Balkendiagramm
         else:
-            st.info("Keine geografischen Koordinaten verfügbar.")
+            counts = data.value_counts()
+            ax.bar(counts.index.astype(str), counts.values, color=color)
+            ax.set_xlabel(colname)
+            ax.set_ylabel("Anzahl")
+            ax.set_title(f"Kategorien in {colname}")
+            plt.xticks(rotation=45, ha="right")
+
+        return fig
+
+    # ---------------------------------------------------------
+    # ROW 1 → 2 Spalten: Filter + Building Type Plot
+    # ---------------------------------------------------------
+    row1_col1, row1_col2 = st.columns(2)
+
+    with row1_col1:
+
+        
+        # ---------------------------------------------------------
+        # MULTISELECT für Building Type
+        # ---------------------------------------------------------
+        st.header("Automatische Plots mit Filter")
+
+        # Alle verfügbaren Gebäudetypen laden
+        building_types = df["building_type"].dropna().unique()
+
+        # Multiselect anzeigen
+        selected_buildings = st.multiselect(
+            "Building Type auswählen (Mehrfachauswahl möglich):",
+            building_types,
+            default=building_types[:1]  # optional: erstes Element vorauswählen
+        )
+
+        # Falls nichts ausgewählt wurde → gesamten Datensatz verwenden
+        if len(selected_buildings) > 0:
+            df_filtered = df[df["building_type"].isin(selected_buildings)]
+        else:
+            df_filtered = df.copy()
 
 
+    with row1_col2:
+        st.subheader("🏢 Building Type")
+        fig_bt = plot_column(df_filtered["building_type"], "building_type")
+        st.pyplot(fig_bt)
+
+    # ---------------------------------------------------------
+    # ROW 2 → 3 Spalten: season, climate, cooling_type
+    # ---------------------------------------------------------
+    row2_col1, row2_col2, row2_col3 = st.columns(3)
+
+    with row2_col1:
+        st.subheader("🌦️ Season")
+        fig_season = plot_column(df_filtered["season"], "season")
+        st.pyplot(fig_season)
+
+    with row2_col2:
+        st.subheader("🌍 Climate")
+        fig_climate = plot_column(df_filtered["climate"], "climate")
+        st.pyplot(fig_climate)
+
+    with row2_col3:
+        st.subheader("❄️ Cooling Type")
+        fig_cooling = plot_column(df_filtered["cooling_type"], "cooling_type")
+        st.pyplot(fig_cooling)
+
+    # ---------------------------------------------------------
+    # NEUE ROW → 4 Spalten: fan, heater, window, door
+    # ---------------------------------------------------------
+    row_fan, row_heater, row_window, row_door = st.columns(4)
+
+    with row_fan:
+        st.subheader("🌀 Fan")
+        fig_fan = plot_column(df_filtered["fan"], "fan")
+        st.pyplot(fig_fan)
+
+    with row_heater:
+        st.subheader("🔥 Heater")
+        fig_heater = plot_column(df_filtered["heater"], "heater")
+        st.pyplot(fig_heater)
+
+    with row_window:
+        st.subheader("🪟 Window")
+        fig_window = plot_column(df_filtered["window"], "window")
+        st.pyplot(fig_window)
+
+    with row_door:
+        st.subheader("🚪 Door")
+        fig_door = plot_column(df_filtered["door"], "door")
+        st.pyplot(fig_door)
+
+    # ---------------------------------------------------------
+    # ROW 3 → 3 Spalten: leer | age | gender
+    # ---------------------------------------------------------
+    row3_col1, row3_col2, row3_col3 = st.columns(3)
+
+    with row3_col1:
+        st.write("")  # bewusst leer
+
+    with row3_col2:
+        st.subheader("👤 Age")
+        fig_age = plot_column(df_filtered["age"], "age")
+        st.pyplot(fig_age)
+
+    with row3_col3:
+        st.subheader("🚻 Gender")
+        fig_gender = plot_column(df_filtered["gender"], "gender")
+        st.pyplot(fig_gender)
+
+
+
+
+
+
+
+
+  # ---------------------------------------------------------
+    # 📌 1. Daten laden
+    # ---------------------------------------------------------
+    df = pd.read_csv("db_bereinigt_fertig.csv")
+
+    st.header("📊 Häufigkeitsanalyse: Thermal Comfort")
+
+    # ---------------------------------------------------------
+    # 🔧 1a. Thermische Parameter vorab runden / bereinigen
+    # ---------------------------------------------------------
+    # Falls deine Komfortvariablen numerisch sind, werden sie hier gerundet.
+    # Falls sie kategorisch sind (z.B. -3 bis +3), passiert nichts.
+    komfort_variablen = ["thermal_sensation", "thermal_comfort", "thermal_preference"]
+
+    for var in komfort_variablen:
+        if var in df.columns:
+            # Nur numerische Werte runden
+            if pd.api.types.is_numeric_dtype(df[var]):
+                df[var] = df[var].round(2)
+
+    # ---------------------------------------------------------
+    # 🔍 2. Auswahl der Komfort-Variable
+    # ---------------------------------------------------------
+    variablen = {
+        "Thermal Sensation": "thermal_sensation",
+        "Thermal Comfort": "thermal_comfort",
+        "Thermal Preference": "thermal_preference"
+    }
+
+    auswahl = st.selectbox(
+        "Wähle eine Komfort-Variable",
+        list(variablen.keys())
+    )
+
+    spalte = variablen[auswahl]
+
+    # ---------------------------------------------------------
+    # 🧹 3. Daten vorbereiten
+    # ---------------------------------------------------------
+    # Nur gültige Werte behalten
+    df_plot = df.dropna(subset=[spalte])
+
+    # Häufigkeiten berechnen
+    freq = df_plot[spalte].value_counts().reset_index()
+    freq.columns = ["Wert", "Anzahl"]
+
+    # ---------------------------------------------------------
+    # 📊 4. Balkendiagramm erstellen (Altair)
+    # ---------------------------------------------------------
+    chart = (
+        alt.Chart(freq)
+        .mark_bar(color="#2E86C1")
+        .encode(
+            x=alt.X("Wert:N", title=auswahl),        # Nur Label im Diagramm
+            y=alt.Y("Anzahl:Q", title="Häufigkeit"),
+            tooltip=["Wert", "Anzahl"]              # Tooltip bleibt sichtbar
+        )
+        .properties(
+            width=600,
+            height=400,
+            title=f"Häufigkeitsverteilung: {auswahl}"
+        )
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+
+
+
+#########################################################################################################
+#########################################################################################################
 
 with tab3:
 
-    st.subheader("Einfluss der Luftgeschwindigkeit auf die Beziehung zwischen Temperatur und thermischer Empfindung")
+    st.text("sdsd")
 
-    chart = (
-        alt.Chart(df_bereinigt)
-        .mark_circle(size=60, opacity=0.7)
-        .encode(
-            x=alt.X("operative_temperature:Q", title="Operative Temperatur [°C]"),
-            y=alt.Y("thermal_sensation:Q", title="Thermal Sensation Vote"),
-            color=alt.Color("air_speed:Q", title="Luftgeschwindigkeit [m/s]"),
-            tooltip=["operative_temperature", "thermal_sensation", "air_speed", "region", "country", "city"]
-        )
-        .properties(height=400)
+with tab4:
+
+    # ---------------------------------------------------------
+    # 📌 1. Daten laden
+    # ---------------------------------------------------------
+    df = pd.read_csv("db_bereinigt.csv")
+
+    # Nur Zeilen behalten, die gültige Koordinaten haben
+    df = df.dropna(subset=["latitude", "longitude"])
+
+    st.subheader("🌍 Globale Verteilung der ASHRAE Feldstudien")
+
+
+    # ---------------------------------------------------------
+    # 🔍 2. Filter-Widgets (Jahr, Saison, Gebäudetyp)
+    # ---------------------------------------------------------
+
+    # Jahr-Filter
+    years = sorted(df["year"].dropna().unique())
+    year_filter = st.selectbox("Jahr auswählen", ["Alle"] + years)
+
+    # Saison-Filter
+    seasons = sorted(df["season"].dropna().unique())
+    season_filter = st.selectbox("Saison auswählen", ["Alle"] + seasons)
+
+    # Gebäudetyp-Filter
+    building_types = sorted(df["building_type"].dropna().unique())
+    building_filter = st.multiselect(
+        "Gebäudetyp auswählen",
+        building_types,
+        default=building_types  # Standard: alle Typen ausgewählt
     )
 
-    st.altair_chart(chart, use_container_width=True)
 
-#######################################################################################################################################
+    # ---------------------------------------------------------
+    # 🔎 3. Filter anwenden
+    # ---------------------------------------------------------
 
-    st.subheader("Einfluss der Luftgeschwindigkeit auf die Beziehung zwischen Temperatur und thermischem Komfort")
+    filtered = df.copy()
 
-    chart = (
-        alt.Chart(df_bereinigt)
-        .mark_circle(size=60, opacity=0.7)
-        .encode(
-            x=alt.X("operative_temperature:Q", title="Operative Temperatur [°C]"),
-            y=alt.Y("thermal_comfort:Q", title="Thermischer Komfort"),
-            color=alt.Color("air_speed:Q", title="Luftgeschwindigkeit [m/s]"),
-            tooltip=[
-                "operative_temperature",
-                "thermal_comfort",
-                "air_speed",
-                "region",
-                "country",
-                "city"
-            ]
-        )
-        .properties(height=400)
+    # Jahr anwenden
+    if year_filter != "Alle":
+        filtered = filtered[filtered["year"] == year_filter]
+
+    # Saison anwenden
+    if season_filter != "Alle":
+        filtered = filtered[filtered["season"] == season_filter]
+
+    # Gebäudetyp anwenden
+    filtered = filtered[filtered["building_type"].isin(building_filter)]
+
+
+    # ---------------------------------------------------------
+    # 📌 4. Daten nach Stadt aggregieren
+    # ---------------------------------------------------------
+    # Jede Stadt bekommt einen Punkt, Größe = Anzahl der Datensätze
+
+    city_counts = (
+        filtered.groupby(["country", "city", "latitude", "longitude"])
+        .size()
+        .reset_index(name="count")
     )
 
-    st.altair_chart(chart, use_container_width=True)
+    # Punktgröße skalieren (logarithmisch, damit große Städte nicht explodieren)
+    city_counts["radius"] = np.log1p(city_counts["count"]) * 25000
 
-#####################################################################################################################################
 
-    st.subheader("Thermischer Komfort – Scatterplot mit Dichtekonturen (KDE)")
+    # ---------------------------------------------------------
+    # 🗺️ 5. Pydeck Layer definieren (Scatterplot)
+    # ---------------------------------------------------------
 
-    # --- Scatterplot ---
-    scatter = (
-        alt.Chart(df_bereinigt)
-        .mark_circle(size=40, opacity=0.5)
-        .encode(
-            x=alt.X("operative_temperature:Q", title="Operative Temperatur [°C]"),
-            y=alt.Y("thermal_comfort:Q", title="Thermischer Komfort"),
-            color=alt.Color("air_speed:Q", title="Luftgeschwindigkeit [m/s]"),
-            tooltip=[
-                "operative_temperature",
-                "thermal_comfort",
-                "air_speed",
-                "region",
-                "country",
-                "city"
-            ]
-        )
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=city_counts,
+        get_position="[longitude, latitude]",  # Koordinaten
+        get_radius="radius",                   # Punktgröße
+        get_fill_color=[46, 134, 193, 180],    # ASHRAE-Blau
+        pickable=True                          # Tooltip aktivieren
     )
 
-    # --- KDE-Dichtekonturen ---
-    kde = (
-        alt.Chart(df_bereinigt)
-        .transform_density(
-            density="operative_temperature",
-            as_=["operative_temperature", "density"],
-            groupby=["thermal_comfort"],
-            steps=200
-        )
-        .mark_line(color="black", opacity=0.6)
-        .encode(
-            x="operative_temperature:Q",
-            y="density:Q"
-        )
+
+    # ---------------------------------------------------------
+    # 🌐 6. Kartenansicht definieren
+    # ---------------------------------------------------------
+
+    view_state = pdk.ViewState(
+        latitude=city_counts["latitude"].mean() if len(city_counts) else 0,
+        longitude=city_counts["longitude"].mean() if len(city_counts) else 0,
+        zoom=1
     )
 
-    # --- Kombination ---
-    chart = (scatter + kde).properties(height=450)
+    # Tooltip-Design
+    tooltip = {
+        "html": "<b>{city}, {country}</b><br/>Studien: {count}",
+        "style": {"color": "white"}
+    }
 
-    st.altair_chart(chart, use_container_width=True)
 
+    # ---------------------------------------------------------
+    # 🧭 7. Karte rendern (ohne Mapbox-Key!)
+    # ---------------------------------------------------------
 
+    st.pydeck_chart(
+        pdk.Deck(
+            layers=[layer],
+            initial_view_state=view_state,
+            tooltip=tooltip,
+            map_style=None   # ⭐ WICHTIG: Kein Mapbox → funktioniert ohne Key
+        )
+    )
 
 
 
