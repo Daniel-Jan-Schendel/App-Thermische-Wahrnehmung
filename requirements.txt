@@ -18,7 +18,8 @@ pip install scikit-learn
 conda install scikit-learn 
 
 
-
+os
+dotenv
 sqlalchemy
 shap
 pickle
