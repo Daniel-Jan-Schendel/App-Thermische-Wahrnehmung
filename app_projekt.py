@@ -22,6 +22,7 @@ pg = st.navigation(
         st.Page("datenbereinigung.py", title="Datenbereinigung", icon=":material/menu_book:"),
         st.Page("database.py", title="Datenbank", icon=":material/dashboard:"),
         st.Page("analytics.py", title="Globale Datenanalyse", icon=":material/analytics:"),
+        st.Page("analytics_dianela.py", title="Cooling_type und Alter", icon=":material/analytics:"),
         st.Page("thermal_comfort_analysis.py", title="Thermal Comfort Analyse", icon=":material/analytics:"),
         st.Page("machine_learning.py", title="Machine Learning", icon=":material/smart_toy:"),
         st.Page("ML_test_iris.py", title="Machine Learning Test", icon=":material/smart_toy:"),
