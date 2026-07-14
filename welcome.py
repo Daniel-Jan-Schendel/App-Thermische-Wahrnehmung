@@ -89,12 +89,12 @@ with tab3:
 
     st.write("""
     - **Python**  
-    - **Postgre SQL Neon**
     - **EDA (Explorative Datenanalyse)**  
+    - **Postgre SQL Neon** 
     - **Power BI**  
-    - **Machine Learning**
     - **Jupyter**
     - **Numpy**
     - **Pandas**
+    - **Machine Learning**
     - **Streamlit**
     """)
