@@ -29,91 +29,116 @@ tab1, tab2, tab3, tab4,tab5, tab6 = st.tabs([
 
 with tab1:
 
+    col1, col2 = st.columns([2,1])
+    col3, col4 = st.columns([2,1])
+    col5, col6 = st.columns([2,1])
+
+    with col1:
     # --- Datenquelle ---
-    st.markdown(
-        """
-        <div style="padding: 10px 0;">
-            <h2 style="margin-bottom: 5px;">📘 Datenquelle</h2>
-            <p style="font-size:18px; line-height:1.5;">
-                <strong>Dataset Source:</strong><br>
-                <a href='https://datadryad.org/dataset/doi:10.6078/D1F671' target='_blank' style='text-decoration:none;'>
-                    ASHRAE Global Thermal Comfort Database II
-                </a>
-            </p>
-            <p style="font-size:16px; color:#555;">
-                Eine umfassende Datenbank zur Untersuchung des thermischen Komforts in Gebäuden weltweit.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        st.markdown(
+            """
+            <div style="padding: 10px 0;">
+                <h2 style="margin-bottom: 5px;">📘 Datenquelle</h2>
+                <p style="font-size:18px; line-height:1.5;">
+                    <strong>Dataset Source:</strong><br>
+                    <a href='https://datadryad.org/dataset/doi:10.6078/D1F671' target='_blank' style='text-decoration:none;'>
+                        ASHRAE Global Thermal Comfort Database II
+                    </a>
+                </p>
+                <p style="font-size:16px; color:#555;">
+                    Eine umfassende Datenbank zur Untersuchung des thermischen Komforts in Gebäuden weltweit.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    # --- Informationen ---
-    st.markdown(
-        """
-        <div style="padding: 10px 0;">
-            <h2 style="margin-bottom: 5px;">ℹ️ Informationen</h2>
-            <ul style="font-size:16px; line-height:1.6; color:#444;">
-                <li>Zusammenstellung weltweit durchgeführter Feldstudien aus dem Zeitraum <strong>1995–2016</strong></li>
-                <li><strong>81.846</strong> neue, validierte Datensätze mit subjektiven Komfortangaben und objektiven Messwerten</li>
-                <li>Integration von <strong>25.617</strong> neuen Einträgen aus Datenbank I (ASHRAE RP‑884 „Adaptive Model“)</li>
-                <li>Ein finaler, zusammengeführter Datensatz mit insgesamt <strong>107.463</strong> hochwertigen Datensätzen</li>
-            </ul>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        st.markdown(
+            """
+            <div style="padding: 10px 0;">
+                <ul style="font-size:16px; line-height:1.6; color:#444;">
+                    <li>Zusammenstellung von Feldstudien aus dem Zeitraum <strong>1995–2016</strong></li>
+                    <li>Besteht aus zwei verschiedenen Datenbanken db 1.0 und db 2.0 </strong></li>
+                    <li>Update der Datenbank mit neuen Einträgen -> db 2.1</li>
+                    <li>Ein finaler, zusammengeführter Datensatz mit insgesamt <strong>109.033</strong> Einträgen</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    # --- Donut Chart ---
-    st.markdown("<h3 style='margin-top:20px;'>📊 Verteilung der Datensätze</h3>", unsafe_allow_html=True)
 
-    option1 = {
-        "tooltip": {"trigger": "item"},
-        "legend": {"top": "5%", "left": "center"},
-        "series": [
-            {
-                "name": "Records",
-                "type": "pie",
-                "radius": ["40%", "70%"],
-                "itemStyle": {
-                    "borderRadius": 10,
-                    "borderColor": "#fff",
-                    "borderWidth": 2
-                },
-                "label": {"show": False},
-                "emphasis": {
-                    "label": {"show": True, "fontSize": 20, "fontWeight": "bold"}
-                },
-                "data": [
-                    {"value": 81846, "name": "New Database Records"},
-                    {"value": 25617, "name": "RP-884 Records"},
-                ],
-            }
-        ],
-    }
+    with col2:
+        # --- Donut Chart ---
+        st.markdown("<h3 style='margin-top:20px;'>📊 Verteilung der Datenbanken</h3>", unsafe_allow_html=True)
 
-    st_echarts(option1, height="400px")
+        option1 = {
+            "tooltip": {"trigger": "item"},
+            "legend": {"top": "5%", "left": "center"},
+            "series": [
+                {
+                    "name": "Records",
+                    "type": "pie",
+                    "radius": ["40%", "70%"],
+                    "itemStyle": {
+                        "borderRadius": 10,
+                        "borderColor": "#fff",
+                        "borderWidth": 2
+                    },
+                    "label": {"show": False},
+                    "emphasis": {
+                        "label": {"show": True, "fontSize": 20, "fontWeight": "bold"}
+                    },
+                    "data": [
+                        {"value": 81846, "name": "New Database Records"},
+                        {"value": 25617, "name": "RP-884 Records"},
+                    ],
+                }
+            ],
+        }
+
+        st_echarts(option1, height="200px")
 
 ##################################################################################################################################
 
-    st.subheader("Datensatz")
+    with col3: 
+        # - Datensatz Aufbau -
+        st.markdown(
+            """
+            <div style="padding: 10px 0;">
+                <h2 style="margin-bottom: 5px;">ℹ️ Datensatz</h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    st.markdown(
-    """
-    Der Datensatz ist in zwei Haupttabellen gegliedert:
+        st.markdown(
+        """
+        Der Datensatz ist in zwei Haupttabellen gegliedert:
 
-    **`metadata` Tabelle**  
-    Enthält allgemeine Gebäude- und Studieninformationen. Bereitgestellt als Standard-**CSV file**.
+        **`metadata` Tabelle**  
+        - Enthält allgemeine Gebäude- und Studieninformationen
+        - Bereitgestellt als Standard-**CSV file**.
 
-    **`measurements` Tabelle**  
-    Enthält alle Feldmessungen, einschließlich:
-    - Einzelne Fragebogenantworten, dargestellt als Zeile
-    - Instrumentelle Innenraummessungen
-    - Werte thermischer Indizes
-    - Meteorologische Außendaten (sofern verfügbar)
-    - Bereitgestellt als **komprimierte CSV-Datei (.csv.gz)** in UTF-8-Kodierung.
-    """
-    )
+        **`measurements` Tabelle**  
+        - Enthält alle Feldmessungen, einschließlich:
+            - Einzelne Fragebogenantworten, dargestellt als Zeile
+            - Instrumentelle Innenraummessungen
+            - Werte thermischer Indizes
+            - Meteorologische Außendaten (sofern verfügbar)
+        - Bereitgestellt als **komprimierte CSV-Datei (.csv.gz)** in UTF-8-Kodierung.
+        """
+        )
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+
+    # - Originaler Datensatz
+    st.subheader("📁 Originaler Datensatz (vor Bereinigung)")
+    st.dataframe(df)
+
+###############################################################################################################################################
+###############################################################################################################################################
 
 with tab2:
     st.subheader("1. Daten importieren und Zusammenführen der beiden Datensätze")
@@ -128,8 +153,7 @@ with tab2:
     st.code(code_1, language="python")
 
 
-    st.subheader("📁 Originaler Datensatz (vor der Reinigung)")
-    st.dataframe(df)
+
 
 ###############################################################################################################################################
 ###############################################################################################################################################
@@ -216,6 +240,7 @@ with tab3:
     }
 
     st_echarts(options=options, height="500px")
+
 
    
 ###############################################################################################################################################
