@@ -57,7 +57,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
     
     with row1_col1:
         st.subheader("📋 Features")
-        possible_features = ['air_temperature', 'relative_humidity', 'air_speed', 'metabolic_rate', 'clothing_ensemble_insulation']
+        possible_features = ['air_temperature', 'relative_humidity', 'air_speed', 'metabolic_rate', 'clothing_ensemble_insulation', 'radiant_temperature']
         selected_features = []
         for feature in possible_features:
             if st.checkbox(feature, value=True, key=f"feat_{feature}"):
@@ -71,7 +71,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
         )
 
      # Zweite Reihe: 3 Spalten für Features, Seasons und Climates
-    row2_col1, row2_col2, row2_col3 = st.columns(3)
+    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4)
     
     with row2_col1:
         # NEU: Filter für Cooling Type über Checkboxen
@@ -99,6 +99,14 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
             if st.checkbox(f"{climate}", value=True, key=f"clim_{climate}"):
                 selected_climates.append(climate)
 
+    with row2_col4:
+        st.subheader("🏢 Gebäudetyp\n\n (Building Type)")
+        available_buildings = sorted(list(df['building_type'].dropna().unique()))
+        selected_buildings = []
+        for building in available_buildings:
+            if st.checkbox(f"{building}", value=True, key=f"build_{building}"):
+                selected_buildings.append(building)
+
     # Trennlinie für die zweite Reihe im Expander
     st.write("---")
     
@@ -108,7 +116,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
 #    param_col1, param_col2 = st.columns(2)
 
     such_modus = st.selectbox(
-        "Wählen Sie die GridSearch-Intensität für die Live-Präsentation:",
+        "GridSearch / RandomSearch-Intensität:",
         ["Schnelle Suche (Live-Demo mit RandomSearch)", "Normale Suche (mit RandomSearch)", "Intensive Suche (mit GridSearch)"],
     )    
 
@@ -226,6 +234,10 @@ if not selected_coolings:
     st.error("Bitte wähle mindestens einen Kühlungstyp im Kühlungsfilter aus.")
     st.stop()
 
+if not selected_buildings:
+    st.error("Bitte wähle mindestens einen Gebäudetyp im Gebäudefilter aus.")
+    st.stop()
+
 if not selected_features:
     st.error("Bitte wähle mindestens ein Feature über die Checkboxen aus.")
     st.stop()
@@ -236,7 +248,8 @@ if not selected_features:
 df_filtered_rows = df[
     (df['season'].isin(selected_seasons)) & 
     (df['climate_zone'].isin(selected_climates)) &
-    (df['cooling_type'].isin(selected_coolings))
+    (df['cooling_type'].isin(selected_coolings)) &
+    (df['building_type'].isin(selected_buildings))
 ].copy()
 
 # Schritt B: Nur noch die benötigten Feature-Spalten + Target behalten
@@ -402,7 +415,7 @@ if 'model' in st.session_state:
         st.download_button(
             label="💾 Trainiertes Modell (.joblib) herunterladen",
             data=joblib_bytes,
-            file_name="ashrae_thermal_model.joblib",
+            file_name="ashrae_thermal_classifcation_model.joblib",
             mime="application/octet-stream",
             help="Klicke hier, um die trainierte Scikit-Learn Pipeline als Joblib-Datei zu speichern."
         )
@@ -415,7 +428,7 @@ if 'model' in st.session_state:
         
         # === NEU: MODELL LOKAL IM ORDNER SPEICHERN ===
         # Der Dateiname der lokal abgelegten Datei
-        local_filename = "ashrae_thermal_model.joblib"
+        local_filename = "ashrae_thermal_classifcation_model.joblib"
         
         # joblib schreibt die Pipeline direkt in das aktuelle Verzeichnis
         joblib.dump(best_pipeline, local_filename)
@@ -425,8 +438,6 @@ if 'model' in st.session_state:
         st.info(f"💾 Das trainierte Modell wurde erfolgreich als **'{local_filename}'** im Projektordner gespeichert.")
 
         
-        st.write(f"**Beste Parameter:** {st.session_state['best_params']}")
-
     with col2:
         st.subheader("🧬 SHAP Analyse")
         
