@@ -243,3 +243,116 @@ with tab5:
     and health. It is a research field with direct impact on the future of our buildings 
     and cities.
     """)
+
+
+with tab3:
+    st.subheader("Hauptziel der Analyse")
+
+    st.markdown(
+            """
+            <div style="
+                background-color: #f7f7f7;
+                padding: 15px;
+                border-radius: 8px;
+            ">
+                Untersuchung von möglichen Einflussfaktoren auf das thermische Empfinden
+                -> Ziel: Unterstützung für Firmen bei der Erschaffung eines guten Arbeitsumfelds
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+
+
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1 ,1 ,1])
+   
+    #######################################################################################################################################################
+    #######################################################################################################################################################
+
+    # - Fragestellung 1 -
+    with col1:
+        st.markdown(
+            """
+            <h3 style="text-align: center;">
+                Fragestellung 1
+            </h3>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div style="
+                background-color: #f7f7f7;
+                padding: 15px;
+                border-radius: 8px;
+            ">
+                <b>Klima</b><br>
+                Beeinflussen Klimazonen das thermische Empfinden?
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    # - Fragestellung 2 -
+    with col2:
+        st.markdown(
+            """
+            <h3 style="text-align: center;">
+                Fragestellung 2
+            </h3>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div style="
+                background-color: #f7f7f7;
+                padding: 15px;
+                border-radius: 8px;
+            ">
+                <b>Belüftungsart</b><br>
+                Beeinflusst die Belüftungsart das thermische Empfinden?
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # - Fragestellung 3 -
+    with col3:
+        st.markdown(
+            """
+            <h3 style="text-align: center;">
+                Fragestellung 3
+            </h3>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div style="
+                background-color: #f7f7f7;
+                padding: 15px;
+                border-radius: 8px;
+            ">
+                <b>Raumklima</b><br>
+                Beeinflusst das Klima des Innenraums das thermische Empfinden?
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+
+    st.text("Ein datenbasiertes Gleichgewicht zwischen wirtschaftlicher Effizienz und menschlichem Wohlbefinden.")
+
+    st.text("Kopie von Notitzen")
+
+    

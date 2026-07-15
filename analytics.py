@@ -6,14 +6,15 @@ import seaborn as sns
 import altair as alt
 import numpy as np
 import matplotlib.pyplot as plt 
+from scipy.stats import chi2_contingency
 
 
 
-st.set_page_config(page_title="Globale Datenanalyse", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Explorative Datenanalyse", layout="wide", initial_sidebar_state="expanded")
 
 # Load data
 
-df_bereinigt = pd.read_csv("db_bereinigt.csv")
+df_bereinigt = pd.read_csv("db_bereinigt_fertig.csv")
 
 #st.title("Globale Datenanalyse")
 #st.line_chart(df_bereinigt["DB"])
@@ -25,7 +26,7 @@ st.title("Explorative Datenanalyse")
 
 # Klima / Building
 
-tab1,tab2,tab3,tab4, tab5 = st.tabs(["Datenverteilung nach Ort","Kategorie","Thermischer Komfort: Einflussgrößen", "Karte", "Cooling typ und Alter"])
+tab1,tab2,tab3,tab4, tab5 = st.tabs(["Datenverteilung nach Ort","Übersicht Datenverteilung wichtige Variablen","Thermische Bewertung und Klima", "Karte", "Cooling typ und Alter"])
 
 
 with tab1:
@@ -55,7 +56,7 @@ with tab1:
         region_df = region_df.reset_index(drop=True)
 
 
-        st.subheader("Balkendiagramm: Anzahl Einträge je Region")
+        st.subheader("Anzahl Einträge je Region")
 
         chart = (
             alt.Chart(region_df)
@@ -72,7 +73,7 @@ with tab1:
 
     # --- Anzahl Einträge in der Kategorie ---
     with col2:
-        st.markdown("### Übersicht Anzahl Einträge")
+        st.markdown("### Übersicht Anzahl Einträge je Region")
         # Prozentwerte berechnen
         region_prozent = (region_anzahl / region_anzahl.sum()) * 100
 
@@ -107,7 +108,7 @@ with tab1:
         land_df["Prozent"] = land_df["Prozent"].round(2).astype(str) + " %"
         land_df = land_df.reset_index(drop=True)
 
-        st.subheader("Balkendiagramm: Anzahl Einträge je Land")
+        st.subheader("Anzahl Einträge je Land")
 
         chart_land = (
             alt.Chart(land_df)
@@ -123,7 +124,7 @@ with tab1:
         st.altair_chart(chart_land, use_container_width=True)
 
     with col4:
-        st.markdown("### Übersicht Anzahl Einträge")
+        st.markdown("### Übersicht Anzahl Einträge je Land")
         st.write(land_df)
 
 #########################################################################################################
@@ -131,29 +132,29 @@ with tab1:
 
     with col5:
 
-        # --- Verteilung nach Stadt berechnen ---
-        stadt_anzahl = df_bereinigt["city"].value_counts()
-        stadt_prozent = (stadt_anzahl / stadt_anzahl.sum()) * 100
+        # --- Verteilung nach climate berechnen ---
+        climate_anzahl = df_bereinigt["climate"].value_counts()
+        climate_prozent = (climate_anzahl / climate_anzahl.sum()) * 100 # Prozentzahl stimmt noch nicht
 
         # --- DataFrame vorbereiten ---
-        stadt_df = pd.DataFrame({
-            "Stadt": stadt_anzahl.index,
-            "Anzahl": stadt_anzahl.values,
-            "Prozent": stadt_prozent.values
+        climate_df = pd.DataFrame({
+            "Klima": climate_anzahl.index,
+            "Anzahl": climate_anzahl.values,
+            "Prozent": climate_anzahl.values
         })
 
-        stadt_df["Prozent"] = stadt_df["Prozent"].round(2).astype(str) + " %"
-        stadt_df = stadt_df.reset_index(drop=True)
+        climate_df["Prozent"] = climate_df["Prozent"].round(2).astype(str) + " %"
+        climate_df = climate_df.reset_index(drop=True)
 
-        st.subheader("Balkendiagramm: Anzahl Einträge je Stadt")
+        st.subheader("Anzahl Einträge je Klima")
 
         chart_stadt = (
-            alt.Chart(stadt_df)
+            alt.Chart(climate_df)
             .mark_bar()
             .encode(
                 x=alt.X("Anzahl:Q", title="Anzahl Einträge"),
-                y=alt.Y("Stadt:N", sort="-x", title="Stadt"),
-                tooltip=["Stadt", "Anzahl", "Prozent"]
+                y=alt.Y("Klima:N", sort="-x", title="Klima"),
+                tooltip=["Klima", "Anzahl", "Prozent"]
             )   
             .properties(height=400)
         )
@@ -161,8 +162,8 @@ with tab1:
         st.altair_chart(chart_stadt, use_container_width=True)
 
     with col6:
-        st.markdown("### Übersicht Anzahl Einträge")
-        st.write(stadt_df)
+        st.markdown("### Übersicht Anzahl Einträge je Klima")
+        st.write(climate_df)
 
 
 
@@ -211,59 +212,24 @@ with tab2:
         return fig
 
     # ---------------------------------------------------------
-    # ROW 1 → 2 Spalten: Filter + Building Type Plot
-    # ---------------------------------------------------------
-    row1_col1, row1_col2 = st.columns(2)
-
-    with row1_col1:
-
-        
-        # ---------------------------------------------------------
-        # MULTISELECT für Building Type
-        # ---------------------------------------------------------
-        st.header("Automatische Plots mit Filter")
-
-        # Alle verfügbaren Gebäudetypen laden
-        building_types = df["building_type"].dropna().unique()
-
-        # Multiselect anzeigen
-        selected_buildings = st.multiselect(
-            "Building Type auswählen (Mehrfachauswahl möglich):",
-            building_types,
-            default=building_types[:1]  # optional: erstes Element vorauswählen
-        )
-
-        # Falls nichts ausgewählt wurde → gesamten Datensatz verwenden
-        if len(selected_buildings) > 0:
-            df_filtered = df[df["building_type"].isin(selected_buildings)]
-        else:
-            df_filtered = df.copy()
-
-
-    with row1_col2:
-        st.subheader("🏢 Building Type")
-        fig_bt = plot_column(df_filtered["building_type"], "building_type")
-        st.pyplot(fig_bt)
-
-    # ---------------------------------------------------------
     # ROW 2 → 3 Spalten: season, climate, cooling_type
     # ---------------------------------------------------------
     row2_col1, row2_col2, row2_col3 = st.columns(3)
 
     with row2_col1:
         st.subheader("🌦️ Season")
-        fig_season = plot_column(df_filtered["season"], "season")
+        fig_season = plot_column(df["season"], "season")
         st.pyplot(fig_season)
 
     with row2_col2:
-        st.subheader("🌍 Climate")
-        fig_climate = plot_column(df_filtered["climate"], "climate")
-        st.pyplot(fig_climate)
+        st.subheader("❄️ Cooling Type")
+        fig_cooling = plot_column(df["cooling_type"], "cooling_type")
+        st.pyplot(fig_cooling)
 
     with row2_col3:
-        st.subheader("❄️ Cooling Type")
-        fig_cooling = plot_column(df_filtered["cooling_type"], "cooling_type")
-        st.pyplot(fig_cooling)
+        st.subheader("🏢 Building Type")
+        fig_bt = plot_column(df["building_type"], "building_type")
+        st.pyplot(fig_bt)
 
     # ---------------------------------------------------------
     # NEUE ROW → 4 Spalten: fan, heater, window, door
@@ -272,22 +238,22 @@ with tab2:
 
     with row_fan:
         st.subheader("🌀 Fan")
-        fig_fan = plot_column(df_filtered["fan"], "fan")
+        fig_fan = plot_column(df["fan"], "fan")
         st.pyplot(fig_fan)
 
     with row_heater:
         st.subheader("🔥 Heater")
-        fig_heater = plot_column(df_filtered["heater"], "heater")
+        fig_heater = plot_column(df["heater"], "heater")
         st.pyplot(fig_heater)
 
     with row_window:
         st.subheader("🪟 Window")
-        fig_window = plot_column(df_filtered["window"], "window")
+        fig_window = plot_column(df["window"], "window")
         st.pyplot(fig_window)
 
     with row_door:
         st.subheader("🚪 Door")
-        fig_door = plot_column(df_filtered["door"], "door")
+        fig_door = plot_column(df["door"], "door")
         st.pyplot(fig_door)
 
     # ---------------------------------------------------------
@@ -300,12 +266,12 @@ with tab2:
 
     with row3_col2:
         st.subheader("👤 Age")
-        fig_age = plot_column(df_filtered["age"], "age")
+        fig_age = plot_column(df["age"], "age")
         st.pyplot(fig_age)
 
     with row3_col3:
         st.subheader("🚻 Gender")
-        fig_gender = plot_column(df_filtered["gender"], "gender")
+        fig_gender = plot_column(df["gender"], "gender")
         st.pyplot(fig_gender)
 
 
@@ -388,8 +354,402 @@ with tab2:
 #########################################################################################################
 
 with tab3:
+    # ---------------------------------------------------------
+    # 📌 1. Daten laden
+    # ---------------------------------------------------------
+    df = pd.read_csv("db_bereinigt_fertig.csv")
 
-    st.text("sdsd")
+    st.header("🌍 Gibt es einen Zusammenhang zwischen Klimazone und thermischer Bewertung?")
+
+    
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    col1, col2 = st.columns([2,1])
+    col3, col4 = st.columns([2,2])
+    col5, col6 = st.columns([2,2])
+    col7, col8 = st.columns([2,2])
+    col9, col10 = st.columns([2,1])
+    col11, col12 = st.columns([2,1])
+
+    with col1:
+
+        st.markdown("""
+        Untersuchung des Zusammenhangs der 4 Hauptklimazonen mit den thermischen Bewertungsvariablen:
+
+        - Thermal Comfort
+        - Thermal Sensation
+        - Thermal Preference
+        - Thermal Acceptability
+        """)
+
+    with col2:
+        with st.expander("Allgemeine Informationen zum Lesen der Boxplots"):
+            st.markdown("""
+            Erklärung des Boxplot:
+                     
+            - Box: zeigt, in welchem Bereich 50% der Werte für diese Klimazone liegen
+            - Linie: stellt Median dar
+            - Whisker: zeigen den Bereich, in dem die meisten Datenwerte liegen
+            - Punkte außerhalb der Whisker: stellen Ausreißer dar
+            """)
+
+    # ---------------------------------------------------------
+    # 📊 2. Grafiken erstellen
+    # ---------------------------------------------------------
+
+    # - Grafik - 
+    with col3:
+
+        st.subheader("Thermal Comfort nach Klimazone")
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        # Boxplot
+        sns.boxplot(
+            data=df,
+            x="climate_zone",
+            y="thermal_comfort",
+            showfliers=False,
+            width=0.6,
+            boxprops=dict(facecolor="none", edgecolor="black"),  # transparente Box
+            whiskerprops=dict(color="black"),
+            capprops=dict(color="black"),
+            medianprops=dict(color="red", linewidth=2.5),
+            ax=ax
+        )
+
+        # Jitter-Plot
+        sns.stripplot(
+            data=df,
+            x="climate_zone",
+            y="thermal_comfort",
+            jitter=0.25,
+            size=1.5,             # etwas größere Punkte
+            alpha=0.05,         # besser sichtbar
+            color="steelblue",
+            ax=ax,
+            hue="thermal_comfort",
+            palette="viridis",
+            legend=False
+        )
+
+        ax.set_xlabel("Climate Zone")
+        ax.set_ylabel("Thermal Comfort")
+
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+
+        st.pyplot(fig)
+
+        with st.expander("Lesen des Boxplot zu Thermal Comfort"):
+            st.markdown("""
+            **Erkenntnisse Thermal Comfort:**
+                    
+            - Median ist bei Continental deutlich niedriger als bei den anderen Klimazonen -> hat aber auch größere Streuung der Werte
+            - Dry und Tropical: kleinste Streuung der Werte
+            - größter Unterschied liegt zwischen Continental und den anderen Klimazonen
+            """)
+              
+        st.markdown("""
+        **-> Bedeutung des Boxplot zu Thermal Comfort:**
+        
+        Befragte in der Klimazone "Continental" bewerten den Komfort tendenziell geringer als in den anderen 3 Klimazonen
+        """)
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+    with col4:
+
+        st.subheader("Thermal Sensation nach Klimazone")
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        # Boxplot
+        sns.boxplot(
+            data=df,
+            x="climate_zone",
+            y="thermal_sensation",
+            showfliers=False,
+            width=0.6,
+            boxprops=dict(facecolor="none", edgecolor="black"),  # transparente Box
+            whiskerprops=dict(color="black"),
+            capprops=dict(color="black"),
+            medianprops=dict(color="red", linewidth=2.5),
+            ax=ax
+        )
+
+        # Jitter-Plot
+        sns.stripplot(
+            data=df,
+            x="climate_zone",
+            y="thermal_sensation",
+            jitter=0.25,
+            size=1.5,             # etwas größere Punkte
+            alpha=0.05,         # besser sichtbar
+            color="steelblue",
+            ax=ax,
+            hue="thermal_sensation",
+            palette="viridis",
+            legend=False
+        )
+
+        ax.set_xlabel("Climate Zone")
+        ax.set_ylabel("Thermal Sensation")
+
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+
+        st.pyplot(fig)
+
+        with st.expander("Lesen des Boxplot zu Thermal Sensation"):
+            st.markdown("""
+            **Erkenntnisse Thermal Sensation:**
+                    
+            - Median ist bei allen Klimazonen gleich
+            - Temperate und Continental: kleinste Streuung der Werte
+            - Dry und Tropical: größte Streuung der Werte
+            """)
+
+        st.markdown("""                   
+        **-> Bedeutung des Boxplot zu Thermal Sensation:**
+        
+        - In allen vier Klimazonen wird das thermische Empfinden tendenziell mit "neutral" bewertet
+        - In den Klimazonen "Temperate" und "Continental" haben 50% der Befragten das thermische Empfinden mit "neutral" oder "warm" bewertet
+        - In den Klimazonen "Dry" und "Tropical" haben 50% der Befragten das thermische Empfinden mit "kühl", "neutral" oder "warm" bewertet
+        """)
+        
+    with col7:
+        st.subheader("Thermal Preference nach Klimazone")
+
+        df_preference_plot = df[df["thermal_preference"] != "Unknown"]
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        # Boxplot
+        sns.boxplot(
+            data=df_preference_plot,
+            x="climate_zone",
+            y="thermal_preference",
+            showfliers=False,
+            width=0.6,
+            boxprops=dict(facecolor="none", edgecolor="black"),  # transparente Box
+            whiskerprops=dict(color="black"),
+            capprops=dict(color="black"),
+            medianprops=dict(color="red", linewidth=2.5),
+            ax=ax
+        )
+
+        # Jitter-Plot
+        sns.stripplot(
+            data=df_preference_plot,
+            x="climate_zone",
+            y="thermal_preference",
+            jitter=0.25,
+            size=1.5,             # etwas größere Punkte
+            alpha=0.05,         # besser sichtbar
+            color="steelblue",
+            ax=ax,
+            hue="thermal_preference",
+            palette="viridis",
+            legend=False
+        )
+
+        ax.set_xlabel("Climate Zone")
+        ax.set_ylabel("thermal Preference")
+
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+
+        st.pyplot(fig)
+
+        with st.expander("Lesen des Boxplot zu Thermal Preference"):
+            st.markdown("""
+            **Erkenntnisse Thermal Preference:**
+                    
+            - Median ist bei allen Klimazonen gleich
+            - Continental: kleinste Streuung der Werte
+            - größter Unterschied liegt zwischen Continental und den anderen Klimazonen
+            """)
+
+        st.markdown("""
+        
+                    
+        **-> Bedeutung des Boxplot zu Thermal Preference:**
+        - In allen vier Klimazonen wurde tendenziell keine Veränderung gewünscht
+        - In den Klimazonen "Temperate", "Dry" und "Tropical" haben 50% der Befragten "keine Veränderung" oder "wärmer bevorzugt" angegeben
+        """)
+
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+    with col8:
+        st.subheader("Thermal Acceptability nach Klimazone")
+
+        def plot_thermal_acceptability_percent(df):
+            # Prozentanteile pro Klimazone berechnen
+            acceptability_pct = (
+                pd.crosstab(
+                    df["climate_zone"],
+                    df["thermal_acceptability"],
+                    normalize="index"
+                ) * 100
+            )
+
+            fig, ax = plt.subplots(figsize=(8, 5))
+
+            acceptability_pct.plot(
+                kind="bar",
+                stacked=False,
+                color=["darkgrey", "royalblue", "powderblue"],
+                ax=ax
+            )
+
+            ax.set_xlabel("Climate Zone")
+            ax.set_ylabel("Percentage (%)")
+            ax.set_title("Thermal Acceptability nach Klimazone")
+
+            ax.set_ylim(0, 100)  # feste Skala von 0 bis 100 %
+
+            ax.legend(
+                title="Thermal Acceptability",
+                bbox_to_anchor=(1.05, 1),
+                loc="upper left"
+            )
+
+            plt.xticks(rotation=45, ha="right")
+            plt.tight_layout()
+
+            return fig
+        
+        fig_acceptability = plot_thermal_acceptability_percent(df)
+
+        st.pyplot(fig_acceptability)
+
+        with st.expander("Lesen des Diagramms zu Thermal Acceptability"):
+            st.markdown("""
+            **Erkenntnisse Thermal Acceptability:**
+            
+            """)
+
+        st.markdown("""
+        **-> Bedeutung des Boxplot zu Thermal Acceptability:**
+        
+        """)
+
+    # ---------------------------------------------------------
+    # 📊 3. Ergebnistabelle erstellen
+    # ---------------------------------------------------------
+    with col5:
+        st.markdown("### Ergebnisse")
+    
+        # DataFrame für Anzeige erstellen
+        # Mittelwert und Median pro Klimazone berechnen
+        climate_zone_stats = (
+            df
+            .groupby("climate_zone")["thermal_comfort"]
+            .agg(["mean", "median"])
+            .reset_index()
+        )
+
+        # Spalten benennen
+        climate_zone_stats.columns = ["Klimazone", "Mittelwert", "Median"]
+
+        # auf zwei Nachkommastellen runden
+        climate_zone_stats["Mittelwert"] = climate_zone_stats["Mittelwert"].round(2)
+        climate_zone_stats["Median"] = climate_zone_stats["Median"].round(2)
+
+        st.write(climate_zone_stats)
+
+    # ---------------------------------------------------------
+    # 📊 4. Statistischen Zusammenhang berechnen
+    # --------------------------------------------------------- 
+    with col9:
+        st.subheader("Zusammenhang zwischen thermischen Bewertungen und Klimazone")
+
+        results = []
+
+        variables = [
+            "thermal_comfort",
+            "thermal_sensation",
+            "thermal_preference",
+            "thermal_acceptability"
+        ]
+
+        for variable in variables:
+            
+            # "unknown" nur bei thermal_preference und thermal_acceptability entfernen
+            if variable in ["thermal_preference", "thermal_acceptability"]:
+                df_test = df_bereinigt[
+                    df_bereinigt[variable] != "Unknown"
+                ]
+            else:
+                df_test = df_bereinigt
+
+            # Kreuztabelle erstellen
+            contingency_table = pd.crosstab(
+                df_test["climate_zone"],
+                df_test[variable]
+            )
+
+            # Chi²-Test
+            chi2, p, dof, expected = chi2_contingency(contingency_table)
+
+
+            # Cramérs V berechnen
+            n = contingency_table.sum().sum()
+            phi2 = chi2 / n
+            r, k = contingency_table.shape
+
+            cramers_v = np.sqrt(
+                phi2 / min(k-1, r-1)
+            )
+
+            # Ergebnisse speichern
+            results.append({
+                "Variable": variable,
+                "p-Wert": f"{p:.4f}",
+                "Effektgröße": round(cramers_v, 3)
+            })
+
+
+        # Ergebnis-DataFrame
+        chi2_results_df = pd.DataFrame(results)
+
+        st.dataframe(
+            chi2_results_df,
+            use_container_width=True,
+            hide_index=True
+        )
+
+        with st.expander("Informationen zum Lesen des Zusammenhangs"):
+            st.write("""                  
+            - Erklärung der Werte:
+                - p-Wert: gibt an, ob ein Zusammenhang statistisch signifikant ist 
+                - Effektgröße: gibt die Größe des Zusammenhangs an (z.B. schwacher, mittlerer, starker Zusammenhang)
+            
+            - Erkenntnisse:
+                - Bei allen vier thermischen Bewertungsvariablen gibt es einen statistisch signifikanten Zusammenhang mit der Klimazone
+                - Die Effektgröße zeigt:
+                     - bei thermal_comfort und thermal_acceptability besteht ein schwacher Zusammenhang mit der Klimazone
+                     - bei thermal_sensation und thermal_preference besteht ein sehr schwacher Zusammenhang mit der Klimazone
+            
+            - Hinweise: 
+                - Für die Signifikanzprüfung wurde der Chi²-Test verwendet, für die Ermittlung der Effektstärke wurde Cramérs V berechnet
+                - Es kann nur eine Aussage darüber gemacht werden, ob ein Zusammenhang besteht, jedoch nicht in welche Richtung dieser wirkt
+            """)
+
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # - Zusammenfassung und Bedeutung der Ergebnisse -
+    with col11:
+        st.subheader("ℹ️ Zusammenfassung und Bedeutung der Ergebnisse")
+
+        st.markdown("""
+        - Es besteht ein **Zusammenhang** zwischen allen vier thermischen Bewertungsvariablen und der Klimazone
+        - Der Zusammenhang ist **schwach** bei thermal_comfort und thermal_acceptability bzw. **sehr schwach** bei thermal_sensation und thermal_preference
+        
+            -> daher erklärt die Klimazone nur einen kleinen Teil der Unterschiede in der thermischen Bewertung
+        """)
+
+#########################################################################################################
+#########################################################################################################
 
 with tab4:
 
