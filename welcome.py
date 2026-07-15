@@ -42,7 +42,7 @@ if image_base64:
     </h1>
 
     <h3 style="font-size: 2.4em; font-weight: 700; margin-bottom: 25px;">
-        Datenarchitektur zur Optimierung klimatisierter Gebäudeinfrastrukturen
+        Datenanalyse und Machine Learning Modellierung des thermischen Komforts in Innenräumen
     </h3>
 
     <p style="font-size: 1.15em; margin-top: 25px;">
