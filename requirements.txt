@@ -8,13 +8,13 @@ scikit-learn
 graphviz
 requests
 python-dotenv
-scikit
 streamlit-echarts
-os
+#io
 dotenv
 sqlalchemy
 shap
-pickle
+pickledb
 imblearn
-multiprocessing
+multiprocess
 joblib
+missingno
