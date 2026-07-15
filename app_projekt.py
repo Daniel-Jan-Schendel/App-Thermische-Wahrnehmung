@@ -18,6 +18,7 @@ st.set_page_config(page_title="ASHRAE", layout="wide", initial_sidebar_state="ex
 pg = st.navigation(
     [
         st.Page("welcome.py", title="Startsite", icon=":material/home:"),
+        st.Page("team.py", title="Team & Tools", icon=":material/group:"),
         st.Page("introduction.py", title="Einführung", icon=":material/info:"),
         st.Page("datenbereinigung.py", title="Datenbereinigung", icon=":material/menu_book:"),
         st.Page("database.py", title="Datenbank", icon=":material/dashboard:"),
@@ -25,8 +26,8 @@ pg = st.navigation(
         st.Page("analytics_dianela.py", title="Cooling_type und Alter", icon=":material/analytics:"),
         st.Page("thermal_comfort_analysis.py", title="Thermal Comfort Analyse", icon=":material/analytics:"),
         st.Page("machine_learning.py", title="Machine Learning", icon=":material/smart_toy:"),
-        st.Page("ML_test_iris.py", title="Machine Learning Test", icon=":material/smart_toy:"),
-        st.Page("ML_test_ASHRAE.py", title="Machine Learning Test 2", icon=":material/smart_toy:"),
+        #st.Page("ML_test_iris.py", title="Machine Learning Test", icon=":material/smart_toy:"),
+        #st.Page("ML_test_ASHRAE.py", title="Machine Learning Test 2", icon=":material/smart_toy:"),
         st.Page("ml_ashrae.py", title="Machine Learning Modelling", icon=":material/smart_toy:"),
         st.Page("zusammenfassung.py", title="Zusammenfassung", icon=":material/menu_book:"),
         st.Page("dashboard.py", title="Dashboard", icon=":material/menu_book:")

@@ -13,7 +13,10 @@ import json
 
 st.set_page_config(page_title="Database", layout="wide", initial_sidebar_state="expanded")
 
-st.title("Datenbank Überblick")
+st.title("Die Datenwolke hinter Smart Building Analytics")
+
+# st.title("Neon PostgreSQL: Unsere cloudnative Datenbasis")
+# st.title("Datenbank Überblick")
 
 
 # ---------------------------------------------------------
@@ -28,12 +31,61 @@ df = load_data()
 # ---------------------------------------------------------
 # TABS (ONLY ON MAIN PAGE)
 # ---------------------------------------------------------
-tab_1, tab_2 = st.tabs(["📘 Postgre SQL Neon (icon)", "🌍 Karte?"])
+tab_1, tab_2 = st.tabs(["📘 Neon PostgreSQL – Datenbank", "🌍 Karte?"])
 
 # ---------------------------------------------------------
 # SOURCE TAB
 # ---------------------------------------------------------
 with tab_1:
+
+    # Renderizamos el título principal limpio usando la misma lógica que propusiste
+    st.markdown("## **Cloud-native Infrastruktur & Datenmodellierung**")
+    
+    # Einleitende Infobox zur Neon-Plattform
+    st.info(
+        "**Neon** ist eine cloudnative, serverlose PostgreSQL-Datenbank, "
+        "die speziell für moderne Entwickler konzipiert wurde. Sie bietet "
+        "sofortiges Branching (Datenbank-Klonen) sowie eine vollständig automatische "
+        "Skalierung der Rechenleistung."
+    )
+    
+    st.markdown("---")
+    
+    # Symmetrisches Zwei-Spalten-Layout für die technische Dokumentation
+    col_doc1, col_doc2 = st.columns(2)
+    
+    with col_doc1:
+        st.markdown("### 📊 **Ausgangssituation & Herausforderung**")
+        st.markdown(
+            "**Datensatz:** ASHRAE v2.1-Datenbank mit über **109.033 Messungen** und **59 strukturierten Spalten**.\n\n"
+            "**Zielstellung:** Aufbau einer hochverfügbaren, performanten Cloud-Infrastruktur, um Echtzeit-Analysen "
+            "für das gesamte Projektteam plattformunabhängig bereitzustellen."
+        )
+        
+        st.markdown("### ⚡ **Systemvorteile der Cloud**")
+        st.markdown(
+            "* **Skalierbarkeit:** Automatische Anpassung an große Abfragemengen bei minimaler Latenz.\n"
+            "* **Ressourcen-Trennung:** Unabhängige Verwaltung von Cloud-Speicher und Rechenleistung.\n"
+            "* **Sicherheit:** Verschlüsselte Ende-zu-Ende-Verbindung über sichere SSL-Kanäle."
+        )
+
+        st.markdown("### 🧱 **Datenbank-Architektur & Optimierung**")
+        st.markdown(
+            "**Modellierung:** Erfolgreiche Überführung einer flachen Tabelle in eine **optimierte, relationale Datenbankstruktur**.\n\n"
+            "Durch diese gezielte Normalisierung wurde die Performance der Abfragen in Python signifikant optimiert."
+        )
+        
+        st.success("**dim_buildings:** Stammdaten-Katalog für die einzigartigen Gebäudestrukturen (9 Spalten).")
+        st.success("**fact_thermal_records:** Zentrale Faktentabelle mit 50 Metrik- und Sensor-Spalten (Sensation, Comfort, Preference, Acceptability).")
+        
+        # 2. Saubere Power BI Erklärung (Sección ejecutiva limpia)
+        st.markdown("### 📊 **BI-Ökosystem & Power BI-Integration**")
+        st.markdown(
+            "**Daten-Schnittstelle:** Die normalisierte relationale Struktur ermöglicht eine direkte, "
+            "native Anbindung an **Microsoft Power BI** über standardisierte PostgreSQL-Connectors."
+        )
+
+
 
     st.text("Technologische und moderne Ansätze Neon ist die serverlose Zukunft von PostgreSQL Mit Neon skaliert die Datenbank automatisch " \
     "auf Null. Neon trennt Speicher und Berechnung für maximale Effizienz. Entwickler-Fokus. Neon ermöglicht Datenbank-Branching wie in Git.. " \

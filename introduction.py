@@ -1,19 +1,141 @@
 import streamlit as st
 
-st.set_page_config(page_title="Introduction - ASHRAE", layout="wide",initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="Introduction – Smart Building Analytics",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
+st.title("🏢 Smart Building Analytics – Einführung")
 
 # -------------------------
 #       TABS
 # -------------------------
-tab1, tab2, tab3 = st.tabs(["Grund - Warum?", "ASHRAE", "Ziel"])
+tab1, tab2, tab3, tab4,tab5 = st.tabs([
+    "1️⃣ Einführung",
+    "2️⃣ Grund – Warum?",
+    "3️⃣ Machine Learning Integration",
+    "4️⃣ ASHRAE Datensatz",
+    "example"
+])
 
+# -------------------------
+# TAB 1 – EINLEITUNG
+# -------------------------
 with tab1:
-    st.text("Mangelnder thermischer Komfort führt zu Unzufriedenheit und sinkender Produktivität.")
+
+    st.markdown(
+    """
+    <div style="
+        background-color: #f7f7f7;
+        padding: 15px;
+        border-radius: 12px;
+        border-left: 5px solid #4B9CD3;
+        font-size: 20px;
+        line-height: 1.5;
+        margin-top: 20px;
+    ">
+        Dieses Projekt analysiert Gebäudedaten, um Energieeffizienz,
+        Komfort und Nachhaltigkeit in klimatisierten Infrastrukturen zu verbessern.
+        Hier findest du Dashboards, Datenpipelines und Machine-Learning-Modelle,
+        die unser Smart-Building-Konzept unterstützen.
+    </div>
+    """, unsafe_allow_html=True)
 
 
+    st.markdown("""
+    ## 1️⃣ Einführung
 
+    **Smart Building Analytics** ist unser Abschlussprojekt im Rahmen der beruflichen Weiterbildung.
+    Es handelt sich nicht um ein statisches Dashboard, sondern um eine **cloudnative, prädiktive
+    Webanwendung**, die modernste Machine‑Learning‑Algorithmen nutzt.
+
+    Ziel des Projekts ist es, die Brücke zwischen **thermodynamischen Big Data** und **künstlicher
+    Intelligenz** zu schlagen, um thermischen Komfort in Gebäuden nicht nur zu analysieren,
+    sondern **proaktiv vorherzusagen**.
+
+    ### 🔧 Systemüberblick
+    - Entwicklung einer cloudnativen, prädiktiven Webanwendung zur intelligenten Visualisierung
+      und Prognose globaler Mikroklimadaten.
+    - Technologie‑Stack: **Python + Streamlit** im Frontend, **Neon PostgreSQL** als Cloud‑Datenbank.
+    - Integration von Machine Learning zur Vorhersage thermischer Komfortparameter.
+    - Fokus auf den vier Hauptvariablen:
+        - **Thermal Comfort (TC)**
+        - **Thermal Sensation (TSV)**
+        - **Thermal Preference (TP)**
+        - **Thermal Acceptability (TA)**
+
+    ### 🎯 Projektziele – Datengetriebener Pipeline‑Ansatz
+    - **Datenbereinigung:** Strukturierung und systematische Behandlung unvollständiger Rohdaten.
+    - **Datenkonsistenz:** Aufbau einer robusten relationalen Cloud‑Datenbank (Neon PostgreSQL).
+    - **Prädiktive Analytik:** KI‑Modelle zur automatischen Vorhersage von TSV, TC, TP und TA.
+    - **Deployment:** Bereitstellung aller Datenströme, Filter und Modelle über eine interaktive
+      Streamlit‑Webanwendung.
+    """)
+
+# -------------------------
+# TAB 2 – WARUM?
+# -------------------------
+with tab2:
+    st.markdown("""
+    ## 2️⃣ Grund – Warum Smart Building Analytics?
+
+    ### 🌍 Big‑Data‑Herausforderung
+    Klassische Werkzeuge versagen bei der Analyse von über **100.000 Messreihen** und führen zu
+    Systemabstürzen. Smart Building Analytics löst dieses Problem durch Cloud‑Computing und
+    optimierte Datenpipelines.
+
+    ### ⚡ Energieeffizienz
+    Gebäude verursachen weltweit rund **40 % des Energieverbrauchs**.  
+    KI‑gestützte Steuerung kann den CO₂‑Ausstoß drastisch reduzieren.
+
+    ### 🙂 Nutzer‑Wohlbefinden
+    Raumklima beeinflusst Produktivität und Gesundheit.  
+    Unser System erkennt kritische Diskomfort‑Zustände im Sekundenbruchteil, indem es die vier
+    Komfortparameter mit **Alter** und **Geschlecht** verknüpft, um präzise Komfortzonen zu bestimmen.
+    """)
+
+# -------------------------
+# TAB 3 – MACHINE LEARNING
+# -------------------------
 with tab3:
+    st.markdown("""
+    ## 3️⃣ Machine Learning Integration
+
+    Der wichtigste Meilenstein unseres Projekts ist die **Machine‑Learning‑Integration**.
+    Wir nutzen die **109.000 historischen Datensätze** nicht nur für Grafiken, sondern als
+    Trainingsdaten für KI‑Modelle.
+
+    Das System lernt Muster der menschlichen Wahrnehmung und kann dadurch zukünftige
+    Komfortstufen autonom prognostizieren – bevor Energie verschwendet wird.
+
+    ### 🤖 Prädiktive Analytik via Machine Learning
+    - Übergang von deskriptiver Statistik zu **Predictive Analytics**.
+    - Klassifikationsmodelle wie **Random Forest** und **Gradient Boosting**.
+    - Ziel: KI‑gestützte Prognose von **Thermal Acceptability** und **Thermal Sensation**.
+    - Grundlage: Live‑Sensordaten (Temperatur, Feuchtigkeit, Luftgeschwindigkeit).
+    """)
+
+# -------------------------
+# TAB 4 – ASHRAE DATENSATZ
+# -------------------------
+with tab4:
+    st.markdown("""
+    ## 4️⃣ ASHRAE Datensatz – Die wissenschaftliche Basis
+
+    ### 📊 ASHRAE Global Thermal Comfort Database v2.1
+    - Erstellt von der *American Society of Heating, Refrigerating and Air‑Conditioning Engineers*.
+    - Wir verwenden die frei verfügbaren Datensätze von **Kaggle**.
+    - Umfang: **109.033 empirische Datensätze** mit **59 physikalischen und demografischen Variablen**.
+    - Wissenschaftlicher Wert: Globaler Goldstandard zur Validierung adaptiver Komfortmodelle
+      wie der **ASHRAE‑Norm 55**.
+
+    Die Daten bilden die Grundlage für alle Analysen, Visualisierungen und Machine‑Learning‑Modelle
+    in unserer Anwendung.
+    """)
+
+
+with tab5:
     st.text("Ein datenbasiertes Gleichgewicht zwischen wirtschaftlicher Effizienz und menschlichem Wohlbefinden.")
 
     st.text("Kopie von Notitzen")
