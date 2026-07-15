@@ -13,7 +13,7 @@ st.set_page_config(page_title="Globale Datenanalyse", layout="wide", initial_sid
 
 # Load data
 
-df_bereinigt = pd.read_csv("db_bereinigt_fertig.csv")
+df_bereinigt = pd.read_csv("db_bereinigt_final")
 
 #st.title("Globale Datenanalyse")
 #st.line_chart(df_bereinigt["DB"])
