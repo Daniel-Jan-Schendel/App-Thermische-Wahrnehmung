@@ -28,9 +28,7 @@ df = load_data()
 # ---------------------------------------------------------
 # TABS (ONLY ON MAIN PAGE)
 # ---------------------------------------------------------
-tab_1,  tab_2, tab_3, tab_4 = st.tabs(
-    ["📘 Neon", "🗂️ ERD", "🌍 Karte",  "📊 Explorer"]
-)
+tab_1, tab_2 = st.tabs(["📘 Postgre SQL Neon (icon)", "🌍 Karte?"])
 
 # ---------------------------------------------------------
 # SOURCE TAB
@@ -44,19 +42,10 @@ with tab_1:
     st.text("Technologische und moderne Ansätze:")
     st.text("1. Neon ist die serverlose Zukunft von PostgreSQL. 2 . Mit Neon skaliert die Datenbank automatisch auf Null. 3. .Neon trennt Speicher und Berechnung für maximale Effizienz.")
     
-
-# ---------------------------------------------------------
-# ERD TAB
-# ---------------------------------------------------------
-with tab_2:
-
-    st.subheader("Entity Relationship Diagram (ERD)")
-    st.write("Visual representation of the database schema and relationships.")
-
 # ---------------------------------------------------------
 # MAP TAB
 # ---------------------------------------------------------
-with tab_3:
+with tab_2:
 
     st.subheader("🌍 Globale Verteilung der ASHRAE‑Feldstudien")
     st.markdown(
@@ -216,38 +205,5 @@ with tab_3:
             age_min = df["age"].dropna().min()
             age_max = df["age"].dropna().max()
             st.write(f"**Alter (Range):** {age_min} – {age_max}")
-
-
-#########################################################################################################################################################
-
-##########################################################################################################################################################
-
-
-    
-
-# ---------------------------------------------------------
-# EXPLORER TAB
-# ---------------------------------------------------------
-
-with tab_4:
-    st.subheader("Data Explorer")
-
-    column = st.selectbox("Choose a column:", df.columns)
-    st.write(df[column].describe())
-
-    if pd.api.types.is_numeric_dtype(df[column]):
-        min_val, max_val = float(df[column].min()), float(df[column].max())
-        selected_range = st.slider("Select value range:", min_val, max_val, (min_val, max_val))
-        filtered_df = df[(df[column] >= selected_range[0]) & (df[column] <= selected_range[1])]
-        st.dataframe(filtered_df.head())
-    else:
-        unique_values = df[column].dropna().unique()
-        selected_value = st.selectbox("Select a value:", unique_values)
-        filtered_df = df[df[column] == selected_value]
-        st.dataframe(filtered_df.head())
-
-
-
-######################################################################################################################
 
 
