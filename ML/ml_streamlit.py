@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, PowerTransformer
@@ -11,19 +11,26 @@ import shap
 import matplotlib.pyplot as plt
 import joblib
 import io
+import threading
+import time
+
+#import locale
+#
+## Setzt das System für die Formatierung auf Deutsch (unter Windows oft "deu_deu" oder "german")
+#try:
+#    locale.setlocale(locale.LC_ALL, 'de_DE.utf8')
+#except locale.Error:
+#    locale.setlocale(locale.LC_ALL, '') # Fallback auf Systemstandard, falls de_DE fehlt
 
 # 1. Seiteneinstellungen & Titel
 st.set_page_config(page_title="ASHRAE Thermal Comfort App", layout="wide")
-st.title("🌡️ ASHRAE Thermal Preference Predictor - Random Forest Classifier")
+st.title("🌡️ ASHRAE Thermische Präferenz Vorhersage - Random Forest Classifier")
 
 # 2. Daten laden (Ge-cached, damit es nur einmal passiert)
 @st.cache_data
 def load_data():
+
     df_loaded = pd.read_csv("db_bereinigt_final.csv")
-    
-    # WICHTIG: Falls deine Spalte großgeschrieben ist ('Season'), benennen wir sie hier um
-    if 'Season' in df_loaded.columns:
-        df_loaded = df_loaded.rename(columns={'Season': 'season'})
         
     return df_loaded
 
@@ -34,6 +41,8 @@ raw_df['thermal_preference'] = raw_df['thermal_preference'].astype(str).str.stri
 raw_df['thermal_preference'] = raw_df['thermal_preference'].replace(['unknown', 'Unknown', 'UNKNOWN', 'nan', 'None'], np.nan)
 raw_df['cooling_type'] = raw_df['cooling_type'].replace(['unknown', 'Unknown', 'UNKNOWN', 'nan', 'None'], np.nan)
 df = raw_df.dropna(subset=['thermal_preference']).copy()
+
+# df sind Anzhal Datensätze mit thermal_preference, im Basismodell 69825 + 15063 = 84888
 
 # 3. Sidebar: Filter & Hyperparameter
 # =====================================================================
@@ -66,7 +75,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
     
     with row2_col1:
         # NEU: Filter für Cooling Type über Checkboxen
-        st.subheader("❄️ Kühlungstyp (Cooling Type)")
+        st.subheader("❄️ Kühlungstypfilter\n\n (Cooling Type)")
         available_coolings = sorted(list(df['cooling_type'].dropna().unique()))
         selected_coolings = []
         for cooling in available_coolings:
@@ -75,7 +84,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
                 selected_coolings.append(cooling)
                 
     with row2_col2:
-        st.subheader("📅 Zeitfilter (Seasons)")
+        st.subheader("📅 Jahreszeitfilter\n\n (Seasons)")
         available_seasons = sorted(list(df['season'].dropna().unique()))
         selected_seasons = []
         for season in available_seasons:
@@ -83,7 +92,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
                 selected_seasons.append(season)
 
     with row2_col3:
-        st.subheader("🌍 Klimafilter (Climate)")
+        st.subheader("🌍 Klimafilter\n\n (Climate)")
         available_climates = sorted(list(df['climate_zone'].dropna().unique()))
         selected_climates = []
         for climate in available_climates:
@@ -91,17 +100,83 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
                 selected_climates.append(climate)
 
     # Trennlinie für die zweite Reihe im Expander
-#    st.write("---")
+    st.write("---")
     
     # Eine Trennlinie innerhalb des Expanders für die Hyperparameter-Auswahl
 #    st.write("---")
-#    st.subheader("🌲 Random Forest Hyperparameter (Grid)")
+    st.subheader("🌲 Random Forest Hyperparameter (Grid)")
 #    param_col1, param_col2 = st.columns(2)
-    
+
+    such_modus = st.selectbox(
+        "Wählen Sie die GridSearch-Intensität für die Live-Präsentation:",
+        ["Schnelle Suche (Live-Demo mit RandomSearch)", "Normale Suche (mit RandomSearch)", "Intensive Suche (mit GridSearch)"],
+    )    
 
     ######################################################
     ########### Block manuell setzen ##################### # derzeit noch über GUI
     ######################################################
+
+    if such_modus == "Schnelle Suche (Live-Demo mit RandomSearch)":
+        # Extrem schlank: Fokus auf die 3 wichtigsten Hebel, minimale Listen
+        param = {
+        "classifier__max_depth": [5, 10],
+        "classifier__n_estimators": [50],
+        "classifier__min_samples_leaf": [30],
+        "classifier__min_samples_split": [70],
+        "classifier__max_features": ["sqrt"],
+        #"classifier__class_weight": ["balanced"],
+            }
+#        #max_depth_options = [3]
+#        #n_estimators_options = [100]
+        #"classifier__min_samples_leaf":,  # Grober Check gegen Overfitting
+        #"class_weight": ["balanced"],
+
+        cv_folds = 3  # Weniger Folds sparen massiv Zeit bei großen Datensätzen
+        max_kombinationen = 4   # Hier soagar nur zwei möglich
+        use_random_search = True  # Bei so wenigen Kombinationen ist GridSearchCV schneller
+
+    elif such_modus == "Normale Suche (mit RandomSearch)":  # kann auch mal 20 min dauern
+        param = {
+        "classifier__max_depth": [6, 9, 12],
+        "classifier__n_estimators": [100],
+        "classifier__min_samples_leaf": [20, 50],
+        "classifier__min_samples_split": [50],
+        "classifier__max_features": ["sqrt"],
+        #"classifier__class_weight": ["balanced"],
+            }
+#        #max_depth_options = [12]
+#        #n_estimators_options = [200]
+        #"min_samples_leaf": ,
+        #"min_samples_split":,
+        #"max_features": ["sqrt"],
+        #"class_weight": ["balanced"],
+
+        cv_folds = 5
+        max_kombinationen = 6
+        use_random_search = True
+
+    else:  # Intensive Suche (Nicht für Live-Vortrag geeignet)
+        param = {
+        'classifier__n_estimators': [100, 200],
+        # Maximale Baumtiefe (Der gesuchte Sweet-Spot zwischen 3 und 16)
+        'classifier__max_depth': [6, 9, 12],
+        # Mindestanzahl an Datenpunkten pro Endblatt (Schutz vor Rauschen/Overfitting)
+        'classifier__min_samples_leaf': [10, 30, 60],
+        # Mindestanzahl an Datenpunkten, um einen Knoten überhaupt zu teilen
+        'classifier__min_samples_split': [25, 70],
+        # Feature-Begrenzung pro Split ('sqrt' nutzt ca. 2 von 5 Features, None nutzt alle 5)
+        'classifier__max_features': ['sqrt', None]
+            }
+#        #max_depth_options = [20]
+#        #n_estimators_options = [200]
+        #"min_samples_leaf": ,
+        #"min_samples_split":,
+        #"max_features": ["sqrt"],
+        #"class_weight": ["balanced"],
+
+        cv_folds = 5
+        max_kombinationen = 0
+        use_random_search = False
 
     # Test, führt zu F1_score=0.53 mit gleichem Set, wie im Notebook!
     #max_depth_options = [12]
@@ -112,8 +187,8 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
     #n_estimators_options = [50, 100, 200]
 
     # ausgewogen
-    max_depth_options = [5, 10, 12]
-    n_estimators_options = [50, 100, 200]
+    #max_depth_options = [5, 10, 12]
+    #n_estimators_options = [50, 100, 200]
 
     # schnell
     #max_depth_options = [5, 10]
@@ -192,10 +267,10 @@ with stat_col2:
 with stat_col3:
     st.metric(
         label="Fehlende Daten im gefilterten Set", 
-        value=f"unvollst. Zeilen: {rows_with_missing_values:,} | Werte: {total_missing_cells:,}"
+        value=f"unvollst. Zeilen: {rows_with_missing_values:,} \n\nfehlende Werte: {total_missing_cells:,}"
     )
     if impute_strategy == "Zeilen mit Fehlwerten löschen (dropna)":
-        st.caption("🔴 Status: Diese betroffenen Zeilen wurden aus dem Modell entfernt.")
+        st.caption("🔴 Status: Die betroffenen Zeilen wurden aus dem Modell entfernt.")
     else:
         st.caption("🟢 Status: Lücken werden im Trainingsverlauf durch den Median ersetzt.")
 
@@ -205,7 +280,8 @@ st.write("---")
 # 5. Training & GridSearch 
 #########################################################################################################
 @st.cache_resource
-def train_model(X_tr, y_tr, features, estimators, depths, strategy, seasons, climates, coolings):
+#def train_model(X_tr, y_tr, features, estimators, depths, strategy, seasons, climates, coolings, max_kombinationen, cv_folds):
+def train_model(X_tr, y_tr, features, param, strategy, seasons, climates, coolings, max_kombinationen, cv_folds):
     pipeline = Pipeline([
         ('imputer', SimpleImputer(strategy='median')),  # in der Regel ohnehin fehlende Werte entfernt
         #('scaler', StandardScaler()),   # 
@@ -217,14 +293,30 @@ def train_model(X_tr, y_tr, features, estimators, depths, strategy, seasons, cli
     #########################################################
     ############## Herzstück von GridSearch #################
     #########################################################
-    param_grid = {
-        'classifier__n_estimators': estimators,
-        'classifier__max_depth': depths
-    }
     
     # Cross-Validation mit 3 Folds (Durchgängen), Bewertungskriterium f1_macro, Overfitting wird nicht berücksichtigt / ermittelt
     # Durch Kreuzvalidierung wird die Gefahr auf Overfitting jedoch stark reduziert!!!
-    grid_search = GridSearchCV(pipeline, param_grid, cv=3, scoring='f1_macro', n_jobs=-1)
+    
+    if (use_random_search):
+        param_distributions = param
+        #param_distributions = {
+        #'classifier__n_estimators': estimators,
+        #'classifier__max_depth': depths
+        #    }
+        #grid_search = GridSearchCV(pipeline, param_grid, cv=3, scoring='f1_macro', n_jobs=-1)
+        grid_search = RandomizedSearchCV(pipeline, param_distributions=param_distributions, cv=cv_folds, n_iter=max_kombinationen, scoring='f1_macro', n_jobs=-1)
+        st.write(f"RandomSearch durchgeführt!")
+    else:
+        param_grid = param
+        #param_grid = {
+        #'classifier__n_estimators': estimators,
+        #'classifier__max_depth': depths
+        #    }
+        grid_search = GridSearchCV(pipeline, param_grid=param, cv=cv_folds, scoring='f1_macro', n_jobs=-1)
+        st.write(f"GridSearch durchgeführt!")
+    
+    
+    
     grid_search.fit(X_tr, y_tr)
     
     return grid_search.best_estimator_, grid_search.best_params_
@@ -232,15 +324,50 @@ def train_model(X_tr, y_tr, features, estimators, depths, strategy, seasons, cli
 
 # Button zum Starten des Trainings
 if st.button("🚀 Modell trainieren & validieren"):
-    with st.spinner("GridSearch läuft... Bitte warten..."):
-        best_pipeline, best_params = train_model(
-            X_train, y_train, tuple(selected_features), tuple(n_estimators_options), tuple(max_depth_options), 
-            impute_strategy, tuple(selected_seasons), tuple(selected_climates), tuple(selected_coolings)
+
+    # Container für die Live-Zeitanzeige erstellen
+    timer_placeholder = st.empty()
+
+    # Variablen für die Zeitmessung initialisieren
+    start_time = time.time()
+    suche_aktiv = True
+
+    # Diese Funktion läuft im Hintergrund und aktualisiert den Timer jede Sekunde
+    def zeige_live_timer():
+        while suche_aktiv:
+            vergangene_zeit = time.time() - start_time
+            # Zeigt den aktuellen Zwischenstand im Vortrag an
+            timer_placeholder.markdown(
+                f"⏳ **Berechnung läuft... Aktuelle Dauer:** `{vergangene_zeit:.1f} Sekunden`"
+            )
+            time.sleep(0.1)
+
+    # Den Live-Timer in einem separaten Hintergrund-Thread starten
+    timer_thread = threading.Thread(target=zeige_live_timer)
+
+
+    if (use_random_search):
+        searchtext = 'RandomSearch läuft... Bitte warten...'
+    else:
+        searchtext = 'GridSearch läuft... Bitte warten...'
+
+    with st.spinner(searchtext):
+        timer_thread.start()
+        best_pipeline, best_params = train_model(   ################################################################################ Aufruf RANDOM FOREST FUNCTION ##################
+            X_train, y_train, tuple(selected_features), param, #tuple(n_estimators_options), tuple(max_depth_options), 
+            impute_strategy, tuple(selected_seasons), tuple(selected_climates), tuple(selected_coolings), max_kombinationen, cv_folds
         )
     
+    # Finale Endzeit berechnen
+    end_time = time.time()
+    gesamtdauer = end_time - start_time
+
+    # Den provisorischen Timer-Text löschen und durch die Erfolgsmeldung ersetzen
+    timer_placeholder.empty()
+
     st.session_state['model'] = best_pipeline
     st.session_state['best_params'] = best_params
-    st.success("Training erfolgreich abgeschlossen!")
+    st.success(f"Training erfolgreich abgeschlossen! Gesamte Rechenzeit: **{gesamtdauer:.2f} Sekunden**")
 
 # 6. Ergebnisse anzeigen
 if 'model' in st.session_state:
@@ -331,12 +458,13 @@ if 'model' in st.session_state:
             class_names=actual_class_names, # <-- Hier werden die Namen gemappt!
             show=False
         )
+
+        plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
+        #plt.ylabel("Features")
+
         st.pyplot(fig)
 
-        
-    col3, col4 = st.columns(2)
-
-    with col3:
+        st.write("\n\n")
 
         st.write("**Confusion Matrix:**")
         fig, ax = plt.subplots(figsize=(6, 5)) # Größe optional anpassbar
@@ -352,3 +480,9 @@ if 'model' in st.session_state:
         plt.title("Thermal Preference")
         plt.tight_layout() # Verhindert abgeschnittene Labels am Rand
         st.pyplot(fig)
+
+
+    #col3, col4 = st.columns(2)
+
+    #with col3:
+
