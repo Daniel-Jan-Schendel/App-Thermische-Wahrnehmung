@@ -4,12 +4,14 @@ import matplotlib.patches as mpatches  # 🌟 Importiert für die perfekte Skali
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="Cooling Typ Analyse", layout="wide", initial_sidebar_state="expanded")
+
 # ==============================================================================
 # 🛠️ 1. GLOBALE FUNKTIONEN (MÜSSEN AN ERSTER STELLE STEHEN)
 # ==============================================================================
 def map_tsv(v): 
     if pd.isna(v): return None 
-    if v <= -2.5: return -3  
+    if v <= -2.5: return -3 
     elif v <= -1.5: return -2 
     elif v <= -0.5: return -1 
     elif v < 0.5: return 0 
@@ -71,7 +73,7 @@ def plot_comfort_variable(series, labels, colors, title):
         legend_patches.append(patch)
     
     ax.set_title(title, fontweight='bold', fontsize=11, pad=10) 
-    ax.set_xlabel("Comfort Level Index", fontweight='bold', fontsize=9) 
+    ax.set_xlabel("Level Verteilung", fontweight='bold', fontsize=9) 
     ax.set_ylabel("Anzahl (Stimmen)", fontweight='bold', fontsize=9) 
     
     plt.xticks(rotation=0, ha="center")
@@ -107,7 +109,7 @@ tp_map = {"cooler": -1, "no change": 0, "warmer": 1, "unknown": np.nan}
 ta_map = {"acceptable": 1, "unacceptable": 0, "unknown": np.nan}
 
 # REITER INITIALISIERUNG
-tab1, tab2 = st.tabs(["Cooling typ", "Gender"])
+tab1, tab2, tab3 = st.tabs(["Globale Übersicht", "Cooling typ", "Gender"])
 
 # ==============================================================================
 # 💾 3. DATENLADUNG & VARIABLEN-MAPPING
@@ -119,9 +121,118 @@ df["thermal_comfort_cat"] = df["thermal_comfort"].apply(map_tc)
 df["thermal_acceptability_cat"] = df["thermal_acceptability"].map(ta_map)
 
 # ==============================================================================
-# 📊 TAB 1: GEOGRAFISCHE KOMFORTANALYSE (DINAMISCHES 2x2 NEBENEINANDER LAYOUT)
+# 🌐 TAB 1: GLOBALE ÜBERSICHT (ZUSAMMENGEFASSTE BIG-DATA ANALYSE IN 2x2 GRID)
 # ==============================================================================
+
 with tab1:
+    # Laden und Vorbereiten der globalen Big-Data-Struktur im Tab-Scope
+    df_global = pd.read_csv("db_bereinigt_final.csv")
+    
+    # Absolute kategoriale Zuweisung der Komfortmetriken
+    df_global["thermal_sensation_cat"] = df_global["thermal_sensation"].apply(map_tsv) 
+    df_global["thermal_preference_cat"] = df_global["thermal_preference"].map(tp_map) 
+    df_global["thermal_comfort_cat"] = df_global["thermal_comfort"].apply(map_tc) 
+    df_global["thermal_acceptability_cat"] = df_global["thermal_acceptability"].map(ta_map)
+    
+    # Normalisierung der Spaltenwerte zur Vermeidung von Formatierungsfehlern
+    df_global['cooling_type'] = df_global['cooling_type'].fillna('unknown').astype(str).str.lower().str.strip()
+    df_global['building_type'] = df_global['building_type'].fillna('unknown').astype(str).str.strip()
+    df_global['gender'] = df_global['gender'].fillna('unknown').astype(str).str.lower().str.strip()
+    df_global['age'] = pd.to_numeric(df_global['age'], errors='coerce')
+    
+    # 🌟 MAẞNAHME: Ausschluss von 'unknown'-Werten auf globaler Ebene für Tab 1
+    df_global = df_global[
+        (df_global['cooling_type'] != 'unknown') & 
+        (df_global['building_type'].str.lower() != 'unknown')
+    ]
+    
+    st.subheader("Wissenschaftlicher Leitfaden: Globale makroskopische Analyse nach Gebäude- und Belüftungsstruktur")
+    st.caption(
+        "Diese Übersicht segmentiert das weltweite Datenvolumen der ASHRAE v2.1-Datenbank automatisch. "
+        "Die 4 Hauptkomfortparameter werden für jede Kombination aus Gebäudetyp und Belüftungsart separat dargestellt "
+        "und direkt mit dem demografischen Profil (Alter und Geschlecht) der jeweiligen Nutzergruppe verknüpft."
+    )
+    
+    # Schleife über alle bereinigten Gebäudetypen im Datensatz
+    gebaeudetypen = sorted(df_global['building_type'].unique().tolist())
+    
+    for gebaeude in gebaeudetypen:
+        df_bldg = df_global[df_global['building_type'] == gebaeude]
+        
+        if df_bldg.empty:
+            continue
+            
+        st.markdown(f"## 🏢 Gebäudetyp: {gebaeude}")
+        
+        # Sortierung der verbleibenden validen Belüftungsarten
+        belueftungsarten = sorted(df_bldg['cooling_type'].unique().tolist())
+        
+        for belueftung in belueftungsarten:
+            df_final_t1 = df_bldg[df_bldg['cooling_type'] == belueftung]
+            
+            total_voten = len(df_final_t1)
+            if total_voten == 0:
+                continue
+                
+            avg_age_seg = df_final_t1['age'].mean() if not df_final_t1['age'].dropna().empty else 0.0
+            
+            # Verteilung der Geschlechter ermitteln
+            gender_counts = df_final_t1['gender'].value_counts()
+            female_votes = gender_counts.get('female', 0)
+            male_votes = gender_counts.get('male', 0)
+            unknown_votes = gender_counts.get('unknown', 0)
+            
+            # Schöne Formatierung für die Anzeige der Belüftungsart im Titel
+            belueftung_title = belueftung.replace('-', ' ').title()
+            st.markdown(f"### ⚡ Belüftungsart: {belueftung_title}")
+            st.markdown(
+                f"**Segment-Statistik:** Gesamtstimmen: `{total_voten:,}` | ø-Alter: `{avg_age_seg:.1f} Jahre` | "
+                f"Demografie: 👩 Frauen: `{female_votes:,}` | 👨 Männer: `{male_votes:,}` | 👤 Unbekannt: `{unknown_votes:,}`"
+            )
+            
+            # Evaluierung der Zeilenmenge vor dem Zeichnen der Matrix
+            has_c1 = not pd.to_numeric(df_final_t1["thermal_comfort_cat"], errors="coerce").dropna().empty
+            has_c2 = not pd.to_numeric(df_final_t1["thermal_sensation_cat"], errors="coerce").dropna().empty
+            
+            # 📊 GRUPPE 1: Comfort und Sensation nebeneinander mit deiner Breiten-Fixierung (width=550)
+            col_r1_1, col_r1_2 = st.columns(2)
+            with col_r1_1:
+                if has_c1:
+                    plot_comfort_variable(df_final_t1["thermal_comfort_cat"], tc_labels, tc_colors, f"Thermal Comfort ({gebaeude} - {belueftung_title})")
+                    st.markdown("**Analyse:** Zeigt die Verteilung des thermischen Komfortindex spezifisch für diese Raumkonfiguration.")
+                else:
+                    st.container()
+            with col_r1_2:
+                if has_c2:
+                    plot_comfort_variable(df_final_t1["thermal_sensation_cat"], tsv_labels, tsv_colors, f"Thermal Sensation ({gebaeude} - {belueftung_title})")
+                    st.markdown("**Analyse:** Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum.")
+            
+            # Evaluierung der Zeilenmenge für die zweite Reihe
+            has_c3 = not pd.to_numeric(df_final_t1["thermal_preference_cat"], errors="coerce").dropna().empty
+            has_c4 = not pd.to_numeric(df_final_t1["thermal_acceptability_cat"], errors="coerce").dropna().empty
+            
+            # 📊 GRUPPE 2: Preference und Acceptability nebeneinander mit deiner Breiten-Fixierung (width=550)
+            col_r2_1, col_r2_2 = st.columns(2)
+            with col_r2_1:
+                if has_c3:
+                    plot_comfort_variable(df_final_t1["thermal_preference_cat"], tp_labels, tp_colors, f"Thermal Preference ({gebaeude} - {belueftung_title})")
+                    st.markdown("**Analyse:** Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wider.")
+                else:
+                    st.container()
+            with col_r2_2:
+                if has_c4:
+                    plot_comfort_variable(df_final_t1["thermal_acceptability_cat"], ta_labels, ta_colors, f"Thermal Acceptability ({gebaeude} - {belueftung_title})")
+                    st.markdown("**Analyse:** Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten.")
+                else:
+                    st.container()
+            
+            st.markdown("---") # Trennlinie zwischen den verschiedenen Belüftungsarten
+        st.markdown("<br><br>", unsafe_allow_html=True) # Deutlicher Abstand zum nächsten Gebäudety
+        
+# ==============================================================================
+# 📊 TAB 2: GEOGRAFISCHE KOMFORTANALYSE (DINAMISCHES 2x2 NEBENEINANDER LAYOUT)
+# ==============================================================================
+with tab2:
     st.subheader("Analyse-Leitfaden: Beeinflusst die Belüftungsart den aktuellen Parameter?")
     
     geo_map = { "Region": "region", "Land": "country", "Stadt": "city" } 
@@ -138,6 +249,30 @@ with tab1:
         df['building_type'] = df['building_type'].fillna('Unknown')
         lista_building_types = sorted(df['building_type'].unique().tolist())
         building_choice = st.selectbox("Building Type auswählen:", lista_building_types, key="bld_t1")
+
+  # 🌟 NEUER FILTER FÜR COOLING TYPE (TAB 1)
+    df['cooling_type'] = df['cooling_type'].fillna('unknown')
+    raw_cooling_t1 = df['cooling_type'].unique().tolist()
+        
+    def cooling_sort_logic(x):
+            c_str = str(x).lower().strip()
+            if "mixed mode" in c_str or "mixed mode" in c_str or "klimatisiert" in c_str:
+                return (0, c_str) # Zeigt Air Conditioned als Standard an erster Stelle
+            elif "unknown" in c_str or "unbekannt" in c_str:
+                return (2, c_str) # Schiebt unknown ans absolute Ende
+            else:
+                return (1, c_str) # Alle anderen (z.B. natural ventilation) in die Mitte
+                
+    sorted_cooling_t1 = sorted(raw_cooling_t1, key=cooling_sort_logic)
+    cooling_choice = st.selectbox("Cooling Type auswählen:", sorted_cooling_t1, key="cool_t1")
+
+        # 🌟 AKTUALISIERTE FILTERPIPELINE FÜR TAB 1 (Inklusive Cooling Type)
+    df_t1_filtered = df[
+            (df[geo_colname] == geo_choice) & 
+            (df['building_type'] == building_choice) &
+            (df['cooling_type'] == cooling_choice)
+        ]    
+
 
     df_t1_filtered = df[
         (df[geo_colname] == geo_choice) & 
@@ -193,9 +328,9 @@ with tab1:
             plot_comfort_variable(df_t1_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "4. Thermal Acceptability Verteilung")
                 
 # ==============================================================================
-# 👥 TAB 2: DEMOGRAFISCHE KOMFORTANALYSE (STRIKT GENDER & ALTER IN 2x2 GRID)
+# 👥 TAB 3: DEMOGRAFISCHE KOMFORTANALYSE (STRIKT GENDER & ALTER IN 2x2 GRID)
 # ==============================================================================
-with tab2:
+with tab3:
     # Synchronisation der Datenquelle mit dem Hauptdatensatz
     #df = df_bereinigt
     
@@ -236,13 +371,41 @@ with tab2:
                 return (3, g_str) # unknown und andere nulos landen ganz unten
                 
         lista_genders = sorted(raw_genders, key=gender_sort_logic)
-        gender_choice = st.selectbox("Gender auswählen:", lista_genders, key="gen_t2")        
+        gender_choice = st.selectbox("Gender auswählen:", lista_genders, key="gen_t2")    
+
+        # 🌟 NEUER FILTER FÜR COOLING TYPE (TAB 2)
+        df['cooling_type'] = df['cooling_type'].fillna('unknown')
+        raw_cooling_t2 = df['cooling_type'].unique().tolist()
+        
+        def cooling_sort_logic_t2(x):
+            c_str = str(x).lower().strip()
+            if "air condition" in c_str or "air-condition" in c_str or "klimatisiert" in c_str:
+                return (0, c_str)
+            elif "unknown" in c_str or "unbekannt" in c_str:
+                return (2, c_str)
+            else:
+                return (1, c_str)
+                
+        sorted_cooling_t2 = sorted(raw_cooling_t2, key=cooling_sort_logic_t2)
+        cooling_choice_t2 = st.selectbox("Cooling Type auswählen:", sorted_cooling_t2, key="cool_t2")
         
     # Kontinuierlicher numerischer Altersschieberegler für präzise Kohorten-Analysen
-    edad_min = float(df['age'].min()) if not pd.isna(df['age'].min()) else 0.0
-    edad_max = float(df['age'].max()) if not pd.isna(df['age'].max()) else 100.0
-    rango_edad = st.slider("Alter (Age) Bereich:", min_value=edad_min, max_value=edad_max, value=(edad_min, edad_max), step=1.0, key="sld_t2")
-    
+        edad_min = float(df['age'].min()) if not pd.isna(df['age'].min()) else 0.0
+        edad_max = float(df['age'].max()) if not pd.isna(df['age'].max()) else 100.0
+        rango_edad = st.slider("Alter (Age) Bereich:", min_value=edad_min, max_value=edad_max, value=(edad_min, edad_max), step=1.0, key="sld_t2")
+         
+        # 🌟 AKTUALISIERTE FILTERPIPELINE FÜR TAB 2 (Inklusive Cooling Type)
+        edad_min_sel, edad_max_sel = rango_edad
+        df_t2_filtered = df[
+            (df[geo_colname_t2] == geo_choice_t2) & 
+            (df['building_type'] == building_choice_t2) &
+            (df['gender'] == gender_choice) &
+            (df['cooling_type'] == cooling_choice_t2) &
+            (df['age'] >= edad_min_sel) &
+            (df['age'] <= edad_max_sel)
+        ]
+
+           
     # Ausführung der kaskadierenden Datenfilterung im Hintergrund
     edad_min_sel, edad_max_sel = rango_edad
     df_t2_filtered = df[
