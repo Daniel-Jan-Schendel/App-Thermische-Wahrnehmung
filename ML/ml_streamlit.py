@@ -13,6 +13,7 @@ import joblib
 import io
 import threading
 import time
+import seaborn as sns
 
 #import locale
 #
@@ -294,7 +295,7 @@ st.write("---")
 #########################################################################################################
 @st.cache_resource
 #def train_model(X_tr, y_tr, features, estimators, depths, strategy, seasons, climates, coolings, max_kombinationen, cv_folds):
-def train_model(X_tr, y_tr, features, param, strategy, seasons, climates, coolings, max_kombinationen, cv_folds):
+def train_model(X_tr, y_tr, features, param, strategy, seasons, climates, coolings, buildings, max_kombinationen, cv_folds):
     pipeline = Pipeline([
         ('imputer', SimpleImputer(strategy='median')),  # in der Regel ohnehin fehlende Werte entfernt
         #('scaler', StandardScaler()),   # 
@@ -368,7 +369,7 @@ if st.button("🚀 Modell trainieren & validieren"):
         timer_thread.start()
         best_pipeline, best_params = train_model(   ################################################################################ Aufruf RANDOM FOREST FUNCTION ##################
             X_train, y_train, tuple(selected_features), param, #tuple(n_estimators_options), tuple(max_depth_options), 
-            impute_strategy, tuple(selected_seasons), tuple(selected_climates), tuple(selected_coolings), max_kombinationen, cv_folds
+            impute_strategy, tuple(selected_seasons), tuple(selected_climates), tuple(selected_coolings), tuple(selected_buildings), max_kombinationen, cv_folds
         )
     
     # Finale Endzeit berechnen
@@ -378,9 +379,52 @@ if st.button("🚀 Modell trainieren & validieren"):
     # Den provisorischen Timer-Text löschen und durch die Erfolgsmeldung ersetzen
     timer_placeholder.empty()
 
+
     st.session_state['model'] = best_pipeline
     st.session_state['best_params'] = best_params
     st.success(f"Training erfolgreich abgeschlossen! Gesamte Rechenzeit: **{gesamtdauer:.2f} Sekunden**")
+
+# 2. Vorhersagen für die Metriken generieren
+    y_pred = best_pipeline.predict(X_test)
+    unique_labels = sorted(list(y_test.unique()))
+    
+    # Textbasierten Classification Report als String generieren
+    class_report_str = classification_report(y_test, y_pred, labels=unique_labels)
+    
+    # 3. SHAP-Werte exakt hier EINMAL berechnen
+    transformed_X_test = best_pipeline.named_steps['scaler'].transform(
+        best_pipeline.named_steps['imputer'].transform(X_test)
+    )
+    transformed_df = pd.DataFrame(transformed_X_test, columns=selected_features)
+    rf_model = best_pipeline.named_steps['classifier']
+    
+    shap_sample = transformed_df.sample(min(100, len(transformed_df)), random_state=42)
+    explainer = shap.TreeExplainer(rf_model)
+    shap_values = explainer.shap_values(shap_sample)
+    actual_class_names = list(rf_model.classes_)
+    
+    # 4. Das KOMPLETTE EXPERIMENT-PAKET als Dictionary schnüren
+    experiment_data = {
+        'pipeline': best_pipeline,
+        'best_params': best_params,
+        'y_test': y_test,
+        'y_pred': y_pred,
+        'unique_labels': unique_labels,
+        'classification_report': class_report_str, # Der gespeicherte Report
+        'shap_values': shap_values,
+        'shap_sample': shap_sample,
+        'shap_class_names': actual_class_names
+    }
+    
+    # 5. Im Session-State für die UI-Anzeige sichern
+    st.session_state['experiment'] = experiment_data
+    
+    # === MODELL + ERGEBNISSE LOKAL IM ORDNER SPEICHERN ===
+    local_filename = "ashrae_thermal_classification_model.joblib"
+    joblib.dump(experiment_data, local_filename)
+    
+    #st.success("Training und Artefakt-Generierung erfolgreich abgeschlossen!")
+    st.info(f"💾 Das Gesamtpaket wurde als **'{local_filename}'** im Projektordner gespeichert.")
 
 # 6. Ergebnisse anzeigen
 if 'model' in st.session_state:
@@ -402,42 +446,48 @@ if 'model' in st.session_state:
         
         st.write("---") # Kleine Trennlinie für die Optik
 
-        # Modell speichern
-        # Erstellt ein virtuelles Dateiobjekt im Arbeitsspeicher
-        buffer = io.BytesIO()
-        
-        # Das Modell (die gesamte Pipeline) mit joblib in den Buffer schreiben
-        joblib.dump(model, buffer)
-        
-        # Den Buffer-Inhalt als Byte-Stream auslesen
-        joblib_bytes = buffer.getvalue()
-        
-        st.download_button(
-            label="💾 Trainiertes Modell (.joblib) herunterladen",
-            data=joblib_bytes,
-            file_name="ashrae_thermal_classifcation_model.joblib",
-            mime="application/octet-stream",
-            help="Klicke hier, um die trainierte Scikit-Learn Pipeline als Joblib-Datei zu speichern."
-        )
+        if 'experiment' in st.session_state:
+            exp = st.session_state['experiment']
+            # Modell speichern
+            # Erstellt ein virtuelles Dateiobjekt im Arbeitsspeicher
+            st.write("**Komplettes Experiment-Paket exportieren:**")
+            buffer = io.BytesIO()
+            # Wir dumpen das geholte 'exp'-Paket in den Speicher-Buffer
+            joblib.dump(exp, buffer)
+            joblib_bytes = buffer.getvalue()
+            
+            st.download_button(
+                label="📥 Gesamtpaket (.joblib) für Browser herunterladen",
+                data=joblib_bytes,
+                file_name="ashrae_thermal_classification_bundle.joblib",
+                mime="application/octet-stream",
+                help="Herunterladen von Pipeline, Parametern, Testdaten, Classification Report und SHAP-Werten."
+            )
 
         # ==============================================
         
         # Ergebnisse im UI speichern
-        st.session_state['model'] = best_pipeline
-        st.session_state['best_params'] = best_params
-        
-        # === NEU: MODELL LOKAL IM ORDNER SPEICHERN ===
-        # Der Dateiname der lokal abgelegten Datei
-        local_filename = "ashrae_thermal_classifcation_model.joblib"
-        
-        # joblib schreibt die Pipeline direkt in das aktuelle Verzeichnis
-        joblib.dump(best_pipeline, local_filename)
-        
-        # Erfolgsmeldungen im Streamlit-Interface ausgeben
-        #st.success("Training erfolgreich abgeschlossen!")
-        st.info(f"💾 Das trainierte Modell wurde erfolgreich als **'{local_filename}'** im Projektordner gespeichert.")
+#        st.session_state['model'] = best_pipeline
+#        st.session_state['best_params'] = best_params
 
-        
+        with st.spinner("Generiere Pairplot... Bitte warten..."):
+            fig_pp = plt.figure(figsize=(12, 10))
+            plot_df = df_filtered.dropna()
+
+            if len(plot_df) > 10000:
+                plot_df = plot_df.sample(10000, random_state=42)
+                st.caption("ℹ️ Hinweis: Der Datensatz ist sehr groß. Es wird eine repräsentative Stichprobe von 10.000 Zeilen visualisiert.")
+
+            sns.pairplot(
+               plot_df, 
+                hue='thermal_preference', 
+                palette='coolwarm', # Schöne Farbpalette für thermischen Komfort
+                corner=True # Verhindert doppelte Plots in der oberen Hälfte für bessere Übersicht
+            )   
+
+            st.pyplot(plt.gcf()) # plt.gcf() holt sich die aktuelle Seaborn-Grafik
+            plt.close('all')
+
     with col2:
         st.subheader("🧬 SHAP Analyse")
         
@@ -453,27 +503,28 @@ if 'model' in st.session_state:
         # NEU: Die exakten Text-Klassennamen direkt aus dem Modell auslesen
         actual_class_names = list(rf_model.classes_)
         
-        # Stichprobe ziehen, um Abstürze bei großen Testsets zu verhindern
-        shap_sample = transformed_df.sample(min(100, len(transformed_df)), random_state=42)
-        explainer = shap.TreeExplainer(rf_model)
-        shap_values = explainer.shap_values(shap_sample)
-        
-        # SHAP Summary Plot erzeugen
-        fig, ax = plt.subplots()
-        
-        # FIX: Übergabe von class_names sorgt für die korrekten Namen in der Legende!
-        shap.summary_plot(
-            shap_values, 
-            shap_sample, 
-            plot_type="bar", 
-            class_names=actual_class_names, # <-- Hier werden die Namen gemappt!
-            show=False
-        )
+        with st.spinner("Generiere SHAP-Analyse... Bitte warten..."):
+            # Stichprobe ziehen, um Abstürze bei großen Testsets zu verhindern
+            shap_sample = transformed_df.sample(min(400, len(transformed_df)), random_state=42) # nur 400 samples!
+            explainer = shap.TreeExplainer(rf_model)
+            shap_values = explainer.shap_values(shap_sample)
+            
+            # SHAP Summary Plot erzeugen
+            fig, ax = plt.subplots()
+            
+            # FIX: Übergabe von class_names sorgt für die korrekten Namen in der Legende!
+            shap.summary_plot(
+                shap_values, 
+                shap_sample, 
+                plot_type="bar", 
+                class_names=actual_class_names, # <-- Hier werden die Namen gemappt!
+                show=False
+            )
 
-        plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
-        #plt.ylabel("Features")
+            plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
+            #plt.ylabel("Features")
 
-        st.pyplot(fig)
+            st.pyplot(fig)
 
         st.write("\n\n")
 
