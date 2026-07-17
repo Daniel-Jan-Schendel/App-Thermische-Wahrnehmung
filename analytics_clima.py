@@ -6,211 +6,734 @@ import seaborn as sns
 import altair as alt
 import numpy as np
 import matplotlib.pyplot as plt 
+from scipy.stats import chi2_contingency
 
 
 
-st.set_page_config(page_title="Globale Datenanalyse", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Analyse Klima und thermische Bewertung", layout="wide", initial_sidebar_state="expanded")
 
 # Load data
 
-df_bereinigt = pd.read_csv("db_bereinigt_fertig.csv")
+df_bereinigt = pd.read_csv("db_bereinigt_final.csv")
 
 #st.title("Globale Datenanalyse")
 #st.line_chart(df_bereinigt["DB"])
 #st.dataframe(df_bereinigt)
 
-st.title("Explorative Datenanalyse")
+st.title("🌍 Analyse Klima und thermische Bewertung")
 
 #st.header("Datenverteilung")
 
 # Klima / Building
 
+tab1, tab2, tab3 = st.tabs(["Verteilung Klimata", "Klima und thermische Bewertung", "Herausforderungen"])
 
-
-tab1, tab2= st.tabs(["Cooling typ", "Gender"])
-
-
-# ==============================================================================
-# 📊 TAB 5: INTERAKTIVE KOMFORTANALYSE (GRAFIKEN MIT INTERNEN NUMMERN)
-# ==============================================================================
 with tab1:
 
-    st.subheader("Analyse-Leitfaden: Beeinflusst die Belüftungsart den aktuellen Parameter?")
+    # ---------------------------------------------------------
+    # 📌 1. Daten laden
+    # ---------------------------------------------------------
+    df = pd.read_csv("db_bereinigt_final.csv")
 
-    # Aufteilung des Layouts in zwei feste Hauptspalten für ein klares Design
-    col1, col2 = st.columns([1, 2.5]) 
+    # Nur Zeilen behalten, die gültige Koordinaten haben
+    df = df.dropna(subset=["latitude", "longitude"])
 
-    with col1: 
-        # Labels & Farbpaletten (Originale Struktur + Anpassung für Akzeptanz)
-        tsv_labels = { -3: "–3 Sehr kalt", -2: "–2 Kalt", -1: "–1 Kühl", 0: "0 Neutral", 1: "+1 Warm", 2: "+2 Heiß", 3: "+3 Sehr heiß" } 
-        tsv_colors = { -3: "#4575b4", -2: "#74add1", -1: "#abd9e9", 0: "#d9d9d9", 1: "#fdae61", 2: "#f46d43", 3: "#d73027" } 
-        tp_labels = { -1: "–1 Kühler bevorzugt", 0: "0 Keine Präferenz", 1: "+1 Wärmer bevorzugt" } 
-        tp_colors = { -1: "#74add1", 0: "#d9d9d9", 1: "#f46d43" } 
-        tc_labels = { 1: "1 Ungemütlich", 2: "2 Leicht ungemütlich", 3: "3 Akzeptabel / Neutral", 4: "4 Leicht gemütlich", 5: "5 Gemütlich", 6: "6 Sehr gemütlich" } 
-        tc_colors = { 1: "#fc8d59", 2: "#fee08b", 3: "#d9d9d9", 4: "#a6d96a", 5: "#1a9850", 6: "#006837" } 
-        ta_labels = { 0: "0 Unakzeptabel", 1: "1 Akzeptabel" }
-        ta_colors = { 0: "#d73027", 1: "#1a9850" }
+    st.subheader("Globale Verteilung der ASHRAE Feldstudien")
 
-        # Logisches Daten-Mapping (Behandlung von Nullwerten und Textzeichenfolgen)
-        tp_map = {"cooler": -1, "no change": 0, "warmer": 1, "unknown": np.nan} 
-        ta_map = {"acceptable": 1, "unacceptable": 0, "unknown": np.nan}
 
-        def map_tsv(v): 
-            if pd.isna(v): return None 
-            if v <= -2.5: return -3 
-            elif v <= -1.5: return -2 
-            elif v <= -0.5: return -1 
-            elif v < 0.5: return 0 
-            elif v < 1.5: return 1 
-            elif v < 2.5: return 2 
-            else: return 3 
+    # ---------------------------------------------------------
+    # 🔍 2. Filter-Widget (Kima/Klimazone)
+    # ---------------------------------------------------------
 
-        def map_tc(v): 
-            if pd.isna(v): return None 
-            if v < 1.5: return 1 
-            elif v < 2.5: return 2 
-            elif v < 3.5: return 3 
-            elif v < 4.5: return 4 
-            elif v < 5.5: return 5 
-            else: return 6 
-            
-        # Plot-Funktion (Zentrierte Nummern innerhalb der Balken + Legende)
-        def plot_comfort_variable(series, labels, colors, title): 
-            series = pd.to_numeric(series, errors="coerce").dropna() 
-            counts = series.value_counts().sort_index() 
-            total = counts.sum() 
-            if total == 0:
-                st.info("Keine Daten für diese Auswahl verfügbar.")
-                return
-                
-            fig, ax = plt.subplots(figsize=(8, 4.5)) 
-            
-            x_positions = [str(level) for level in counts.index]
-            y_values = counts.values
-            bar_colors = [colors[level] for level in counts.index]
-            
-            bars = ax.bar(x_positions, y_values, color=bar_colors)
-            
-            # 🌟 KORREKTUR: Platzierung der Zahlen INNERHALB der Balken (va="top")
-            for bar in bars:
-                height = bar.get_height()
-                if height > 0:
-                    # Der Versatz platziert die Zahl knapp unter die Oberkante des Balkens
-                    ax.text(
-                        bar.get_x() + bar.get_width()/2., 
-                        height - (height * 0.05) - 0.2, 
-                        f"{int(height)}", 
-                        ha="center", 
-                        va="top", 
-                        fontsize=10, 
-                        fontweight='bold', 
-                        color="black" # Ändern zu "white" falls dunkle Balken die Lesbarkeit stören
-                    ) 
-            
-            for level in sorted(counts.index):
-                ax.plot([], [], color=colors[level], label=labels[level], linewidth=10)
-            
-            ax.set_title(title, fontweight='bold', fontsize=12, pad=12) 
-            ax.set_xlabel("Comfort Level Index", fontweight='bold', fontsize=9) 
-            ax.set_ylabel("Anzahl (Stimmen)", fontweight='bold', fontsize=9) 
-            
-            plt.xticks(rotation=0, ha="center")
-            ax.legend(title="Legende (Komfortstufen)", loc="best", framealpha=0.9, fontsize=8)
-            plt.tight_layout()
-            st.pyplot(fig) 
-            
-        # Laden der originalen lokalen CSV-Datei
-        df = pd.read_csv("db_bereinigt_fertig.csv") 
-        df["thermal_sensation_cat"] = df["thermal_sensation"].apply(map_tsv) 
-        df["thermal_preference_cat"] = df["thermal_preference"].map(tp_map) 
-        df["thermal_comfort_cat"] = df["thermal_comfort"].apply(map_tc) 
-        df["thermal_acceptability_cat"] = df["thermal_acceptability"].map(ta_map)
-        
-        st.header("Komfortanalyse") 
-        
-        comfort_option = st.selectbox( 
-            "Komfortvariable auswählen:", ["Thermal Comfort", "Thermal Sensation", "Thermal Preference", "Thermal Acceptability"] 
-        ) 
-        
-        geo_map = { "Region": "region", "Land": "country", "Stadt": "city" } 
-        geo_option = st.selectbox("Geografische Verteilung anzeigen nach:", list(geo_map.keys())) 
-        geo_colname = geo_map[geo_option] 
-        
-        geo_values = df[geo_colname].dropna() 
-        geo_choice = st.selectbox(f"{geo_option} auswählen:", sorted(geo_values.unique())) 
-        
-        # Vertikale Anordnung der kaskadierenden Filter in Spalte 1 (col1)
-        df['building_type'] = df['building_type'].fillna('Unknown')
-        lista_building_types = sorted(df['building_type'].unique().tolist())
-        building_choice = st.selectbox("Building Type auswählen:", lista_building_types)
-        
-        df['cooling_type'] = df['cooling_type'].fillna('Unknown')
-        lista_cooling = sorted(df['cooling_type'].unique().tolist())
-        cooling_choice = st.selectbox("Cooling Type auswählen:", lista_cooling)
-        
-        lista_generos = sorted(df['gender'].dropna().unique().tolist())
-        gender_choice = st.selectbox("Gender auswählen:", lista_generos)
-        
-        edad_min = float(df['age'].min()) if not pd.isna(df['age'].min()) else 0.0
-        edad_max = float(df['age'].max()) if not pd.isna(df['age'].max()) else 100.0
-        rango_edad = st.slider("Alter (Age) Bereich:", min_value=edad_min, max_value=edad_max, value=(edad_min, edad_max), step=1.0)
+    # Filter für Klima/Klimazone
+    climate_filter = st.selectbox(
+        "Variable auswählen",
+        ["Climate Zone", "Climate"],
+        key="climate_variable"
+    )
 
-        # Kaskadierende Filterlogik mit Entpacken des Slider-Bereichs
-        df_geo_base = df[df[geo_colname] == geo_choice] 
-        edad_min_sel, edad_max_sel = rango_edad
-        
-        df_geo = df_geo_base[
-            (df_geo_base['building_type'] == building_choice) &
-            (df_geo_base['cooling_type'] == cooling_choice) &
-            (df_geo_base['gender'] == gender_choice) &
-            (df_geo_base['age'] >= edad_min_sel) &  
-            (df_geo_base['age'] <= edad_max_sel)    
-        ]
 
-    with col2: 
-        st.subheader(f"📈 Verteilung – {comfort_option} ({geo_choice})") 
-        
-        # Renderizado de los gráficos univariables
-        if comfort_option == "Thermal Comfort": 
-            plot_comfort_variable(df_geo["thermal_comfort_cat"], tc_labels, tc_colors, f"Thermal Comfort") 
-        elif comfort_option == "Thermal Sensation": 
-            plot_comfort_variable(df_geo["thermal_sensation_cat"], tsv_labels, tsv_colors, f"Thermal Sensation") 
-        elif comfort_option == "Thermal Preference": 
-            plot_comfort_variable(df_geo["thermal_preference_cat"], tp_labels, tp_colors, f"Thermal Preference") 
-        elif comfort_option == "Thermal Acceptability":
-            plot_comfort_variable(df_geo["thermal_acceptability_cat"], ta_labels, ta_colors, f"Thermal Acceptability")
-            
-        st.markdown("---")
-        
-        # 🌟 EXAKTE REDAKTION: Leitfaden ohne kryptische Kürzungszeichen
-        
-        # Dynamischer Textblock basierend auf der selektierten Variable
-        if comfort_option == "Thermal Comfort":
-            st.markdown(
-                "* **Einfluss auf die Behaglichkeit:** Natürlich belüftete Gebäude weisen oft eine breitere Toleranzgrenze auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.\n"
-                "* **Normen-Vergleich:** Klimatisierte Räume erzielen eine engere Clusterung um den Neutralpunkt, schränken jedoch die individuelle thermische Freiheit der Gebäudenutzer stark ein.\n"
-                "* **Gebäude-Verhalten:** Mechanische Belüftung stabilisiert das Komfortniveau im Sommer, kann jedoch bei unzureichender Wartung zu einer erhöhten Unzufriedenheit führen."
-            )
-        elif comfort_option == "Thermal Sensation":
-            st.markdown(
-                "* **Thermische Wahrnehmung:** Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die sensorischen Stimmen massiv verschiebt.\n"
-                "* **Erwartungshaltung:** In klimatisierten Räumen erwarten Nutzer eine konstante Temperatur, weshalb kleine Abweichungen sofort als extrem warm oder kalt empfunden werden.\n"
-                "* **Demografischer Faktor:** Die Kombination aus Belüftungsart und Alter zeigt, dass ältere Gruppen in natürlich belüfteten Zonen sensibler auf Zugluft reagieren."
-            )
-        elif comfort_option == "Thermal Preference":
-            st.markdown(
-                "* **Nutzerpräferenz:** In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen und äußern seltener den Wunsch nach intensiver Kühlung.\n"
-                "* **Klimatisierungs-Effekt:** Nutzer in mechanisch gekühlten Räumen neigen statistisch dazu, permanent einen kühleren Zustand wie kühler bevorzugt zu fordern.\n"
-                "* **Saisonaler Einfluss:** Die Präferenzkurve flacht ab, wenn das Gebäude den Nutzern erlaubt, die Luftbewegung eigenständig zu regulieren."
-            )
-        elif comfort_option == "Thermal Acceptability":
-            st.markdown(
-                "* **Akzeptanz-Verhalten:** Die thermische Akzeptanz sinkt in klimatisierten Räumen drastisch, wenn die relative Luftfeuchtigkeit außerhalb des optimalen Bereichs liegt.\n"
-                "* **Anpassungspotenzial:** Natürlich belüftete Strukturen erzielen trotz höherer Absoluttemperaturen eine hohe Akzeptanzrate aufgrund des psychologischen Gewöhnungseffekts.\n"
-                "* **Statistische Relevanz:** Nullwerte treten vermehrt in mechanischen Systemen auf, was auf eine geringere Interaktion der Nutzer mit der Gebäudetechnik hinweist."
-            ) 
+    # ---------------------------------------------------------
+    # 🔎 3. Filter anwenden
+    # ---------------------------------------------------------
+
+    # Klima/Klimazone anwenden
+    if climate_filter == "Climate":
+        selected_climate_column = "climate"
+    else:
+        selected_climate_column = "climate_zone"
+
+
+    # ---------------------------------------------------------
+    # 📌 4. Kombinationen von Ländern und Klimazonen erstellen
+    # ---------------------------------------------------------
+    # Land-Klimazonen-Kombinationen erstellen
+
+    #country_climate = df[
+    #    ["city", "city", "latitude", "longitude", selected_climate_column]
+    #].drop_duplicates()
+
+    country_climate = (
+        df[["country", "latitude", "longitude", selected_climate_column]]
+        .groupby("country")
+        .agg({
+            "latitude": "mean",
+            "longitude": "mean",
+            selected_climate_column: lambda x: list(x.dropna().unique())
+        })
+        .reset_index()
+    )
+
+    # Klimanamen bereinigen
+    country_climate[selected_climate_column] = (
+        country_climate[selected_climate_column]
+        .apply(
+            lambda climates: [
+                c.strip().replace("\xa0", " ")
+                for c in climates
+                if isinstance(c, str)
+            ]
+        )
+    )
+
+    # Farben für Klimazonen vergeben
+    if climate_filter == "Climate":
+
+        climate_colors = {
+        # Tropische Klimate
+        "wet equatorial": [220, 80, 120, 180],
+        "tropical rainforest": [200, 60, 120, 180],
+        "tropical monsoon": [230, 100, 140, 180],
+        "tropical savanna": [240, 130, 150, 180],
+        "tropical wet savanna": [230, 110, 160, 180],
+        "tropical dry savanna": [210, 90, 140, 180],
+        "tropical": [220, 120, 160, 180],
+
+        # Aride / trockene Klimate
+        "hot arid": [245, 210, 80, 180],
+        "desert (hot arid)": [240, 190, 60, 180],
+        "hot desert": [230, 170, 40, 180],
+        "semi arid midlatitude": [220, 180, 70, 180],
+        "semi arid high altitude": [200, 170, 90, 180],
+        "hot semi-arid": [235, 200, 90, 180],
+        "cold semi-arid": [190, 170, 100, 180],
+        "subtropical hot and dry": [250, 180, 50, 180],
+
+        # Mediterrane Klimate
+        "mediterranean": [180, 160, 70, 180],
+        "hot-summer mediterranean": [200, 150, 60, 180],
+        "warm-summer mediterranean": [170, 150, 80, 180],
+        "cool-summer mediterranean": [140, 160, 100, 180],
+
+        # Gemäßigte Klimate
+        "temperate": [80, 180, 90, 180],
+        "humid subtropical": [60, 170, 100, 180],
+        "temperature marine": [60, 150, 120, 180],
+        "temperate oceanic": [40, 140, 170, 180],
+        "west coast marine": [50, 130, 190, 180],
+        "subtropical highland": [100, 190, 100, 180],
+
+        # Kontinentale Klimate
+        "humid midlatitude": [120, 100, 200, 180],
+        "warm-summer humid continental": [140, 100, 210, 180],
+        "monsoon-influenced humid subtropical": [160, 120, 220, 180],
+        "monsoon-influenced temperate oceanic": [130, 150, 220, 180],
+        "monsoon-influenced hot-summer humid continental": [150, 90, 190, 180],
+
+        # Subarktisches Klima
+        "continental subarctic": [80, 90, 150, 180]
+    }
+
+    else:
+
+        climate_colors = {
+            "Tropical": [220, 120, 120, 180],
+            "Dry": [245, 210, 80, 180],
+            "Temperate": [0, 180, 0, 180],
+            "Continental": [150, 0, 150, 180]
+        }
+
+    import math
+
+    # Mehrfarbige Kreise erstellen
+    def create_pie_segments(df, climate_column, radius=1.5):
+
+        segments = []
+
+        for _, row in df.iterrows():
+
+            climates = row[climate_column]
+
+            n = len(climates)
+
+            angle_step = 360 / n
+
+            for i, climate in enumerate(climates):
+
+                start_angle = i * angle_step
+                end_angle = (i + 1) * angle_step
+
+                polygon = [
+                    [row["longitude"], row["latitude"]]
+                ]
+
+                for angle in range(
+                    int(start_angle),
+                    int(end_angle) + 1,
+                    5
+                ):
+                    lon = (
+                        row["longitude"]
+                        + radius * math.cos(math.radians(angle))
+                    )
+
+                    lat = (
+                        row["latitude"]
+                        + radius * math.sin(math.radians(angle))
+                    )
+
+                    polygon.append([lon, lat])
+
+                polygon.append(
+                    [row["longitude"], row["latitude"]]
+                )
+
+                segments.append({
+                    "country": row["country"],
+                    "climate": climate,
+                    "polygon": polygon,
+                    "color": climate_colors.get(climate)
+                })
+
+        return pd.DataFrame(segments)
+
+    if climate_filter == "Climate":
+
+        # Mehrfarbige Kreise für einzelne Klimata
+        pie_data = create_pie_segments(
+            country_climate,
+            selected_climate_column
+        )
+
+        layer = pdk.Layer(
+            "PolygonLayer",
+            data=pie_data,
+            get_polygon="polygon",
+            get_fill_color="color",
+            pickable=True,
+            stroked=False
+        )
+
+
+    else:
+
+        # Einfarbige Kreise für die 4 Klimazonen
+
+        country_climate["color"] = (
+            country_climate[selected_climate_column]
+            .apply(lambda x: climate_colors.get(x[0]))
+        )
+
+        layer = pdk.Layer(
+            "ScatterplotLayer",
+            data=country_climate,
+            get_position="[longitude, latitude]",
+            get_radius=50000,
+            get_fill_color="color",
+            pickable=True
+        )
+
+   
+
+    # ---------------------------------------------------------
+    # 🌐 6. Kartenansicht definieren
+    # ---------------------------------------------------------
+
+    view_state = pdk.ViewState(
+        latitude=country_climate["latitude"].mean() if len(country_climate) else 0,
+        longitude=country_climate["longitude"].mean() if len(country_climate) else 0,
+        zoom=1
+    )
+
+    # Tooltip-Design
+    tooltip = {
+        "html": """
+        <b>{country}</b><br/>
+        Klima: {climate}
+        """,
+        "style": {
+            "color": "white"
+        }
+    }
+
+    # Legende hinzufügen
+    st.markdown("""
+    **Klimazonen:**
+
+    🔴 Tropical  
+    🟡 Dry  
+    🟢 Temperate  
+    🟣 Continental
+    """)
+
+
+    # ---------------------------------------------------------
+    # 🧭 7. Karte rendern (ohne Mapbox-Key!)
+    # ---------------------------------------------------------
+
+    st.pydeck_chart(
+        pdk.Deck(
+            layers=[layer],
+            initial_view_state=view_state,
+            tooltip=tooltip,
+            map_style=None   # ⭐ WICHTIG: Kein Mapbox → funktioniert ohne Key
+        )
+    )
+
+    # ---------------------------------------------------------
+    # 🧭 8. Zuordnung Klimata zu Klimazonen
+    # ---------------------------------------------------------
+
+    # Zuordnung Klimata zu Klimazonen
+    climate_mapping = (
+        df[["climate_zone", "climate"]]
+        .drop_duplicates()
+        .groupby("climate_zone")["climate"]
+        .apply(lambda x: ", ".join(sorted(x.dropna().unique())))
+        .reset_index()
+    )
+
+    # Spaltennamen ändern
+    climate_mapping.columns = [
+        "Klimazone",
+        "Zugehörige Klimata"
+    ]
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    st.markdown("### Zuordnung der Klimata zu den Klimazonen")
+
+    climate_mapping = (
+        df[["climate_zone", "climate"]]
+        .drop_duplicates()
+        .sort_values(["climate_zone", "climate"])
+    )
+
+    st.dataframe(
+        climate_mapping,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    # Hinweis zu Klimazonen-Zuweisung
+    with st.expander("Weitere Informationen zu Klimata und Klimazonen"):
+        st.markdown("""  
+        - Hinweise:
+            - Die 5. Hauptklimazone Polar ist hier nicht mit aufgeführt, da es für diese Klimazone in diesem Datensatz keine Daten gibt
+            - Es wurde keine offizielle Zuordnung der Klimata zu den Klimazonen gefunden, daher kann sich die hier gewählte Zuordnung von anderen unterscheiden
+        """)
+
+        st.markdown(""" 
+        - Beschreibungen zu Klimazonen:
+            - Tropical: Ganzjährig hohe Temperaturen, geringe jahreszeitliche Schwankungen 
+            - Dry: Geringe Niederschläge, aride und semiaride Gebiete
+            - Temperate: Moderate Temperaturen, ausgeprägte Jahreszeiten
+            - Continental: Große Temperaturunterschiede zwischen Sommer und Winter
+        """)
 
 with tab2:
+    # ---------------------------------------------------------
+    # 📌 1. Daten laden und Einführungstext
+    # ---------------------------------------------------------
+    df = pd.read_csv("db_bereinigt_final.csv")
 
-    st.text("sdsds")
+    st.header("Gibt es einen Zusammenhang zwischen Klimazone und thermischer Bewertung?")
+    
+
+    col1, col2 = st.columns([2,1])
+    col3, col4 = st.columns([2,2])
+    col5, col6 = st.columns([2,2])
+    col7, col8 = st.columns([2,2])
+    col9, col10 = st.columns([2,1])
+    col11, col12 = st.columns([2,1])
+
+    # ---------------------------------------------------------
+    # 📌 2. Einführungstext und Auswahl Variable
+    # ---------------------------------------------------------
+
+    with col1:
+
+        st.markdown("""
+        Untersuchung des Zusammenhangs der vier Hauptklimazonen mit den thermischen Bewertungsvariablen:
+
+        - Thermischer Komfort
+        - Thermisches Empfinden
+        - Thermische Präferenz
+        - Thermische Akzeptanz
+        """)
+
+        
+
+        selected_variable = st.selectbox(
+        "Thermische Bewertungsvariable auswählen",
+        (
+            "Thermischer Komfort",
+            "Thermisches Empfinden",
+            "Thermische Präferenz",
+            "Thermische Akzeptanz"
+        ),
+        key="analyse_variable"
+        )
+
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+        # ---------------------------------------------------------
+        # 🔎 2. Filter anwenden
+        # ---------------------------------------------------------
+        if selected_variable == "Thermischer Komfort":
+            selected_thermal_column = "thermal_comfort"
+        elif selected_variable == "Thermisches Empfinden":
+            selected_thermal_column = "thermal_sensation"
+        elif selected_variable == "Thermische Präferenz":
+            selected_thermal_column = "thermal_preference"
+        else:
+            selected_thermal_column = "thermal_acceptability"
+
+    # ---------------------------------------------------------
+    # 📊 3. Grafiken erstellen
+    # ---------------------------------------------------------
+
+    # - Grafik - 
+    with col3:
+
+        # Boxplot für thermal_comfort, thermal_sensation und thermal_preference
+        if selected_thermal_column != "thermal_acceptability":
+
+            plot_df = df.copy()
+
+            # Unknown in thermal_preference entfernen
+            if selected_variable == "Thermische Präferenz":
+                plot_df = plot_df[
+                    plot_df["thermal_preference"] != "Unknown"
+                ]
+
+            fig, ax = plt.subplots(figsize=(8,5))
+
+            sns.boxplot(
+                data=plot_df,
+                x="climate_zone",
+                y=selected_thermal_column,
+                width=0.6,
+                whiskerprops=dict(color="black"),
+                showmeans=True,
+                capprops=dict(color="black"),
+                medianprops=dict(color="cyan", linewidth=2.5),
+                meanprops=dict(
+                    marker="o",
+                    markerfacecolor="skyblue",
+                    markeredgewidth=0.0,
+                    markersize=8
+                ),
+                ax=ax
+            )
+
+            # sns.stripplot(
+            #      data=plot_df,
+            #      x="climate_zone",
+            #      y=selected_thermal_column,
+            #      jitter=0.25,
+            #      size=1.5,
+            #      alpha=0.05,
+            #      color="steelblue",
+            #      ax=ax,
+            #      hue=selected_thermal_column,
+            #      palette="viridis",
+            #      legend=False
+            #  )
+
+            st.pyplot(fig)
+
+
+        # Grafik für thermal_acceptability
+        else:
+
+            acceptability_pct = (
+                pd.crosstab(
+                    df["climate_zone"],
+                    df["thermal_acceptability"],
+                    normalize="index"
+                ) * 100
+            )
+
+            fig, ax = plt.subplots(figsize=(8,5))
+
+            acceptability_pct.plot(
+                kind="bar",
+                ax=ax,
+                color=["darkgrey","royalblue", "teal"]
+            )
+
+            st.pyplot(fig)
+
+    # - Interpretation der Ergebnisse - 
+    with col5:
+        interpretation = {
+
+            "thermal_comfort": """
+        #### **Erkenntnisse**
+
+        - Median ist bei Continental niedriger als bei den anderen Klimazonen ➝ hat aber auch größere Streuung der Werte
+        - Dry und Tropical: geringste Streuung der Werte
+        - Continental unterscheidet sich am stärksten von den anderen Klimazonen
+
+        #### ℹ️**Bedeutung**
+
+        Befragte in der Klimazone "Continental" bewerten den Komfort tendenziell schlechter als in den anderen 3 Klimazonen
+        """,
+
+            "thermal_sensation": """
+        #### **Erkenntnisse**
+
+        - Median ist bei allen Klimazonen gleich
+        - Temperate und Continental: geringste Streuung der Werte
+        - Dry und Tropical: größte Streuung der Werte
+
+        #### ℹ️**Bedeutung**
+
+        - In allen vier Klimazonen wird das thermische Empfinden tendenziell mit neutral bewertet
+        - Unterschied vor allem:
+            - Temperate, Continental: 50% der Befragten haben das thermische Empfinden mit neutral oder warm bewertet
+            - Dry, Tropical: 50% der Befragten haben das thermische Empfinden mit kühl, neutral oder warm bewertet
+        
+        """,
+
+            "thermal_preference": """
+        #### **Erkenntnisse**
+
+        - Median ist bei allen Klimazonen gleich
+        - Continental: geringste Streuung der Werte
+        - Continental unterscheidet sich am stärksten von den anderen Klimazonen
+
+        #### ℹ️**Bedeutung**
+
+        
+        - In allen vier Klimazonen wurde tendenziell keine Veränderung gewünscht
+        - In den Klimazonen Temperate, Dry und Tropical haben 50% der Befragten keine Veränderung oder wärmer bevorzugt angegeben
+        """,
+
+            "thermal_acceptability": """
+        #### **Erkenntnisse**
+
+        - In allen vier Klimazonen bewertet die Mehrheit die Umgebung als akzeptabel
+        - Unterschiede zwischen den Klimazonen sind gering
+        - Bei Continental sehr hoher Anteil fehlender Werte
+
+       #### ℹ️**Bedeutung**
+
+        Die thermische Akzeptanz ist in allen Klimazonen überwiegend hoch
+        """
+        }
+
+        st.markdown(interpretation[selected_thermal_column])
+    
+
+    # ---------------------------------------------------------
+    # 📊 4. Ergebnistabelle erstellen
+    # ---------------------------------------------------------
+    with col4:
+        titles = {
+                "thermal_comfort": "Thermal Comfort",
+                "thermal_sensation": "Thermal Sensation",
+                "thermal_preference": "Thermal Preference",
+                "thermal_acceptability": "Thermal Acceptability"
+            }
+
+        st.markdown(f"### Ergebnisse für {titles[selected_thermal_column]}")
+    
+        # Ergebnistabelle für thermal_comfort und thermal_sensation
+        if selected_thermal_column not in ["thermal_acceptability", "thermal_preference"]:
+
+            plot_df = df.copy()
+
+
+            climate_zone_stats = (
+                plot_df
+                .groupby("climate_zone")[selected_thermal_column]
+                .agg(["mean", "median"])
+                .reset_index()
+            )
+
+            climate_zone_stats.columns = ["Klimazone", "Mittelwert", "Median"]
+
+            climate_zone_stats["Mittelwert"] = climate_zone_stats["Mittelwert"].round(2)
+            climate_zone_stats["Median"] = climate_zone_stats["Median"].round(2)
+
+            st.dataframe(climate_zone_stats, use_container_width=True)
+
+            with st.expander("Allgemeine Informationen zum Lesen des Boxplot"):
+                st.markdown("""  
+                - Box: zeigt, in welchem Bereich 50% der Werte für diese Klimazone liegen
+                - türkisfarbene Linie: stellt Median dar
+                - hellblauer Punkt: stellt Mittelwert dar
+                - Whisker: zeigen den Bereich, in dem die meisten Datenwerte liegen
+                - Punkte außerhalb der Whisker: stellen Ausreißer dar
+                """)
+
+        # Ergebnistabelle für thermal_preference
+        elif selected_thermal_column == "thermal_preference":
+
+            plot_df = df[df["thermal_preference"] != "Unknown"].copy()
+
+            # Schreibweise vereinheitlichen
+            plot_df["thermal_preference"] = (
+                plot_df["thermal_preference"]
+                .str.strip()
+                .str.lower()
+            )
+
+            mapping = {
+                "cooler": -1,
+                "no change": 0,
+                "warmer": 1
+            }
+
+            plot_df["thermal_preference_num"] = (
+                plot_df["thermal_preference"].map(mapping)
+            )
+
+            climate_zone_stats = (
+                plot_df
+                .groupby("climate_zone")["thermal_preference_num"]
+                .agg(["mean", "median"])
+                .reset_index()
+            )
+
+            climate_zone_stats.columns = ["Klimazone", "Mittelwert", "Median"]
+
+            climate_zone_stats["Mittelwert"] = climate_zone_stats["Mittelwert"].round(2)
+            climate_zone_stats["Median"] = climate_zone_stats["Median"].round(2)
+
+            st.dataframe(climate_zone_stats)
+
+            with st.expander("Allgemeine Informationen zum Lesen des Boxplot"):
+                st.markdown("""  
+                - Box: zeigt, in welchem Bereich 50% der Werte für diese Klimazone liegen
+                - türkisfarbene Linie: stellt Median dar
+                - hellblauer Punkt: stellt Mittelwert dar
+                - Whisker: zeigen den Bereich, in dem die meisten Datenwerte liegen
+                - Punkte außerhalb der Whisker: stellen Ausreißer dar
+                """)
+
+        # Ergebnistabelle für thermal_acceptability
+        else:
+
+            climate_zone_stats = (
+                pd.crosstab(
+                    df["climate_zone"],
+                    df["thermal_acceptability"],
+                    normalize="index"
+                ) * 100
+            ).round(1)
+
+            climate_zone_stats = climate_zone_stats.reset_index()
+
+            st.dataframe(
+                climate_zone_stats.style.format("{:.1f}%", subset=climate_zone_stats.columns[1:]),
+                use_container_width=True,
+                hide_index=True
+            )
+
+
+    # ---------------------------------------------------------
+    # 📊 5. Statistischen Zusammenhang berechnen
+    # --------------------------------------------------------- 
+    with col9:
+        st.subheader("📊 Zusammenhang zwischen thermischen Bewertungen und Klimazone")
+
+        results = []
+
+        variables = [
+            "thermal_comfort",
+            "thermal_sensation",
+            "thermal_preference",
+            "thermal_acceptability"
+        ]
+
+        for variable in variables:
+            
+            # "Unknown" nur bei thermal_preference und thermal_acceptability entfernen
+            if variable in ["thermal_preference", "thermal_acceptability"]:
+                df_test = df_bereinigt[
+                    df_bereinigt[variable] != "Unknown"
+                ]
+            else:
+                df_test = df_bereinigt
+
+            # Kreuztabelle erstellen
+            contingency_table = pd.crosstab(
+                df_test["climate_zone"],
+                df_test[variable]
+            )
+
+            # Chi²-Test
+            chi2, p, dof, expected = chi2_contingency(contingency_table)
+
+
+            # Cramérs V berechnen
+            n = contingency_table.sum().sum()
+            phi2 = chi2 / n
+            r, k = contingency_table.shape
+
+            cramers_v = np.sqrt(
+                phi2 / min(k-1, r-1)
+            )
+
+            # Ergebnisse speichern
+            results.append({
+                "Variable": variable,
+                "p-Wert": f"{p:.4f}",
+                "Effektgröße": round(cramers_v, 3)
+            })
+
+
+        # Ergebnis-DataFrame
+        chi2_results_df = pd.DataFrame(results)
+
+        st.dataframe(
+            chi2_results_df,
+            use_container_width=True,
+            hide_index=True
+        )
+
+        with st.expander("Informationen zum Lesen des Zusammenhangs"):
+            st.write("""                  
+            - Erklärung der Werte:
+                - p-Wert: gibt an, ob ein Zusammenhang statistisch signifikant ist 
+                - Effektgröße: gibt die Größe des Zusammenhangs an (z.B. schwacher, mittlerer, starker Zusammenhang)
+            
+            - Erkenntnisse:
+                - Bei allen vier thermischen Bewertungsvariablen gibt es einen statistisch signifikanten Zusammenhang mit der Klimazone
+                - Die Effektgröße zeigt:
+                     - bei thermal_comfort und thermal_acceptability besteht ein schwacher Zusammenhang mit der Klimazone
+                     - bei thermal_sensation und thermal_preference besteht ein sehr schwacher Zusammenhang mit der Klimazone
+            
+            - Hinweise: 
+                - Für die Signifikanzprüfung wurde der Chi²-Test verwendet, für die Ermittlung der Effektstärke wurde Cramérs V berechnet
+                - Es kann nur eine Aussage darüber gemacht werden, ob ein Zusammenhang besteht, jedoch nicht in welche Richtung dieser wirkt
+            """)
+
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # - Zusammenfassung und Bedeutung der Ergebnisse -
+    with col11:
+        st.info(
+            """
+            ℹ️ **Zusammenfassung und Bedeutung der Ergebnisse**
+
+            - Es besteht ein **Zusammenhang** zwischen allen vier thermischen Bewertungsvariablen und der Klimazone.
+            - Der Zusammenhang ist **schwach** bei Thermischem Komfort und Thermischer Akzeptanz bzw. **sehr schwach** bei Thermischem Empfinden und Thermischer Präferenz.
+
+            ➜ Daher erklärt die Klimazone nur einen kleinen Teil der Unterschiede in der thermischen Bewertung.
+            """
+        )
 
