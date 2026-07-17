@@ -31,7 +31,7 @@ st.title("Die Datenwolke hinter Smart Building Analytics")
 # ---------------------------------------------------------
 # TABS (ONLY ON MAIN PAGE)
 # ---------------------------------------------------------
-tab_1, tab_2, tab_3, = st.tabs(["📘 Neon PostgreSQL – Datenbank", "🧱 Datenbank-Architektur & Optimierung", "📊 Power BI-Integration"])
+tab_1, tab_2, tab_3, tab_4 = st.tabs(["📘 Neon PostgreSQL – Datenbank", "🧱 Datenbank-Architektur & Optimierung", "📊 Power BI-Integration", "Verfahren"])
 
 # ---------------------------------------------------------
 # SOURCE TAB
@@ -64,12 +64,12 @@ with tab_1:
             "für das gesamte Projektteam plattformunabhängig bereitzustellen."
         )
         
-        st.markdown("### ⚡ **Systemvorteile der Cloud**")
-        st.markdown(
-            "* **Skalierbarkeit:** Automatische Anpassung an große Abfragemengen bei minimaler Latenz.\n"
-            "* **Ressourcen-Trennung:** Unabhängige Verwaltung von Cloud-Speicher und Rechenleistung.\n"
-            "* **Sicherheit:** Verschlüsselte Ende-zu-Ende-Verbindung über sichere SSL-Kanäle."
-        )
+        # st.markdown("### ⚡ **Systemvorteile der Cloud**")
+        # st.markdown(
+        #     "* **Skalierbarkeit:** Automatische Anpassung an große Abfragemengen bei minimaler Latenz.\n"
+        #     "* **Ressourcen-Trennung:** Unabhängige Verwaltung von Cloud-Speicher und Rechenleistung.\n"
+        #     "* **Sicherheit:** Verschlüsselte Ende-zu-Ende-Verbindung über sichere SSL-Kanäle."
+        # )
 
 
 with tab_2:
@@ -84,8 +84,8 @@ with tab_2:
             "Durch diese gezielte Normalisierung wurde die Performance der Abfragen in Python signifikant optimiert."
         )
         
-        st.success("**dim_buildings:** Stammdaten-Katalog für die einzigartigen Gebäudestrukturen (9 Spalten).")
-        st.success("**fact_thermal_records:** Zentrale Faktentabelle mit 50 Metrik- und Sensor-Spalten (Sensation, Comfort, Preference, Acceptability).")
+        st.info("**dim_buildings:** Stammdaten-Katalog für die einzigartigen Gebäudestrukturen (9 Spalten).")
+        st.info("**fact_thermal_records:** Zentrale Faktentabelle mit 50 Metrik- und Sensor-Spalten (Sensation, Comfort, Preference, Acceptability).")
         
 with tab_3:
     col_doc1, col_doc2 = st.columns(2)
@@ -98,12 +98,149 @@ with tab_3:
             "native Anbindung an **Microsoft Power BI** über standardisierte PostgreSQL-Connectors."
         )
 
-    # Texto final corregido sin barras invertidas innecesarias
-    st.text("Technologische und moderne Ansätze:")
-    st.text("     1. Neon ist die serverlose Zukunft von PostgreSQL.")
-    st.text("     2. Mit Neon skaliert die Datenbank automatisch auf Null.")
-    st.text("     3. Neon trennt Speicher und Berechnung für maximale Effizienz.")
+    # # Texto final corregido sin barras invertidas innecesarias
+    # st.text("Technologische und moderne Ansätze:")
+    # st.text("     1. Neon ist die serverlose Zukunft von PostgreSQL.")
+    # st.text("     2. Mit Neon skaliert die Datenbank automatisch auf Null.")
+    # st.text("     3. Neon trennt Speicher und Berechnung für maximale Effizienz.")
 
+# ==============================================================================
+# 🏗️ PROJEKT-ARCHITEKTUR: DATENBANK-PIPELINE & NEON CLOUD INFRASTRUKTUR
+# ==============================================================================
+import os 
+with tab_4:
+    st.header("🏗️ Datenbasis & Cloud-Infrastruktur-Prozess")
+    st.caption(
+        "Der folgende Abschnitt dokumentiert das vollständige Backend-Engineering des Projekts. "
+        "Die Pipeline erstreckt sich von der Bereitstellung der Cloud-Datenbank über das relationale "
+        "Mapping bis hin zur finalen Integration in das Business-Intelligence-Infrastruktur-System."
+    )
+
+    st.markdown("---")
+
+    # Helper-Funktion, um Abstürze bei fehlenden oder falsch geschriebenen Bildern komplett zu verhindern
+    def safe_st_image(file_path, caption_text):
+        if os.path.exists(file_path):
+            st.image(file_path, caption=caption_text, use_container_width=True)
+        else:
+            # Versucht automatisch eine korrigierte Großbuchstaben-Erweiterung zu finden (.PNG)
+            alt_path = file_path.replace(".png", ".PNG")
+            if os.path.exists(alt_path):
+                st.image(alt_path, caption=caption_text, use_container_width=True)
+            else:
+                st.warning(f"⚠️ Bild nicht gefunden: '{file_path}'. Bitte überprüfen Sie den Ordner-Pfad.")
+
+    # ------------------------------------------------------------------------------
+    # ABSCHNITT 1: NEON CLOUD INITIALISIERUNG
+    # ------------------------------------------------------------------------------
+    st.subheader("1. Bereitstellung der Serverlosen PostgreSQL-Datenbank in Neon")
+    c1, c2 = st.columns(2)
+
+    with c1:
+        safe_st_image("neon/neon_01.jpg", "Abbildung 1: Initialisierung des Cloud-Projekts auf AWS Frankfurt.")
+        st.markdown(
+            "**Cloud-Provisionierung:** Einrichtung des serverlosen PostgreSQL-Clusters in der Region "
+            "AWS Europe Central 1 (Frankfurt) zur Gewährleistung minimaler Latenzzeiten bei Abfragen."
+        )
+
+    with c2:
+        safe_st_image("neon/neon_02.jpg", "Abbildung 2: Architektur-Übersicht der Compute-Ressourcen im Neon-Dashboard.")
+        st.markdown(
+            "**Infrastruktur-Monitoring:** Überwachung von Speicher (Storage) und Rechenleistung (Compute-Units) "
+            "in Echtzeit. Generierung des sicheren SSL-Verbindungsstrings für die Backend-Kopplung."
+        )
+
+    st.markdown("---")
+
+    # ------------------------------------------------------------------------------
+    # ABSCHNITT 2: DATABASE OVERVIEW & SQL OPERATIONS
+    # ------------------------------------------------------------------------------
+    st.subheader("2. Datenbank-Projekt-Struktur & SQL DDL-Spezifikation")
+    c3, c4 = st.columns(2)
+
+    with c3:
+        safe_st_image("neon/neon_03.jpg", "Abbildung 3: Detaillierte Projekt-Übersicht und Verbindungsparameter.")
+        st.markdown(
+            "**Datenbank-Konfiguration:** Verwaltung der Datenbank-Instanzen und Endpunkte. Sichere Bereitstellung "
+            "der Zugriffsrechte für den DB-Owner zur Datenmanipulation."
+        )
+
+    with c4:
+        safe_st_image("neon/neon_04.jpg", "Abbildung 4: SQL DDL-Skript im integrierten Neon SQL Editor.")
+        st.markdown(
+            "**Tabellen-Strukturierung (DDL):** Generierung des relationalen Datenbankschemas. Erstellung der "
+            "Dimensionstabelle (`dim_buildings`) und der zentralen Faktentabelle (`fact_thermal_records`) "
+            "mit strikten Primärschlüssel-Restriktionen."
+        )
+
+    st.markdown("---")
+
+    # ------------------------------------------------------------------------------
+    # ABSCHNITT 3: PYTHON PIPELINE & VERIFIKATION
+    # ------------------------------------------------------------------------------
+    st.subheader("3. Automatisierte Dateninjektion & Tabellen-Verifikation")
+    c5, _ = st.columns([1,1])
+
+    with c5:
+        safe_st_image("neon/neon_05.jpg", "Abbildung 5: Robustes Python-Skript zur massiven Cloud-Injektion (SQLAlchemy).")
+        st.markdown(
+            "**ETL-Pipeline (Injektion):** Automatisierter Datentransfer via Python. Das Skript bereinigt "
+            "Metadaten der Sensoren und lädt die **109.033 Zeilen** mithilfe optimierter Blockgrößen "
+            "(Chunksize = 10.000) effizient in die Cloud hoch."
+        )
+
+    st.markdown("---")
+
+    # ------------------------------------------------------------------------------
+    # ABSCHNITT 4: POWER BI INTEGRATION
+    # ------------------------------------------------------------------------------
+    st.subheader("4. Business-Intelligence-Anbindung (Power BI)")
+    c6, c7 = st.columns(2)
+
+    with c6:
+        safe_st_image("neon/neon_06.jpg", "Abbildung 6: Strukturierte Tabellen-Ansicht innerhalb der Neon-Datenbank-Konsole.")
+        st.markdown(
+            "**Daten-Validierung:** Direktprüfung der hochgeladenen Datensätze in der Cloud zur Gewährleistung "
+            "von Datenkonsistenz und fehlerfreien Datentypen vor der BI-Verknüpfung."
+        )
+
+    with c7:
+        safe_st_image("neon/neon_07.jpg", "Abbildung 7: Konfiguration der nativen PostgreSQL-Schnittstelle in Power BI.")
+        st.markdown(
+            "**DirectQuery / Import-Modus:** Anbindung der Cloud-Datenbank an das analytische Frontend. "
+            "Einfügen des verschlüsselten AWS-Endpunkts und Authentifizierung des DB-Owners."
+        )
+    
+    c8, _ = st.columns([1,1])
+    with c8:
+        safe_st_image("neon/neon_08.jpg", "Abbildung 8: Ausführung und Laden der Datenströme in die BI-Umgebung.")
+        st.markdown(
+            "**Verbindungs-Aufbau:** Datenübertragung aus Neon in das relationale Modell. Die Tabellen "
+            "werden ohne Informationsverlust in den Hauptspeicher der BI-Anwendung geladen."
+        )
+
+    st.markdown("---")
+
+    # ------------------------------------------------------------------------------
+    # ABSCHNITT 5: RELATIONAL MODEL & COMPONENT SCHEME
+    # ------------------------------------------------================--------------
+    st.subheader("5. Relationales Sternschema & Komponenten-Integrität")
+    c9, c10 = st.columns(2)
+
+    with c9:
+        safe_st_image("neon/neon_09.jpg", "Abbildung 9: Komponenten-Übersicht des Datenmodells.")
+        st.markdown(
+            "**System-Architektur:** Validierung der einzelnen Datenkomponenten. Überprüfung der Datenintegrität "
+            "und Vorbereitung der Kennzahlen-Berechnungen (Measures)."
+        )
+
+    with c10:
+        safe_st_image("neon/neon_10.jpg", "Abbildung 10: Finales Sternschema mit einer mathematischen Viele-zu-Eins-Beziehung (*:1).")
+        st.markdown(
+            "**Datenmodellierung (Star Schema):** Verknüpfung der Faktentabelle mit der Dimensionstabelle über "
+            "das gemeinsame Feld `building_id`. Dieses relationale Design sichert die referenzielle Integrität "
+            "und bildet das mathematische Fundament für die Berechnungen unseres Dashboards."
+        )
 
 # ---------------------------------------------------------
 # MAP TAB
