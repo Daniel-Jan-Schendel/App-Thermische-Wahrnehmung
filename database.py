@@ -235,12 +235,18 @@ with tab_4:
         )
 
     with c10:
-        safe_st_image("neon/neon_10.jpg", "Abbildung 10: Finales Sternschema mit einer mathematischen Viele-zu-Eins-Beziehung (*:1).")
+        safe_st_image("neon/neon_10.jpg", "Abbildung 10: Finales Schema.")
         st.markdown(
             "**Datenmodellierung (Star Schema):** Verknüpfung der Faktentabelle mit der Dimensionstabelle über "
             "das gemeinsame Feld `building_id`. Dieses relationale Design sichert die referenzielle Integrität "
             "und bildet das mathematische Fundament für die Berechnungen unseres Dashboards."
         )
+ 
+    c11, _ = st.columns([1,1])
+    with c11:
+        safe_st_image("neon/neon_11.jpg", "Abbildung 11: Power Bi Relationales Datenmodell.")
+
+        
 
 # ---------------------------------------------------------
 # MAP TAB
