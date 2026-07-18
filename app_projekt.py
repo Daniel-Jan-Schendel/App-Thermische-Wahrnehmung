@@ -18,7 +18,7 @@ st.set_page_config(page_title="ASHRAE", layout="wide", initial_sidebar_state="ex
 pg = st.navigation(
     [
         st.Page("welcome.py", title="Startsite", icon=":material/home:"),
-        st.Page("team.py", title="Team & Tools", icon=":material/group:"),
+        #st.Page("team.py", title="Team & Tools", icon=":material/group:"),
         st.Page("introduction.py", title="Einführung", icon=":material/info:"),
         st.Page("datenbereinigung.py", title="Datenbereinigung", icon=":material/menu_book:"),
         st.Page("database.py", title="Datenbank", icon=":material/dashboard:"),
