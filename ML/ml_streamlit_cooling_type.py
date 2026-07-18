@@ -57,7 +57,7 @@ except Exception as e:
 st.title("🏢 Vorhersage Kühlungsart (Cooling Type)")
 st.markdown("Dieses Dashboard prognostiziert den Kühlungstyp basierend auf thermodynamischen und personenspezifischen Features.")
 
-tab1, tab3 = st.tabs(["🔮 Live-Vorhersage & SHAP", "📈 Modell-Performance"])
+tab1, tab2, tab3 = st.tabs(["🔮 Livevorhersage & SHAP", "📈 Modellperformance", "⚙️ Modellaufbau"])
 
 # --- TAB 1: ECHTZEIT VORHERSAGE ---
 with tab1:
@@ -67,15 +67,15 @@ with tab1:
 
     # 2. Sidebar für Benutzereingaben (Schieberegler)
     with col_sidebar:
-        st.header("🎛️ Feature-Eingabe")
+        st.header("🎛️ Featureeingabe")
         st.markdown("Passen Sie die Parameter an, um eine Echtzeit-Vorhersage zu erhalten.")
         
-        air_temp = st.slider("Raumlufttemperatur (°C)", 10.0, 40.0, 23.0, step=0.1, format="%0.1f")
-        out_temp = st.slider("Außenlufttemperatur (°C)", -30.0, 45.0, 20.0, step=0.1, format="%0.1f")
-        rel_hum = st.slider("Relative Luftfeuchtigkeit (%)", 0.0, 100.0, 50.0, step=0.1, format="%0.1f")
-        air_speed = st.slider("Luftgeschwindigkeit (m/s)", 0.0, 4.0, 0.1, step=0.01, format="%0.2f")
-        clo = st.slider("Bekleidungsisolation (clo)", 0.0, 3.0, 0.6, step=0.01, format="%0.2f")
-        met = st.slider("Metabolische Rate (met)", 0.5, 4.0, 1.2, step=0.1, format="%0.1f")
+        air_temp = st.slider("Innentemperatur (air_temperature) [°C]", 10.0, 40.0, 23.0, step=0.1, format="%0.1f")
+        out_temp = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, 20.0, step=0.1, format="%0.1f")
+        rel_hum = st.slider("Relative Luftfeuchtigkeit (relative_humidity) [%]", 0.0, 100.0, 50.0, step=0.1, format="%0.1f")
+        air_speed = st.slider("Luftgeschwindigkeit (air_speed) [m/s]", 0.0, 4.0, 0.1, step=0.01, format="%0.2f")
+        clo = st.slider("Bekleidungsisolierung (clothing_ensemble_insulation) [clo]", 0.0, 3.0, 0.6, step=0.01, format="%0.2f")
+        met = st.slider("Metabolische Rate (metabolic_rate) [met]", 0.5, 4.0, 1.2, step=0.1, format="%0.1f")
 
         input_data = pd.DataFrame([{
             'air_temperature': air_temp,
@@ -89,7 +89,7 @@ with tab1:
 
     # 3. Hauptbereich für Vorhersagen und Analysen
     with col_main:
-        #tab1, tab2, tab3 = st.tabs(["🔮 Vorhersage", "📊 SHAP Analyse", "📈 Modell-Performance"])
+        #tab1, tab2, tab3 = st.tabs(["🔮 Vorhersage", "📊 SHAP Analyse", "📈 Modellperformance"])
 
             #st.subheader("Live-Klassifikation")
             
@@ -221,9 +221,6 @@ with tab1:
                     else:
                         calibrated_values = raw_values
                     
-                    # --- REPARATUR DES OUT-OF-BOUNDS FEHLERS ---
-                    # WICHTIG: .values[0] macht die Daten eindimensional (Form: (6,)),
-                    # genau wie calibrated_values ebenfalls eindimensional ist.
                     prob_shap = shap.Explanation(
                         values=calibrated_values,
                         base_values=raw_base_value,
@@ -243,16 +240,13 @@ with tab1:
                 plt.close()
 
 
-
-
-                
             except Exception as e:
                 st.error(f"Fehler bei der SHAP-Visualisierung: {e}")
 
 
-# --- TAB 3: MODELL-PERFORMANCE ---
-with tab3:
-    st.subheader("Modell-Performance & Metriken")
+# --- TAB 2: MODELLPERFORMANCE ---
+with tab2:
+    st.subheader("📈 Modellperformance & -metriken")
     
     col_metric1, col_metric2 = st.columns(2)
     with col_metric1:
@@ -261,94 +255,116 @@ with tab3:
         st.metric(label="F1-Score (Test)", value=f"{metrics.get('f1_test', 0):.2f}")
         
     st.markdown("---")
-    st.markdown("**Classification Report:**")
-    # Überprüfen, ob y_test und y_test_pred im Dictionary vorhanden sind
-    if "y_test" in metrics and "y_test_pred" in metrics:
-        try:
-            # # Generiere den Report als strukturiertes Dictionary
-            # report_dict = classification_report(
-            #     metrics["y_test"], 
-            #     metrics["y_test_pred"], 
-            #     target_names=target_names, 
-            #     output_dict=True
-            # )
-            # # # In einen schicken Pandas DataFrame umwandeln
-            # report_df = pd.DataFrame(report_dict).transpose()
-            
-            # # Styling für eine professionelle Darstellung (Prozentwerte & korrekter Support)
-            # st.dataframe(
-            #     report_df.style.format(
-            #         formatter={col: "{:.2f}" for col in report_df.columns if col != "support"},
-            #         na_rep="-"
-            #     ).format(
-            #         formatter="{:.0f}", 
-            #         subset=(["macro avg", "weighted avg", "accuracy"] if "accuracy" in report_df.index else ["macro avg", "weighted avg"], ["support"])
-            #     ), 
-            #     use_container_width=True
-            # )
-            st.code(classification_report(metrics["y_test"], metrics["y_test_pred"], target_names=target_names))
 
-        except Exception as e:
-            st.error(f"Classification Report konnte nicht generiert werden: {e}")
-            st.info("Hinweis: Stellen Sie sicher, dass y_test und y_test_pred die gleichen Dimensionen haben.")
-    else:
-        st.warning("⚠️ 'y_test' oder 'y_test_pred' wurden nicht im metrics-Dictionary gefunden. Bitte überprüfen Sie den Export.")
+    performance_left, performance_right = st.columns(2, vertical_alignment="center")
+
+    with performance_left:
+
+        st.markdown("**Classification Report:**")
+        # Überprüfen, ob y_test und y_test_pred im Dictionary vorhanden sind
+        if "y_test" in metrics and "y_test_pred" in metrics:
+            try:
+                # # Generiere den Report als strukturiertes Dictionary
+                # report_dict = classification_report(
+                #     metrics["y_test"], 
+                #     metrics["y_test_pred"], 
+                #     target_names=target_names, 
+                #     output_dict=True
+                # )
+                # # # In einen schicken Pandas DataFrame umwandeln
+                # report_df = pd.DataFrame(report_dict).transpose()
+                
+                # # Styling für eine professionelle Darstellung (Prozentwerte & korrekter Support)
+                # st.dataframe(
+                #     report_df.style.format(
+                #         formatter={col: "{:.2f}" for col in report_df.columns if col != "support"},
+                #         na_rep="-"
+                #     ).format(
+                #         formatter="{:.0f}", 
+                #         subset=(["macro avg", "weighted avg", "accuracy"] if "accuracy" in report_df.index else ["macro avg", "weighted avg"], ["support"])
+                #     ), 
+                #     use_container_width=True
+                # )
+                st.code(classification_report(metrics["y_test"], metrics["y_test_pred"], target_names=target_names))
+
+            except Exception as e:
+                st.error(f"Classification Report konnte nicht generiert werden: {e}")
+                st.info("Hinweis: Stellen Sie sicher, dass y_test und y_test_pred die gleichen Dimensionen haben.")
+        else:
+            st.warning("⚠️ 'y_test' oder 'y_test_pred' wurden nicht im metrics-Dictionary gefunden. Bitte überprüfen Sie den Export.")
+
+    with performance_right:
+
+        st.write("**Confusion Matrix:**")
+        fig, ax = plt.subplots(figsize=(6, 5))
+
+        # Ermittle die tatsächlichen numerischen Klassen, die in den Daten stecken (z.B.)
+        import numpy as np
+        unique_numeric_labels = sorted(list(set(metrics["y_test"])))
+        
+        # Hole die exakt passenden Textbeschriftungen aus deiner target_names Liste
+        display_labels_filtered = [target_names[i] for i in unique_numeric_labels]
+
+        from sklearn.metrics import ConfusionMatrixDisplay
+        ConfusionMatrixDisplay.from_predictions(
+            metrics["y_test"], 
+            metrics["y_test_pred"], 
+            labels=unique_numeric_labels,       # IDs für die mathematische Zuordnung (0, 1, 2)
+            display_labels=display_labels_filtered, # Textnamen für die visuelle Achsenbeschriftung!
+            cmap="Blues", 
+            ax=ax
+        )
+
+        plt.title("Cooling Type")
+        plt.tight_layout()
+        ax.set_xticklabels(
+            ax.get_xticklabels(), 
+            rotation=90, 
+        #    ha="right"
+        )
+        st.pyplot(fig)
 
 
-    st.write("**Confusion Matrix:**")
-    fig, ax = plt.subplots(figsize=(6, 5))
-
-    # Ermittle die tatsächlichen numerischen Klassen, die in den Daten stecken (z.B.)
-    import numpy as np
-    unique_numeric_labels = sorted(list(set(metrics["y_test"])))
-    
-    # Hole die exakt passenden Textbeschriftungen aus deiner target_names Liste
-    display_labels_filtered = [target_names[i] for i in unique_numeric_labels]
-
-    from sklearn.metrics import ConfusionMatrixDisplay
-    ConfusionMatrixDisplay.from_predictions(
-        metrics["y_test"], 
-        metrics["y_test_pred"], 
-        labels=unique_numeric_labels,       # IDs für die mathematische Zuordnung (0, 1, 2)
-        display_labels=display_labels_filtered, # Textnamen für die visuelle Achsenbeschriftung!
-        cmap="Blues", 
-        ax=ax
-    )
-
-    plt.title("Cooling Type")
-    plt.tight_layout()
-    ax.set_xticklabels(
-        ax.get_xticklabels(), 
-        rotation=90, 
-    #    ha="right"
-    )
-    st.pyplot(fig)
-
-
-    st.subheader("Globale & Lokale Feature-Wichtigkeit (SHAP)")
+    st.subheader("Globale Feature-Wichtigkeit (SHAP)")
     st.markdown("Nutzt den in der Modelldatei hinterlegten Explainer zur Analyse.")
     
-    try:
-        st.markdown("**Globale Feature-Wichtigkeit (Gesamter Datensatz):**")
-        fig_global, ax_global = plt.subplots(figsize=(8, 4))
-        shap.summary_plot(shap_values, show=False, class_names=target_names,)
-        plt.tight_layout()
-        plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
-        st.pyplot(fig_global)
-        plt.close()
-        
+    st.write("\n\n")
+    shap_alle_links, shap_alle_mitte, shap_alle_rechts = st.columns([1,3,1])
+    
+    with shap_alle_mitte:
+    
+        try:
+            st.markdown("**Globale Feature-Wichtigkeit (Gesamter Datensatz):**")
+            fig_global, ax_global = plt.subplots(figsize=(8, 4))
+            shap.summary_plot(shap_values, show=False, class_names=target_names, plot_size=(8, 4))
+            plt.tight_layout()
+            plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
+            st.pyplot(fig_global, use_container_width=True)
+            plt.close()
+
+        except Exception as e:
+            st.error(f"Fehler bei der SHAP-Visualisierung: {e}")
+
+    st.subheader("Globaler Einfluss auf Klassen")
+
+    # Eigener Filter für den globalen Plot mit eindeutigem Key
+    selected_class_global = st.selectbox(
+        "Kühlungstyp:",
+        options=target_names,
+        key="sb_global_shap"  # Eindeutiger Key für Streamlit
+    )
+
+    shap_global_left, shap_global_right = st.columns(2, vertical_alignment="center")
+
+
+    with shap_global_left:
 
         # ==========================================
         # DIAGRAMM 1: GLOBALER PLOT (EINFLUSSRICHTUNG)
         # ==========================================
         st.markdown("### 📊 Globale Einflussrichtung")
         
-        # Eigener Filter für den globalen Plot mit eindeutigem Key
-        selected_class_global = st.selectbox(
-            "Wählen Sie einen Kühlungstyp für die GLOBALE Einflussrichtung:",
-            options=target_names,
-            key="sb_global_shap"  # Eindeutiger Key für Streamlit
-        )
+
         
         # Index für global ermitteln
         class_idx_global = target_names.index(selected_class_global)
@@ -372,9 +388,84 @@ with tab3:
             "Befinden sich rote Punkte rechts von der Nulllinie, *erhöht* ein hoher Wert "
             f"die Wahrscheinlichkeit für die Klasse **{selected_class_global}**."
         )
-                    
-
-    except Exception as e:
-        st.error(f"Fehler bei der SHAP-Visualisierung: {e}")
 
 
+    with shap_global_right:
+
+        st.write("### 🔍 Globaler SHAP Dependence Plot")
+        
+
+
+        gewaehlte_klasse = int(le.transform([selected_class_global])[0])  # Index der gewünschten Klasse (z.B. 0, 1, 2)
+
+        if selected_class_global == 'air conditioned':
+            max_feature = 'air_temperature'
+        elif selected_class_global == 'mixed mode':
+            max_feature = 'metabolic_rate'
+        elif selected_class_global == 'naturally ventilated':
+            max_feature = 'outdoor_air_temperature'
+
+        # 1. Eine frische Matplotlib-Figur öffnen
+        fig_scatter, ax_scatter = plt.subplots(figsize=(8, 5))
+
+        # 2. Variable aus deiner joblib nutzen ('shap_values')
+        # Wir prüfen, ob es ein neues Explanation-Objekt oder ein altes Array ist
+        if hasattr(shap_values, "values"):
+            # Modernes SHAP-Objekt (3 Dimensionen: [Samples, Features, Klassen])
+            shap.plots.scatter(
+                shap_values[:, max_feature, gewaehlte_klasse], 
+                color=shap_values[:, :, gewaehlte_klasse], 
+                ax=ax_scatter,
+                show=False
+            )
+        else:
+            # Fallback für ältere SHAP/NumPy-Array-Formate
+            air_temp_idx = 0 
+            shap.plots.dependence_plot(
+                air_temp_idx, 
+                shap_values[gewaehlte_klasse], 
+                X_test,  # Benötigt hier die Originaldaten der Testmatrix
+                ax=ax_scatter,
+                show=False
+            )
+        
+        plt.title(f"SHAP Dependence Plot - {selected_class_global}", fontsize=12, pad=10)
+        st.pyplot(fig_scatter)
+        plt.close(fig_scatter)       
+
+        st.caption(
+            "**Interpretation:** Es wird automatisch der Wert mit der größten Korrelation mit dem Wert der X-Achse" \
+            "dargestellt als weitere farbliche Dimension. Auf der Y-Achse ist der Einfluss der Größe der X-Achse dargestellt." \
+            "Ebenso ist die Verteilung in grau dargestellt."
+        )
+
+
+
+
+with tab3:
+    st.subheader("⚙️ Modellaufbau")
+
+    st.markdown("""
+        * ca. 47.500 Datensätze, aufgeteilt in:
+            * 80% Train
+            * 20% Test
+        * Features: alle kontinuierlich => kein Encoding erforderlich
+        * Target: 3 Klassen als Strings => Label encoding erforderlich
+        * Aufbau einer Pipeline:
+            * PowerTransformer für schiefe Features und StandardScaler für die restlichen Features
+            * Vergleich von unterschieldichen Algorithmen zur Klassifizierung:
+                * logistische lineare und polinomiale Regression 2. Grades
+                * decision tree
+                * kNN
+                * Random Forest
+                * HistGradientBoosting
+        * Kontrolle auf Overfitting über Differenz des macro F1 Scores zwischen Train- und Testset
+        * Auswahl fällt auf Random Forest
+            * hoher F1-Macro Score
+            * flexibel (kann NL-Probleme gut abbilden) und weniger Anfällig auf overfitting
+            * keine Skalierung notwendig
+            * Problem scharfe Grenzen, Wahrscheindlichkeitsermittlung nicht sehr genau ohne "calibrated_classifierCV"
+            * Modell zusammen mit SHAP-Analyse über joblib mit compress option exportiert zur Nutzung in Streamlit (ca. 70 mb)
+                """)
+    
+    st.image("ML/images/VergleichModelle_cooling_type.png", caption="Modellvergleich: Macro F1-Score")

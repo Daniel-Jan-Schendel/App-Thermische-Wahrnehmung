@@ -85,7 +85,7 @@ except Exception as e:
     st.sidebar.error(f"Fehler beim Laden der Modelldatei: {e}")
     st.stop()
 
-tab1, tab2 = st.tabs(["🔮 Live-Vorhersage & SHAP", "📈 Modell-Performance"])
+tab1, tab2, tab3 = st.tabs(["🔮 Livevorhersage & SHAP", "📈 Modellperformance", "⚙️ Modellaufbau"])
 
 with tab1:
 
@@ -98,7 +98,7 @@ with tab1:
     # 3. Sidebar: Feature-Eingaben mit Key-Anker
     # ==========================================
     with col_sidebar:
-        st.header("🎛️ Feature-Eingbae")
+        st.header("🎛️ Featureeingabe")
 
         # Hilfsfunktion, um Startwerte aus dem Session-State zu lesen oder Defaults zu nutzen
         def get_val(key, default):
@@ -303,7 +303,7 @@ with tab1:
 
 
 with tab2:
-    st.subheader("📈 Modell-Performance (Historische Trainingswerte)")
+    st.subheader("📈 Modellperformance & -metriken")
     
     col1, col2 = st.columns(2)
     col1.metric(label="R² Score (Test)", value=f"{metrics['r2_test']:.2f}")
@@ -319,10 +319,13 @@ with tab2:
     if historical_shap is not None and X_test_summary is not None:
         # Zwei Spalten nebeneinander für die beiden globalen Grafiken anlegen
         # Das Breitenverhältnis [1, 1] sorgt für gleiche Größe links und rechts
-        col_bar, col_dot = st.columns([1, 1])
+
         
-        with col_bar:
-            st.markdown("**Relative Feature-Wichtigkeit (Global)**")
+        st.markdown("**Relative Feature-Wichtigkeit (Global)**")
+        global_shap_left, global_shap_middle, global_shap_right = st.columns([1, 3, 1])        
+        
+        with global_shap_middle:
+        
             try:
                 fig_bar, ax_bar = plt.subplots(figsize=(7, 5))
                 # plot_type="bar" erzwingt das globale Balkendiagramm
@@ -335,8 +338,10 @@ with tab2:
 
             except Exception as e:
                 st.error(f"Fehler beim Erstellen des Balkendiagramms: {e}")
-                
-        with col_dot:
+
+        col_left, col_right = st.columns([1, 1])
+
+        with col_left:
             st.markdown("**Einflussrichtung der Features (Summary Plot)**")
             try:
                 fig_dot, ax_dot = plt.subplots(figsize=(7, 5))
@@ -347,8 +352,72 @@ with tab2:
                 st.pyplot(fig_dot, use_container_width=True)
             except Exception as e:
                 st.error(f"Fehler beim Erstellen des Summary-Plots: {e}")
+
+        with col_right:
+            fig_scatter, ax_scatter = plt.subplots(figsize=(7, 5))
+
+            plot_shap_obj = historical_shap[:, :]
+
+            # 3. Die unskalierten Originaldaten aus Excel übergeben
+            plot_shap_obj.data = X_test_summary.values
+
+            # 3. Scatter-Plot zeichnen 
+            # (Da .data jetzt die echten Werte hat, stehen auf der X-Achse sofort Grad Celsius!)
+            shap.plots.scatter(
+                plot_shap_obj[:, "air_temperature"], 
+                color=plot_shap_obj,  # SHAP wählt das Interationsfeature automatisch
+                ax=ax_scatter,
+                show=False
+            )
+            
+            plt.tight_layout()
+            plt.xlabel("Lufttemperatur (°C)")
+            plt.ylabel("Isolationswert [clo]")
+
+            alle_achsen = plt.gcf().get_axes()
+            if len(alle_achsen) > 1:
+                # Überschreibe das Label der rechten Achse
+                alle_achsen[1].set_ylabel(
+                    "Außentemperatur — Interaktion",
+                )
+
+            st.pyplot(fig_scatter, use_container_width=True)
+            plt.close(fig_scatter)
+
     else:
         st.info(
             "ℹ️ Die globalen SHAP-Grafiken konnten nicht geladen werden. "
             "Bitte stellen Sie sicher, dass 'shap_values' und 'X_test_summary' im Trainingsskript mit abgespeichert wurden."
         )
+
+with tab3:
+    st.subheader("⚙️ Modellaufbau")
+
+    st.markdown("""
+        * ca. 47500 Datensätze, aufgeteilt in:
+            * 80% Train
+            * 20% Test
+        * Features: z.T. kategorisch => Encoding erforderlich
+            * One-Hot-Encoding für 'season', 'building_type', 'cooling_type' und 'climate_zone' (14 zusätliche Spalten, insgesamt 22)
+            * (Target-Encoding vor Reduzierung der Klimazonen)
+        * rechtsschiefe Verteilung des clo-Targets (=> testweise log. auf Target, jedoch ohne Einfluss)
+        * Aufbau einer Pipeline:
+            * PowerTransformer für schiefe Features und StandardScaler für die restlichen Features
+            * Vergleich von unterschieldichen Algorithmen zur Klassifizierung:
+                * lineare und polinomiale Regression 2.Grades
+                * Ridge Regression
+                * Support Vector Regression
+                * Random Forest
+                * HistgradientBoostingRegression
+        * Kontrolle auf Overfitting über Differenz des R²-Wertes zwischen Train- und Testset
+        * Auswahl fällt auf HistGradientBoosting
+            * niedriger MAE-Wert (durchschnittliche Abweichung vom Wert des Targets)
+            * flexibel (kann NL-Probleme gut abbilden) und weniger Anfällig auf overfitting
+            * keine Skalierung notwendig
+            * Modell zusammen mit SHAP-Analyse über joblib exportiert zur Nutzung in Streamlit (ca. 12 mb)
+            * deutlich bessere Performance bei der SHAP-Analyse (RandomForest infolge der zahlreichen Bäume eher problematisch)
+            * deutlich kleinere Datei durch die bessere SHAP-Analyse
+        * Über GridSearch Hyperparameter optimiert
+        """)
+    
+    st.image("ML/images/VergleichModell_clo_MAE.png", caption="Modellvergleich: Macro F1-Score")
