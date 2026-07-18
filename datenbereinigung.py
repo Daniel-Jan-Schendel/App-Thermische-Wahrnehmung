@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Datenbereinigung - ASHRAE", layout="wide",initial_sidebar_state="expanded")
 
-st.header("📊 Inspektion und Bereinigung des Datensatzes")
+st.header("🔍 Inspektion und Bereinigung des Datensatzes")
 
 # Datensätze laden
 
@@ -16,435 +16,522 @@ metadata = pd.read_csv("db_metadata.csv")
 measurements = pd.read_csv("db_measurements_v210.csv")
 df = measurements.merge(metadata, on="building_id", how="inner")
 
-df_bereinigt = pd.read_csv("db_bereinigt.csv")
+df_bereinigt = pd.read_csv("db_bereinigt_final.csv")
+df = pd.read_csv("db_bereinigt.csv")
 
-tab1, tab2, tab3, tab4,tab5, tab6 = st.tabs([
-    "1. Datensatz",
-    "2. Daten importieren",
-    "3. Erste Übersicht",
-    "4. Datentypen bereinigen",
-    "5. Spalten umbenennen",
-    "6. Standardisierung von Kategorien"
+tab1, tab2, tab3, tab4 = st.tabs([
+    "ℹ️ Datensatz",
+    "🧹 Prozess Datenbereinigung",
+    "⚠️ Herausforderungen bei Datenbereinigung",
+    "🔢 Standardisierung von Kategorien"
 ])
 
-with tab1:
+###############################################################################################################################################
+###############################################################################################################################################
 
-    col1, col2 = st.columns([2,1])
-    col3, col4 = st.columns([2,1])
-    col5, col6 = st.columns([2,1])
+with tab1:
+    
+    # --- Datenquelle ---
+    st.subheader("📘 Datenquelle: ASHRAE Global Thermal Comfort Database v2.1")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    col1, spacer, col2 =st.columns([2, 0.2, 2])
 
     with col1:
-    # --- Datenquelle ---
-        st.markdown(
-            """
-            <div style="padding: 10px 0;">
-                <h2 style="margin-bottom: 5px;">📘 Datenquelle</h2>
-                <p style="font-size:18px; line-height:1.5;">
-                    <strong>Dataset Source:</strong><br>
-                    <a href='https://datadryad.org/dataset/doi:10.6078/D1F671' target='_blank' style='text-decoration:none;'>
-                        ASHRAE Global Thermal Comfort Database II
-                    </a>
-                </p>
-                <p style="font-size:16px; color:#555;">
-                    Eine umfassende Datenbank zur Untersuchung des thermischen Komforts in Gebäuden weltweit.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.write(
+            "Umfassende Datenbank zur **Untersuchung des thermischen Komforts in Gebäuden weltweit**"
         )
 
         st.markdown(
             """
-            <div style="padding: 10px 0;">
-                <ul style="font-size:16px; line-height:1.6; color:#444;">
-                    <li>Zusammenstellung von Feldstudien aus dem Zeitraum <strong>1995–2016</strong></li>
-                    <li>Besteht aus zwei verschiedenen Datenbanken db 1.0 und db 2.0 </strong></li>
-                    <li>Update der Datenbank mit neuen Einträgen -> db 2.1</li>
-                    <li>Ein finaler, zusammengeführter Datensatz mit insgesamt <strong>109.033</strong> Einträgen</li>
-                </ul>
-            </div>
-            """,
-            unsafe_allow_html=True
+            - Zusammenstellung von Feldstudien aus dem Zeitraum **1995–2016**
+            - Besteht aus zwei verschiedenen Datenbanken db 1.0 und db 2.0
+            - Update der Datenbank mit neuen Einträgen -> db 2.1
+            - Ein finaler, zusammengeführter Datensatz mit insgesamt **109.033** Einträgen
+        """
         )
-
-
+   
     with col2:
-        # --- Donut Chart ---
-        st.markdown("<h3 style='margin-top:20px;'>📊 Verteilung der Datenbanken</h3>", unsafe_allow_html=True)
+        st.markdown(
+        """
+        **🔗 Dataset Source:**
 
-        option1 = {
-            "tooltip": {"trigger": "item"},
-            "legend": {"top": "5%", "left": "center"},
-            "series": [
-                {
-                    "name": "Records",
-                    "type": "pie",
-                    "radius": ["40%", "70%"],
-                    "itemStyle": {
-                        "borderRadius": 10,
-                        "borderColor": "#fff",
-                        "borderWidth": 2
-                    },
-                    "label": {"show": False},
-                    "emphasis": {
-                        "label": {"show": True, "fontSize": 20, "fontWeight": "bold"}
-                    },
-                    "data": [
-                        {"value": 81846, "name": "New Database Records"},
-                        {"value": 25617, "name": "RP-884 Records"},
-                    ],
-                }
-            ],
-        }
+        [ASHRAE Global Thermal Comfort Database II](https://datadryad.org/dataset/doi:10.6078/D1F671)
 
-        st_echarts(option1, height="200px")
+        - Datensatz findet sich in verschiedenen Versionen z.B. bei kaggle 
+        - Für dieses Projekt wurde der **originale Datensatz von ASHRAE** genutzt
+        """
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
 ##################################################################################################################################
 
-    with col3: 
-        # - Datensatz Aufbau -
-        st.markdown(
-            """
-            <div style="padding: 10px 0;">
-                <h2 style="margin-bottom: 5px;">ℹ️ Datensatz</h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    
+    # - Datensatz Aufbau -
+    st.subheader("ℹ️ Datensatz")
 
-        st.markdown(
-        """
-        Der Datensatz ist in zwei Haupttabellen gegliedert:
+    st.write("Der Datensatz ist in **zwei Haupttabellen** gegliedert: ")
 
-        **`metadata` Tabelle**  
+    col1, spacer, col2 = st.columns([2, 0.2, 2])
+
+    with col1:
+        st.info("""
+        **`metadata` Tabelle**
+
         - Enthält allgemeine Gebäude- und Studieninformationen
-        - Bereitgestellt als Standard-**CSV file**.
+        - Bereitgestellt als Standard-**CSV file**
+        """)
+        
 
-        **`measurements` Tabelle**  
-        - Enthält alle Feldmessungen, einschließlich:
-            - Einzelne Fragebogenantworten, dargestellt als Zeile
-            - Instrumentelle Innenraummessungen
-            - Werte thermischer Indizes
-            - Meteorologische Außendaten (sofern verfügbar)
-        - Bereitgestellt als **komprimierte CSV-Datei (.csv.gz)** in UTF-8-Kodierung.
-        """
-        )
+    with col2:
+        st.info("""
+        **`measurements` Tabelle**
+
+        - Enthält die Messdaten (z.B.)
+            - Fragebogenantworten → zentral für Untersuchung der thermischen Bewertung
+            - Physikalische Messdaten
+
+        - Bereitstellung:
+            - Als **komprimierte CSV-Datei (.csv.gz)** in UTF-8-Kodierung
+        """)
+        
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
+    # --- Einteilung der Variablen ---
+    st.subheader("📋 Übersicht über Variablen")
 
-    # - Originaler Datensatz
-    st.subheader("📁 Originaler Datensatz (vor Bereinigung)")
-    st.dataframe(df)
+    data = {
+        "Gruppe": [
+            "🏢 Gebäude- und Studiendaten",
+            "👤 Personenbezogene Variablen",
+            "🌡️ Umgebungsvariablen",
+            "🧍 Subjektive Komfortbewertungen",
+            "📊 Komfort-Indizes"
+        ],
+        "Beschreibung": [
+            "Informationen zum Messkontext",
+            "Eigenschaften der Personen",
+            "Physikalische Bedingungen",
+            "Komfortangaben der Personen",
+            "Berechnete thermische Kennwerte"
+        ],
+        "Variablen (Bsp.)": [
+            "building_type, cooling_type, country, climate, season",
+            "age, gender, met, clo",
+            "air_temperature, humidity, air_velocity",
+            "thermal_sensation, thermal_comfort, thermal_preference, thermal_acceptability",
+            "PMV, PPD, SET"
+        ]
+    }
+
+    df_groups = pd.DataFrame(data)
+
+    st.dataframe(
+    df_groups,
+    use_container_width=True,
+    hide_index=True
+    )
+
 
 ###############################################################################################################################################
 ###############################################################################################################################################
+
 
 with tab2:
-    st.subheader("1. Daten importieren und Zusammenführen der beiden Datensätze")
-    code_1 = '''
-    # Datensätze laden
-    df_meta = pd.read_csv("db_metadata.csv")
-    df_measure = pd.read_csv("db_measurements_v2.1.0.csv")
 
-    # Datensätze zusammenführen
-    df = pd.merge(df_meta, df_measure, on='building_id', how='inner')
-    '''
-    st.code(code_1, language="python")
+    st.subheader("🧹 Prozess der Datenbereinigung")
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    col1, spacer, col2 = st.columns([1.5,0.2, 1])
 
+    with col1:
+        st.info("""
+        1. **Zusammenführen** der beiden Datensätze für Analysen in Python
+        """)  
+    
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+        
+        st.info("""
+        2. **Bereinigung von Datentypen** 
+        """)  
+
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+
+        st.info("""
+        3. **Umbenennung von Spalten** für besseres Verständnis (z.B. ta ➝ air_temperature)
+        """)  
+
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+
+        st.info("""
+        4. 🔍 Übersichten zur Verteilung des Datensatzes und **Untersuchung der fehlenden Werte** 
+                
+        ➝ Gibt es Muster wie z.B. bestimmte Länder mit vielen fehlenden Werten?
+        """)  
+
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+
+        st.info("""
+        5. **Entfernen** von nicht benötigten Spalten 
+        """)  
+
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+
+        st.info("""
+        6. Bei kategorialen Spalten: **Auffüllen** der fehlenden Werte mit der Kategorie "Unknown"
+        """)  
+        
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+
+        st.info("""
+        7. **Standardisierung**: Runden der Werte von thermal_comfort und thermal_sensation für klare Kategorien 
+        
+        ➝ wichtig für Machine Learning 
+        """)  
+        
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>⬇️</h1>",
+            unsafe_allow_html=True,
+        )
+
+        st.info("""
+        8. Erstellen einer neuen **Spalte mit vier Hauptklimazonen** 
+        
+        ➝ Zuordnung der Klimata zu diesen Hauptklimazonen
+        """)  
+
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # Übersicht Dimensionen vor und nach Bereinigung
+    with col2:
+        # Dimensionen vor der Bereinigung 
+        st.write("### 📏 Dimensionen vor Bereinigung")
+        st.write(f"**Zeilen:** {df.shape[0]}")
+        st.write(f"**Spalten:** {df.shape[1]}")
+        
+        # Dimensionen nach der Bereinigung 
+        st.write("### 📏 Dimensionen nach Bereinigung")
+        st.write(f"**Zeilen:** {df_bereinigt.shape[0]}")
+        st.write(f"**Spalten:** {df_bereinigt.shape[1]}")
+
+    # Tabelle Datensatz nach Bereinigung
+    st.subheader("🧾 Datensatz nach der Bereinigung")
+    st.dataframe(df_bereinigt)
 
 
 ###############################################################################################################################################
 ###############################################################################################################################################
 
 with tab3:
-    st.subheader("2. Übersicht der zusammengeführten Daten")
-    code_2 = '''
-    # Datenstruktur analysieren
-    df.shape
-    df.info()
 
-    # Anzeigen von Duplikaten
-    duplicates = df[df.duplicated()]
-    duplicates
+    st.subheader("Herausforderungen bei der Datenbereinigung")
 
-    # Statistische Daten
-    stats = df.describe()
-    display(stats)
+    col1, col2, col3 = st.columns([1.5, 0.2, 2])
+    col4, col5, col6 = st.columns([1.5, 0.2, 2])
+    col7, col8, col9 = st.columns([1.5, 0.2, 2])
+    col10, col11, col12 = st.columns([1.5, 0.2, 2])
 
-    # Ausgeben der Anzahl fehlender Werte
-    df.isnull().sum()
+    # ---------------------------------------------------------
+    # Linke Spalte: Herausforderungen
+    # ---------------------------------------------------------
+    with col1:
+        st.markdown("#### ⚠️ Herausforderung")
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.info(
+            """
+            1. Sehr großer Datensatz mit **vielen erhobenen Werten**
+        """
+        )
 
-    # Entfernen von vollständig leeren Zeilen
-    df = df.dropna(how='all').reset_index(drop=True)
-    '''
-    st.code(code_2, language="python")
-    df = df.dropna(how='all').reset_index(drop=True)
-    buffer = io.StringIO()
-    df.info(buf=buffer)
-    info_str = buffer.getvalue()
-    st.subheader("🔍 Erste Untersuchung des Datensatzes")
-    st.code(info_str, language="text")
+        st.markdown(
+            """
+            - Viele verschiedene Messdaten
+            
+            ➝ z.B. bei air_temperature 4 verschiedene Werte: allgemein, 10cm über Boden, 60cm über Boden, 110cm über Boden
+                
+            """
+        ) 
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    with col4:
+        st.info(
+            """
+            2. Sehr viele **fehlende Werte**
+        """
+        )
+
+        st.markdown(
+            """
+            - Spalten variieren stark bezüglich Anzahl der fehlenden Werte (z.B.):
+                - age ➝ 55% (60039 Einträge)
+                - thermal_sensation ➝ 3% (2862 Einträge)
+                - thermal_comfort ➝ 65% (70998 Einträge)
+            """
+        ) 
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    with col7:
+        st.info(
+            """
+            3. Werte in den Spalten **thermal_comfort** und **thermal_sensation** enthalten Dezimalwerte
+        """
+        )
+
+        st.markdown(
+            """
+            - thermal_comfort und thermal_sensation haben eigentlich Kategorien (z.B. -3: sehr kalt bis 3: sehr heiß)
+            - Dezimalwerte in den Daten entstehen durch Aggregationen und Verwendung von unterschiedlichen Skalen
+            """
+        )      
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    with col10:
+        st.info(
+            """
+            4. 31 verschiedene **Klimata**
+        """
+        )
+
+        st.markdown(
+            """
+            - unübersichtlich für Analysen
+            """
+        ) 
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    # ---------------------------------------------------------
+    # Mittlere Spalte: Pfeile
+    # ---------------------------------------------------------
+
+    with col2:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>➡️</h1>",
+            unsafe_allow_html=True,
+        )
+
+    with col5:
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>➡️</h1>",
+            unsafe_allow_html=True,
+        )
+
+    with col8:
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>➡️</h1>",
+            unsafe_allow_html=True,
+        )
+
+    with col11:
+        st.markdown(
+            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>➡️</h1>",
+            unsafe_allow_html=True,
+        )
+
+    # ---------------------------------------------------------
+    # Rechte Spalte: Lösungen
+    # ---------------------------------------------------------
+
+    with col3:
+        st.markdown("#### 🛠️ Umgang mit Herausforderung")
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.info(
+            """
+            1. Überblick verschaffen  
+        """
+        )
+
+        st.markdown(
+            """
+            - Welche Werte sind für uns relevant? 
+            - Welche Fragestellungen wollen wir untersuchen?
+        """
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    with col6:
+        st.info(
+            """
+            2. Gemeinsame Überlegungen, welche Voraussetzungen wir benötigen für:
+        """
+        )
+
+        st.markdown(
+            """
+        - Datenanalyse
+        - Machine Learning
+
+        **➜ Untersuchung der fehlenden Werte auf Muster**
+
+        **➜ Entscheidung:**
+
+        - kategoriale Spalten: mit "Unknown" auffüllen
+        - numerische Spalten: fehlende Werte nicht bearbeiten, um Analysen nicht zu verzerren
+        - für Machine Learning: Entfernen der Zeilen mit fehlenden Werten in relevanten Variablen
+        """
+        )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    with col9:
+        st.info(
+            """
+            3. Standardisierung durch Runden der Dezimalwerte  
+        """
+        )
+
+        st.markdown(
+            """
+            ➝ ausführlichere Informationen auf nächster Seite
+        """
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        with col12:
+            st.info(
+                """
+                4. Neue Spalte mit 4 Hauptklimazonen  
+            """
+            )
+
+            st.markdown(
+                """
+                - Erstellen eines Mapping, um Klimata den Hauptklimazonen zuzuweisen
+                - Hierdurch bei Analyse auch eine generellere Betrachtung möglich
+            """
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
 
 
-    st.subheader("Database – Anzahl & Prozent (Pie Chart)")
 
-    # Spalte bereinigen
-    db_clean = df_bereinigt["database"].fillna("Unbekannt").astype(str)
-
-    # Werte zählen
-    db_counts = db_clean.value_counts()
-
-    # Total
-    total = int(db_counts.sum())
-
-    # Total anzeigen
-    st.info(f"**Total Daten:** {total:,}".replace(",", "."))
-
-    # Prozent berechnen (mit deutschem Komma)
-    percentages = [(count / total) * 100 for count in db_counts.values]
-    percentages_de = [f"{p:.2f}".replace(".", ",") for p in percentages]
-
-    # Pie-Daten vorbereiten
-    pie_data = []
-    for i, (cat, count) in enumerate(db_counts.items()):
-        count_de = f"{count:,}".replace(",", ".")   # Tausenderpunkt
-        percent_de = percentages_de[i]              # Komma-Prozent
-
-        pie_data.append({
-            "name": str(cat),
-            "value": int(count),
-            "percent": percent_de
-        })
-
-    # ECharts Optionen
-    options = {
-        "title": {"text": "Einträge pro Datenbank", "left": "center"},
-        "tooltip": {
-            "trigger": "item",
-            "formatter": "{b}: {c} ({d}%)"
-        },
-        "legend": {"orient": "vertical", "left": "left"},
-        "series": [
-            {
-                "name": "Database",
-                "type": "pie",
-                "radius": "60%",
-                "data": pie_data,
-                "label": {
-                    "formatter": "{b}: {c} ({d}%)"
-                }
-            }
-        ]
-    }
-
-    st_echarts(options=options, height="500px")
-
-
-   
 ###############################################################################################################################################
 ###############################################################################################################################################
-
-
 
 with tab4:
-    st.subheader("3. Bereinigung der Datentypen")
-    code_3 = '''
-    # Kopie des Datensatzes erstellen:
-    df_bereinigt_typ = df.copy()
 
-    # Spalte "timestamp" von str in datetime umwandeln
-    df_bereinigt_typ["timestamp"] = pd.to_datetime(df_bereinigt_typ["timestamp"], format='%Y-%m-%dT%H:%M:%SZ', errors="coerce") 
+    st.subheader("Worin liegt die Schwierigkeit?")
 
-    # Spalte " " von str in int umwandeln
-    df_bereinigt_typ["subject_id"] = pd.to_numeric(df_bereinigt_typ["subject_id"], errors="coerce").astype('Int64') 
-    df_bereinigt_typ["blind_curtain"] = df_bereinigt_typ["blind_curtain"].astype('Int64')
-    df_bereinigt_typ["fan"] = df_bereinigt_typ["fan"].astype('Int64')
-    df_bereinigt_typ["window"] = df_bereinigt_typ["window"].astype('Int64')
-    df_bereinigt_typ["door"] = df_bereinigt_typ["door"].astype('Int64')
-    df_bereinigt_typ["heater"] = df_bereinigt_typ["heater"].astype('Int64')
+    st.markdown(
+        """
+        - ASHRAE Global Thermal Comfort Database II sammelt Daten aus vielen verschiedenen Studien, Ländern, Klimazonen und Gebäudetypen
+        - Dadurch entstehen **unterschiedliche Werte, Skalen und Formate** für dieselben Komfortparameter
+        - Zudem werden in manchen Studien **Aggregationen** vorgenommen und in anderen nicht
+        
+        ➜ Für bessere Vergleichbarkeit und Auswertung der Daten: **Standardisierung**
 
-    # Ausgabe des Datensatzes zur Überprüfung
-    df_bereinigt_typ.info()
-    df_bereinigt_typ.head()
-    '''
-    st.code(code_3, language="python")
+        ➜ Durch Standardisierung werden alle Werte auf die **ASHRAE‑Skala** (z.B. 1–6) abgebildet
+    """
+    )
+    
+    st.markdown("<br>", unsafe_allow_html=True)
 
-############ EXECUTION CODE #############################################
-    df_bereinigt_typ = df.copy()
+    st.subheader("Standardisierte thermische Komfortparameter (TSV, TP, TC)")
 
-    # Spalte "timestamp" von str in datetime umwandeln
-    df_bereinigt_typ["timestamp"] = pd.to_datetime(df_bereinigt_typ["timestamp"], format='%Y-%m-%dT%H:%M:%SZ', errors="coerce") 
+    image = Image.open("thermal_parameters_code_numbers.png")
 
-    # Spalte "subject_id" von str in int umwandeln
-    df_bereinigt_typ["subject_id"] = pd.to_numeric(df_bereinigt_typ["subject_id"], errors="coerce").astype('Int64') 
+    # Bild anzeigen mit definierter Breite
+    st.image(image, caption="Thermische Komfortparameter (TSV, TP, TC) – Standardisierte Codes", width=700)
 
-    # Spalte "blind_curtain" von float in int umwandeln
-    df_bereinigt_typ["blind_curtain"] = df_bereinigt_typ["blind_curtain"].astype('Int64')
-
-    # Spalte "fan" von float in int umwandeln
-    df_bereinigt_typ["fan"] = df_bereinigt_typ["fan"].astype('Int64')
-
-    # Spalte "window" von float in int umwandeln
-    df_bereinigt_typ["window"] = df_bereinigt_typ["window"].astype('Int64')
-
-    # Spalte "door" von float in int umwandeln
-    df_bereinigt_typ["door"] = df_bereinigt_typ["door"].astype('Int64')
-
-    # Spalte "heater" von float in int umwandeln
-    df_bereinigt_typ["heater"] = df_bereinigt_typ["heater"].astype('Int64')
-
-    # Ausgabe des Datensatzes zur Überprüfung
-
-    buffer = io.StringIO()
-    df_bereinigt.info(buf=buffer)
-    info_str_1 = buffer.getvalue()
-
-    st.subheader("🔍 Untersuchung des Datensatzes")
-    st.code(info_str_1, language="text")
-
-with tab5:
-    st.subheader("4. Umbenennung von Spalten")
-    code_4 = '''
-    # Kopie des Datensatzes erstellen:
-    df_bereinigt = df_bereinigt_typ.copy()
-
-    # Für besseres Verständnis Umbenennen von bestimmten Spalten
-    df_bereinigt = df_bereinigt.rename(columns={
-    "lat": "latitude", "lon": "longitude", "has_ec": "has_environmental_controls",
-    "met_source": "source_meteorological_data", "ht": "height", "wt": "weight",
-    "ta": "air_temperature", "ta_h": "air_temperature_1.1",
-    "ta_m": "air_temperature_0.6", "ta_l": "air_temperature_0.1",
-    "top": "operative_temperature", "tr": "radiant_temperature",
-    "tg": "globe_temperature", "tg_h": "globe_temperature_1.1",
-    "tg_m": "globe_temperature_0.6", "tg_l": "globe_temperature_0.1",
-    "rh": "relative_humidity", "vel": "air_speed",
-    "vel_h": "air_speed_1.1", "vel_m": "air_speed_0.6",
-    "vel_l": "air_speed_0.1", "vel_r": "relative_air_speed",
-    "met": "metabolic_rate", "clo": "clothing_ensemble_insulation",
-    "clo_d": "dynamic_clothing", "pmv": "predicted_mean_vote",
-    "pmv_ce": "calculated_predicted_mean_vote", "ppd": "predicted_percentage_dissatisfied",
-    "ppd_ce": "calculated_predicted_percentage_dissatisfied",
-    "set": "standard_effective_temperature", "t_out": "outdoor_air_temperature",
-    "rh_out": "outdoor_relative_humidity", "t_out_isd": "average_daily_outdoor_temperature",
-    "rh_out_isd": "average_daily_outdoor_humidity",
-    "t_mot_isd": "7_day_mean_outdoor_temperature"
-    })
-    df_bereinigt
-    '''
-    st.code(code_4, language="python")
-
-
-
-    # Dimensionen nach der Reinigung 
-    st.write("### 📏 Dimensionen nach der Reinigung")
-    st.write(f"**Zeilen:** {df_bereinigt.shape[0]}")
-    st.write(f"**Spalten:** {df_bereinigt.shape[1]}")
-
-    st.subheader("🧹 Datensatz nach der Reinigung")
-    st.dataframe(df_bereinigt)
-
-
-    st.markdown("### Spaltennamen:")
-    st.markdown(" | ".join([f"`{c}`" for c in df_bereinigt.columns]))
-
-    st.subheader("Diagnose: Gemischte Datentypen in Spalten")
-
-    def diagnose_spalten(df_bereinigt):
-        ergebnis = []
-
-        for col in df_bereinigt.columns:
-            typ_liste = df_bereinigt[col].map(type).unique()
-            ergebnis.append({
-                "Spalte": col,
-                "Datentypen in der Spalte": [t.__name__ for t in typ_liste],
-                "Anzahl verschiedener Typen": len(typ_liste),
-                "Anzahl fehlender Werte": df_bereinigt[col].isna().sum(),
-                "Pandas-Datentyp": str(df_bereinigt[col].dtype)
-            })
-
-        return pd.DataFrame(ergebnis)
-
-    diagnose_df = diagnose_spalten(df_bereinigt)
-    st.dataframe(diagnose_df)
-
-
-
-with tab6:
-
-
-    st.text("Die ASHRAE Global Thermal Comfort Database II sammelt Daten aus vielen verschiedenen Studien, Ländern, Klimazonen und Gebäudetypen. " \
-    "Dadurch entstehen unterschiedliche Werte, Skalen und Formate für dieselben Komfortparameter. " \
-    "Um diese Daten vergleichbar und auswertbar zu machen, ist eine Standardisierung zwingend notwendig.")
-
-
-    # ---------------------------------------------------------
-    # 📌 Daten laden
-    # ---------------------------------------------------------
-    df = pd.read_csv("db_bereinigt_fertig.csv")
-
-    # ---------------------------------------------------------
-    # 🔧 Standardisierung / Rundung von Thermal Comfort
-    # ---------------------------------------------------------
-    def map_tc(v):
-        if pd.isna(v): 
-            return None
-        if v < 1.5: return 1
-        elif v < 2.5: return 2
-        elif v < 3.5: return 3
-        elif v < 4.5: return 4
-        elif v < 5.5: return 5
-        else: return 6
-
-    df["thermal_comfort_std"] = df["thermal_comfort"].apply(map_tc)
-
-    # ---------------------------------------------------------
-    # 📊 Plot-Funktion
-    # ---------------------------------------------------------
-    def plot_hist(series, title):
-        fig, ax = plt.subplots(figsize=(6,4))
-        ax.hist(series.dropna(), bins=20, color="#4C72B0", edgecolor="white")
-        ax.set_title(title)
-        ax.set_xlabel("Wert")
-        ax.set_ylabel("Häufigkeit")
-        st.pyplot(fig)
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
     # 📍 Layout: Zwei Spalten
     # ---------------------------------------------------------
-    col1, col2 = st.columns(2)
+    st.subheader("🔢 Runden der thermischen Komfortparameter")
+    
+    st.info(
+            """
+            - Thermal Comfort
+        """
+        )
+    
+    col1, spacer, col2 = st.columns([0.5, 0.1, 0.5])
 
     # ---------------------------------------------------------
     # 🟦 Spalte 1: Originalwerte
     # ---------------------------------------------------------
     with col1:
-        st.subheader("Originalwerte")
-        st.write("""
-        Diese Werte stammen direkt aus der ASHRAE-Datenbank. 
-        Sie können Dezimalwerte enthalten (z. B. 2.7, 3.4, 4.8), 
-        was die Analyse erschwert, da viele Studien unterschiedliche Skalen verwenden.
-        """)
-        plot_hist(df["thermal_comfort"], "Originale Thermal Comfort Werte")
+        
+        # Grafik für thermal_comfort
+        fig, ax = plt.subplots(figsize=(6,4))
+        ax.hist(df["thermal_comfort"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
+        ax.set_title("Originale Thermal Comfort Werte")
+        ax.set_xlabel("Wert")
+        ax.set_ylabel("Häufigkeit")
+        st.pyplot(fig)
+
+        st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
     # 🟩 Spalte 2: Standardisierte / gerundete Werte
     # ---------------------------------------------------------
     with col2:
-        st.subheader("Standardisierte Werte")
-        st.write("""
-        Durch die Standardisierung werden alle Werte auf die ASHRAE‑Skala (1–6) abgebildet.
-        Dies ermöglicht eine klare, vergleichbare Analyse über Länder, Gebäude und Klimazonen hinweg.
-        """)
-        plot_hist(df["thermal_comfort_std"], "Standardisierte Thermal Comfort Werte (1–6)")
+        # Grafik für thermal_comfort
+        fig, ax = plt.subplots(figsize=(6,4))
+        ax.hist(df_bereinigt["thermal_comfort"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
+        ax.set_title("Standardisierte Thermal Comfort Werte")
+        ax.set_xlabel("Wert")
+        ax.set_ylabel("Häufigkeit")
+        st.pyplot(fig)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    st.info(
+        """
+        - Thermal Sensation
+    """
+    )
+
+    col3, spacer, col4 = st.columns([0.5, 0.1, 0.5])
+
+    with col3:
+        # Grafik für thermal_sensation
+        fig, ax = plt.subplots(figsize=(6,4))
+        ax.hist(df["thermal_sensation"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
+        ax.set_title("Originale Thermal Sensation Werte")
+        ax.set_xlabel("Wert")
+        ax.set_ylabel("Häufigkeit")
+        st.pyplot(fig)
+
+    
+
+    with col4:
+        # Grafik für thermal_sensation
+        fig, ax = plt.subplots(figsize=(6,4))
+        ax.hist(df_bereinigt["thermal_sensation"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
+        ax.set_title("Standardisierte Thermal Sensation Werte")
+        ax.set_xlabel("Wert")
+        ax.set_ylabel("Häufigkeit")
+        st.pyplot(fig)
 
 
-    st.subheader("Standardisierte thermische Komfortparameter (TSV, TP, TC)")
-
-    st.text(
-    "Die ASHRAE-Datenbank enthält Komfortangaben aus vielen Ländern und Studien. Dadurch entstehen unterschiedliche Werte und Skalen. Die folgende Übersicht zeigt, wie Thermal Sensation (TSV), Thermal Preference (TP) und Thermal Comfort (TC) auf einheitliche Codes standardisiert werden, um eine klare und vergleichbare Analyse zu ermöglichen.")
-    # Bild laden
-    image = Image.open("thermal_parameters_code_numbers.png")
-
-    # Bild anzeigen mit definierter Breite
-    st.image(image, caption="Thermische Komfortparameter (TSV, TP, TC) – Standardisierte Codes", width=900)
+    
