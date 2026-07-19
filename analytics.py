@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from scipy.stats import chi2_contingency
 import os
+import pydeck as pdk
+from sklearn.preprocessing import MinMaxScaler
 
 st.set_page_config(page_title="Betrachtung der Verteilungen", layout="wide", initial_sidebar_state="expanded")
 
@@ -96,8 +98,10 @@ st.title("📊 Betrachtung der Verteilungen")
 
 # Klima / Building
 
-tab1,tab2 = st.tabs(["Globale Datenverteilung","Übersicht Datenverteilung wichtige Variablen"], on_change="rerun")
+tab1, tab2, tab3 = st.tabs(["Globale Datenverteilung","Übersicht Datenverteilung mögliche Einflussfaktoren", "Übersicht Datenverteilung thermische Bewertung"], on_change="rerun")
 
+#########################################################################################################
+#########################################################################################################
 
 with tab1:
     col1, spacer, col2 = st.columns([2, 0.4, 1])
@@ -121,7 +125,7 @@ with tab1:
         selected_variable = st.selectbox(
             "Variable auswählen",
             list(mapping.keys()),
-            key="verteilung_variable"
+            key="selectbox_1"
         )
 
         # ---------------------------------------------------------
@@ -184,6 +188,73 @@ with tab1:
             hide_index=True
         )
 
+
+    # Karte für Darstellung
+
+    # ---------------------------------------------------------
+    # 🌍 4. Koordinaten hinzufügen
+    # ---------------------------------------------------------
+    # Beispiel für Länder:
+    country_coords = {
+        "Deutschland": [51.1657, 10.4515],
+        "Frankreich": [46.6034, 1.8883],
+        "Spanien": [40.4637, -3.7492],
+        "Italien": [41.8719, 12.5674],
+    }
+
+    if selected_variable == "Land":
+        coords = pd.DataFrame(
+            [
+                {
+                    "country": country,
+                    "latitude": value[0],
+                    "longitude": value[1]
+                }
+                for country, value in country_coords.items()
+            ]
+        )
+
+        map_df = counts.merge(
+            coords,
+            on="country",
+            how="left"
+        )
+
+        # ---------------------------------------------------------
+        # 🗺️ 5. Karte erstellen
+        # ---------------------------------------------------------
+        st.subheader(f"Karte: Anzahl Einträge je {selected_variable}")
+
+        map_chart = (
+            alt.Chart(map_df)
+            .mark_circle(
+                opacity=0.65,
+                color="steelblue"
+            )
+            .encode(
+                longitude="longitude:Q",
+                latitude="latitude:Q",
+                size=alt.Size(
+                    "Anzahl:Q",
+                    scale=alt.Scale(range=[50, 2000]),
+                    title="Anzahl Einträge"
+                ),
+                tooltip=[
+                    "country",
+                    "Anzahl",
+                    "Prozent"
+                ]
+            )
+            .properties(
+                width=600,
+                height=500
+            )
+        )
+
+        st.altair_chart(
+            map_chart,
+            use_container_width=True
+        )
 
 #########################################################################################################
 #########################################################################################################
@@ -262,4 +333,76 @@ with tab2:
         fig_gender = plot_column(df["gender"], "gender")
         st.pyplot(fig_gender)
         plt.close(fig_gender)
+
+with tab3:
+    st.subheader("📊 Häufigkeitsanalyse: Thermische Bewertung")
+
+    # ---------------------------------------------------------
+    # 🔧 1a. Thermische Parameter vorab runden / bereinigen
+    # ---------------------------------------------------------
+    # Falls deine Komfortvariablen numerisch sind, werden sie hier gerundet.
+    # Falls sie kategorisch sind (z.B. -3 bis +3), passiert nichts.
+    # komfort_variablen = ["thermal_sensation", "thermal_comfort", "thermal_preference"]
+
+    # for var in komfort_variablen:
+    #     if var in df.columns:
+    #         # Nur numerische Werte runden
+    #         if pd.api.types.is_numeric_dtype(df[var]):
+    #             df[var] = df[var].round(2)
+
+
+
+
+    col1, col2 = st.columns([2,1])
+    col3, col4 = st.columns([2,1])
+
+    with col1:
+        # ---------------------------------------------------------
+        # 🔍 2. Auswahl der Komfort-Variable
+        # ---------------------------------------------------------
+        variablen = {
+            "Thermischer Komfort": "thermal_comfort",
+            "Thermisches Empfinden": "thermal_sensation",
+            "Thermische Präferenz": "thermal_preference",
+            "Thermische Akzeptanz": "thermal_acceptability"
+        }
+
+        auswahl = st.selectbox(
+            "Wähle eine thermische Bewertungsvariable",
+            list(variablen.keys())
+        )
+
+        spalte = variablen[auswahl]
+
+        # ---------------------------------------------------------
+        # 🧹 3. Daten vorbereiten
+        # ---------------------------------------------------------
+        # Nur gültige Werte behalten
+        df_plot = df.dropna(subset=[spalte])
+
+        # Häufigkeiten berechnen
+        freq = df_plot[spalte].value_counts().reset_index()
+        freq.columns = ["Wert", "Anzahl"]
+
+
+    # ---------------------------------------------------------
+    # 📊 4. Balkendiagramm erstellen (Altair)
+    # ---------------------------------------------------------
+    with col3:
+        chart = (
+            alt.Chart(freq)
+            .mark_bar(color="#2E86C1")
+            .encode(
+                x=alt.X("Wert:N", title=auswahl, axis=alt.Axis(labelAngle=0) ),      
+                y=alt.Y("Anzahl:Q", title="Häufigkeit"),
+                tooltip=["Wert", "Anzahl"]        
+            )
+            .properties(
+                width=600,
+                height=400,
+                title=f"Häufigkeitsverteilung: {auswahl}"
+            )
+        )
+
+        st.altair_chart(chart, use_container_width=True)
 

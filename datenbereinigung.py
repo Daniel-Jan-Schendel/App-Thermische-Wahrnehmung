@@ -29,46 +29,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ###############################################################################################################################################
 ###############################################################################################################################################
 
-with tab1:
-    
-    # --- Datenquelle ---
-    st.subheader("📘 Datenquelle: ASHRAE Global Thermal Comfort Database v2.1")
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    col1, spacer, col2 =st.columns([2, 0.2, 2])
-
-    with col1:
-        st.write(
-            "Umfassende Datenbank zur **Untersuchung des thermischen Komforts in Gebäuden weltweit**"
-        )
-
-        st.markdown(
-            """
-            - Zusammenstellung von Feldstudien aus dem Zeitraum **1995–2016**
-            - Besteht aus zwei verschiedenen Datenbanken db 1.0 und db 2.0
-            - Update der Datenbank mit neuen Einträgen -> db 2.1
-            - Ein finaler, zusammengeführter Datensatz mit insgesamt **109.033** Einträgen
-        """
-        )
-   
-    with col2:
-        st.markdown(
-        """
-        **🔗 Dataset Source:**
-
-        [ASHRAE Global Thermal Comfort Database II](https://datadryad.org/dataset/doi:10.6078/D1F671)
-
-        - Datensatz findet sich in verschiedenen Versionen z.B. bei kaggle 
-        - Für dieses Projekt wurde der **originale Datensatz von ASHRAE** genutzt
-        """
-        )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-##################################################################################################################################
-
-    
+with tab1:   
     # - Datensatz Aufbau -
     st.subheader("ℹ️ Datensatz")
 
@@ -145,6 +106,8 @@ with tab2:
     st.subheader("🧹 Prozess der Datenbereinigung")
 
     st.markdown("<br>", unsafe_allow_html=True)
+
+    
     
     col1, spacer, col2 = st.columns([1.5,0.2, 1])
 
@@ -470,7 +433,7 @@ with tab4:
     
     st.info(
             """
-            - Thermal Comfort
+            - Thermischer Komfort
         """
         )
     
@@ -507,7 +470,7 @@ with tab4:
 
     st.info(
         """
-        - Thermal Sensation
+        - Thermisches Empfinden
     """
     )
 
