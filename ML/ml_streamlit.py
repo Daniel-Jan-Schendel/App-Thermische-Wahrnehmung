@@ -118,22 +118,23 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
 
     such_modus = st.selectbox(
         "GridSearch / RandomSearch-Intensität:",
-        ["Schnelle Suche (Live-Demo mit RandomSearch)", "Normale Suche (mit RandomSearch)", "Intensive Suche (mit GridSearch)"],
+        ["Schnelle Suche (Live-Demo)", "Normale Suche (mit RandomSearch)", "Intensive Suche (mit GridSearch)"],
     )    
 
     ######################################################
     ########### Block manuell setzen ##################### # derzeit noch über GUI
     ######################################################
 
-    if such_modus == "Schnelle Suche (Live-Demo mit RandomSearch)":
+    if such_modus == "Schnelle Suche (Live-Demo)":
         # Extrem schlank: Fokus auf die 3 wichtigsten Hebel, minimale Listen
         param = {
-        "classifier__max_depth": [5, 10],
-        "classifier__n_estimators": [50],
-        "classifier__min_samples_leaf": [30],
-        "classifier__min_samples_split": [70],
+        #"classifier__max_depth": [5, 10],
+        "classifier__max_depth": [12],  # 15,200,2,,sqrt => 0.55
+        "classifier__n_estimators": [100],
+        "classifier__min_samples_leaf": [2],
+        #"classifier__min_samples_split": [70],
         "classifier__max_features": ["sqrt"],
-        #"classifier__class_weight": ["balanced"],
+        #"classifier__class_weight": ["balanced"],  # bereits im Estimator definert
             }
 #        #max_depth_options = [3]
 #        #n_estimators_options = [100]
@@ -141,7 +142,7 @@ with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
         #"class_weight": ["balanced"],
 
         cv_folds = 3  # Weniger Folds sparen massiv Zeit bei großen Datensätzen
-        max_kombinationen = 4   # Hier soagar nur zwei möglich
+        max_kombinationen = 2
         use_random_search = True  # Bei so wenigen Kombinationen ist GridSearchCV schneller
 
     elif such_modus == "Normale Suche (mit RandomSearch)":  # kann auch mal 20 min dauern
@@ -474,9 +475,9 @@ if 'model' in st.session_state:
             fig_pp = plt.figure(figsize=(12, 10))
             plot_df = df_filtered.dropna()
 
-            if len(plot_df) > 10000:
-                plot_df = plot_df.sample(10000, random_state=42)
-                st.caption("ℹ️ Hinweis: Der Datensatz ist sehr groß. Es wird eine repräsentative Stichprobe von 10.000 Zeilen visualisiert.")
+            if len(plot_df) > 5000:
+                plot_df = plot_df.sample(5000, random_state=42)
+                st.caption("ℹ️ Hinweis: Der Datensatz ist sehr groß. Es wird eine repräsentative Stichprobe von 5.000 Zeilen visualisiert.")
 
             sns.pairplot(
                plot_df, 

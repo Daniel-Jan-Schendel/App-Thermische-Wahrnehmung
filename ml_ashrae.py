@@ -18,221 +18,98 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import PowerTransformer, FunctionTransformer, StandardScaler, RobustScaler
 
+EXCEL_FILE = "ML/Ergebnisse_ASHRAE_ML.xlsx"
 
-st.title("🌡️ Thermal Comfort Modelling")
+@st.cache_data
+def get_sheet(sheet_name):
+    # Liest genau den gewünschten Reiter aus der Excel-Datei
+    return pd.read_excel(EXCEL_FILE, sheet_name=sheet_name)
+
+st.title(":material/smart_toy: Machine Learning")
 
 # Create two tabs
 # ---------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Auswahl der Parameter", "Logistic Regression", "Decision Tree", "kNN", "Random Forest"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Bearbeitete Themen", "Subjektive Komfortbewertungen", "Decision Tree", "kNN", "Anomaliebetrachtungen"])
+
+
+FONT_SIZE_TEXT = "24px"
+FONT_SIZE_BULLET = "34px"
+BULLET_COLOR = "#ff4b4b"
+TEXT_COLOR = "#31333F"
+
+SMALL_FONT_SIZE_TEXT = "16px"
+SMALL_FONT_SIZE_BULLET = "24px"
+SMALL_BULLET_COLOR = "#7f8c8d"
+INDENT_WIDTH = "40px"
+
+def slide_point(text):
+    return f"""
+    <div style='font-size: {FONT_SIZE_TEXT}; color: {TEXT_COLOR}; line-height: 1.6; margin-bottom: 12px; display: flex; align-items: center;'>
+        <span style='font-size: {FONT_SIZE_BULLET}; color: {BULLET_COLOR}; margin-right: 15px;'>•</span> 
+        <div>{text}</div>
+    </div>
+    """
+
+def slide_smallpoint(text):
+    return f"""
+    <div style='font-size: {SMALL_FONT_SIZE_TEXT}; color: {TEXT_COLOR}; line-height: 1.6; margin-bottom: 8px; margin-left: {INDENT_WIDTH}; display: flex; align-items: center;'>
+        <span style='font-size: {SMALL_FONT_SIZE_BULLET}; color: {SMALL_BULLET_COLOR}; margin-right: 12px;'>–</span><div>{text}</div>
+    </div>
+    """
 
 with tab1: 
+    bullet_points, bullet_images = st.columns([3,1])
+    with bullet_points:
+        st.header('Bearbeitete Themengebiete:')
 
-    col1_1, col1_2 = st.columns([1, 2])
+        FONT_SIZE_TEXT = "24px"
+        FONT_SIZE_BULLET = "34px"
+        BULLET_COLOR = "#ff4b4b"  # Streamlit-Rot
+        TEXT_COLOR = "#31333F"  # Schönes Dunkelgrau
 
-    with col1_1:
+        st.write("\n")
 
-        df = pd.read_csv("db_bereinigt.csv")  
-        df_ml = df[['air_temperature','radiant_temperature','air_speed', 'metabolic_rate', 'clothing_ensemble_insulation','thermal_comfort']]
+        st.write("\n")
+        st.html(slide_point("Untersuchungen zur Vorhersage der subjektive Komfortbewertungen (Klassifizierung)"))
 
-        df_ml_clean = df_ml.dropna()
+        st.write("\n")
+        st.html(slide_point("Untersuchungen zur Vorhersage der Kühlungsart (Cooling Type) (Klassifizierung)"))
 
-        code_1='''
-        df = pd.read_csv("db_bereinigt.csv")  
+        st.write("\n")
+        st.html(slide_point("Untersuchungen zur Vorhersage der der Bekleidungsisolationswertes (clothing_ensemble_insulation) (Regression)"))
 
-        df_ml = df[['air_temperature',
-        'radiant_temperature',
-        'air_speed', 
-        'metabolic_rate', 
-        'clothing_ensemble_insulation',
-        'thermal_comfort']]
-
-        df_ml_clean = df_ml.dropna()
-        '''
-        st.code(code_1, language="python")
-
-    with col1_2: 
-        st.dataframe(df_ml_clean.head())
-        st.write(f"Zeilen: {df_ml_clean.shape[0]} | Spalten: {df_ml_clean.shape[1]}")
-
-        y = df_ml_clean['thermal_comfort']
-        X = df_ml_clean.drop(columns=['thermal_comfort'])
-
-        # Display value counts in Streamlit
-        # st.write("Target value counts:")
-        # st.write(y.value_counts())
-
-        # Plot histogram (numeric) or bar chart (categorical)
-        fig, ax = plt.subplots()
-
-        if pd.api.types.is_numeric_dtype(y):
-            ax.hist(y, bins=20, color='skyblue', edgecolor='black')
-            ax.set_xlabel('Thermal Comfort')
-            ax.set_ylabel('Frequency')
-        else:
-            counts = y.value_counts()
-            ax.bar(counts.index.astype(str), counts.values, color='skyblue', edgecolor='black')
-            ax.set_xlabel('Thermal Comfort')
-            ax.set_ylabel('Count')
-
-        ax.set_title('Thermal Comfort Distribution')
-
-        # Show plot in Streamlit
-        st.pyplot(fig)
-
+        st.write("\n")
+        st.html(slide_point("Anomaliebetrachtungen"))
+    
+    with bullet_images:
+        st.write("BILDER")
 
 with tab2:
 
-    st.subheader("Ziel")
-    st.subheader("Code")
-    st.write("Code für Logistic Regression Model")
+    st.subheader("Subjektive Komfortbewertungen")
 
-    code_2='''
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y) # stratify für unbalancing, jedoch keine großen Unterschiede
-            
-        schiefe_features = ['air_speed', 'metabolic_rate', 'clothing_ensemble_insulation']
-        normale_features = ['air_temperature', 'radiant_temperature']
+    st.html(slide_point("Idee: Vorhersage der subjektiven Komfortbewertungen (...) mit Hilfe von Featuren wie, ..."))
 
-        # StandardScaler für schiefe Features
-        schiefe_transformer = Pipeline(steps=[('power_transform', PowerTransformer(method='yeo-johnson'))])
 
-        # Alternativen zum StandardScaler, RobustScaler (bei Ausreißern), MinMaxScaler (gut für neuronale Netze), MaxAbsScaler (für dünnbesetzte Daten)
-        # RobustScaler oder StandardScaler hier
-        preprocessor = ColumnTransformer(
-            transformers=[('schief', schiefe_transformer, schiefe_features),('normal', StandardScaler(), normale_features)  # Normale Spalten werden nur skaliert - hier mit StandardScaler])
+    st.subheader("Aufgetrendende Probleme")
 
-        pipeline = Pipeline(steps=[('preprocessor', preprocessor),('classifier', LogisticRegression(max_iter=100))])
-    
+    st.html(slide_point("Label Noise"))
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Die gleichen Bedingungen führen zu subjektiv unterschiedlichen Ergebnisse.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es bilden sich keine klassischen Cluster oder Möglichkeiten für einen Classifier für Unterscheidungen.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Klassifizierungen erzielen eine Genauigkeit die kaum Mehrwert bietet.")
 
-        # 4. Pipeline trainieren (skaliert X_train intern und trainiert das Modell)
-        pipeline.fit(X_train, y_train)
+    st.write("PAIRPLOT")
 
-        # 5. Vorhersagen treffen (skaliert X_test intern mit den Werten aus dem Training)
-        y_pred = pipeline.predict(X_test)
-        '''
-    st.code(code_2, language="python")
+    st.subheader("Versuchte Gegenmaßnahmen")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Kleinere Datensätze mit Filterung für homogenere Datensätze.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Reduzierung der Klassen des Targets.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einsatz von TomekLink Filtern und SMOTE")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Aufbau eines Dashboards zum schnellen Untersuchen möglicher Modelle.")
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y) # stratify für unbalancing, jedoch keine großen Unterschiede
+    st.html(slide_point("Auf Grund der Daten lassen sich keine verlässlichen Vorhersagen bezüglich der subjektiven Komfortbewertungen treffen."))
 
-    col2_1, col2_2 = st.columns([1,1])
-
-    with col2_1:
-
-        schiefe_features = ['air_speed', 'metabolic_rate', 'clothing_ensemble_insulation']
-        normale_features = ['air_temperature', 'radiant_temperature']
-
-        # StandardScaler für schiefe Features
-        schiefe_transformer = Pipeline(steps=[('power_transform', PowerTransformer(method='yeo-johnson')) ])
-
-        # Alternativ mit Robust, Scaler statt StandardScaler
-        #schiefe_pipeline = Pipeline(steps=[
-        #    # Wichtig: standardize=False schaltet das automatische 'StandardScaler'-Verhalten aus
-        #    ('power', PowerTransformer(method='yeo-johnson', standardize=False)), 
-        #    # Jetzt skaliert der RobustScaler die transformierten Daten ausreißersicher
-        #    ('robust_scale', RobustScaler()) 
-        #])
-
-        # Alternativen zum StandardScaler, RobustScaler (bei Ausreißern), MinMaxScaler (gut für neuronale Netze), MaxAbsScaler (für dünnbesetzte Daten)
-        # RobustScaler oder StandardScaler hier
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('schief', schiefe_transformer, schiefe_features),
-                ('normal', StandardScaler(), normale_features)  # Normale Spalten werden nur skaliert - hier mit StandardScaler
-                #('normal', RobustScaler(), normale_features) # Alternative zu StandardScaler der RobustScaler - Nachteile bei logReg, man verliert Infos zu Ausreißern auch wenn er dafür besser ist, hohe Anfälligkeit bei wenig Daten
-            ]
-        )
-
-        pipeline = Pipeline(steps=[('preprocessor', preprocessor),('classifier', LogisticRegression(max_iter=100))])
-        ##################################################################################################
-
-        ###########################################################################
-        # allgemeine Pipeline ohne log
-        #pipeline = Pipeline([
-        #    ('scaler', StandardScaler()),
-        #    ('classifier', LogisticRegression(max_iter=100))
-        #])
-        ###########################################################################
-
-        # 4. Pipeline trainieren (skaliert X_train intern und trainiert das Modell)
-        pipeline.fit(X_train, y_train)
-
-        # 5. Vorhersagen treffen (skaliert X_test intern mit den Werten aus dem Training)
-        y_pred = pipeline.predict(X_test)
-
-
-        # 6. Bewertung
-        st.subheader("Bewertung: Logistische Regression")
-
-        accuracy = accuracy_score(y_test, y_pred)
-        st.write(f"**Genauigkeit mit Pipeline:** {accuracy:.2f}")
-
-        st.markdown("**Detaillierter Klassifikationsbericht:**")
-        report = classification_report(y_test, y_pred, output_dict=False)
-        st.text(report)
-
-
-        report_dict = classification_report(y_test, y_pred, output_dict=True)
-        report_df = pd.DataFrame(report_dict).transpose()
-
-        st.dataframe(report_df.style.format({
-            'precision': "{:.2f}",
-            'recall': "{:.2f}",
-            'f1-score': "{:.2f}",
-            'support': "{:.0f}"
-        }))
-
-        
-
-    with col2_2:
-        # confusion matrix
-        st.subheader("Confusion Matrix")
-
-        fig, ax = plt.subplots()
-        ConfusionMatrixDisplay.from_predictions(y_test, y_pred, cmap="Blues", ax=ax)
-        ax.set_title("Logistische Regression")
-        st.pyplot(fig)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    df_thermal_clf = get_sheet("thermal_clf")
+    st.table(df_thermal_clf)
 
 with tab3:
     st.write("Decision Tree")
@@ -244,5 +121,5 @@ with tab4:
 
 
 with tab5:
-    st.write("Random Forest")
+    st.write("Anomaliebetrachtungen")
 
