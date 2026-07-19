@@ -224,7 +224,7 @@ with tab_4:
     # ------------------------------------------------------------------------------
     # ABSCHNITT 5: RELATIONAL MODEL & COMPONENT SCHEME
     # ------------------------------------------------================--------------
-    st.subheader("5. Relationales Sternschema & Komponenten-Integrität")
+    st.subheader("5. Relationales Schema & Komponenten-Integrität")
     c9, c10 = st.columns(2)
 
     with c9:
