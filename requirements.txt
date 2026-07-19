@@ -18,3 +18,4 @@ imblearn
 multiprocess
 joblib
 missingno
+altair

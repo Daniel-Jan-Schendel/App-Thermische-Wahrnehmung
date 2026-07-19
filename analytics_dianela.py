@@ -72,9 +72,9 @@ def plot_comfort_variable(series, labels, colors, title):
         patch = mpatches.Patch(color=colors[level], label=labels[level])
         legend_patches.append(patch)
     
-    ax.set_title(title, fontweight='bold', fontsize=11, pad=10) 
-    ax.set_xlabel("Level Verteilung", fontweight='bold', fontsize=9) 
-    ax.set_ylabel("Anzahl (Stimmen)", fontweight='bold', fontsize=9) 
+    ax.set_title(title, fontsize=11, pad=10) 
+    ax.set_xlabel("Level Verteilung", fontsize=9) 
+    ax.set_ylabel("Anzahl (Stimmen)", fontsize=9) 
     
     plt.xticks(rotation=0, ha="center")
     
@@ -199,13 +199,13 @@ with tab1:
             with col_r1_1:
                 if has_c1:
                     plot_comfort_variable(df_final_t1["thermal_comfort_cat"], tc_labels, tc_colors, f"Thermal Comfort ({gebaeude} - {belueftung_title})")
-                    st.markdown("**Analyse:** Zeigt die Verteilung des thermischen Komfortindex spezifisch für diese Raumkonfiguration.")
+                    #st.markdown("**Analyse:** Zeigt die Verteilung des thermischen Komfortindex spezifisch für diese Raumkonfiguration.")
                 else:
                     st.container()
             with col_r1_2:
                 if has_c2:
                     plot_comfort_variable(df_final_t1["thermal_sensation_cat"], tsv_labels, tsv_colors, f"Thermal Sensation ({gebaeude} - {belueftung_title})")
-                    st.markdown("**Analyse:** Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum.")
+                    #st.markdown("**Analyse:** Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum.")
             
             # Evaluierung der Zeilenmenge für die zweite Reihe
             has_c3 = not pd.to_numeric(df_final_t1["thermal_preference_cat"], errors="coerce").dropna().empty
@@ -216,13 +216,13 @@ with tab1:
             with col_r2_1:
                 if has_c3:
                     plot_comfort_variable(df_final_t1["thermal_preference_cat"], tp_labels, tp_colors, f"Thermal Preference ({gebaeude} - {belueftung_title})")
-                    st.markdown("**Analyse:** Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wider.")
+                    #st.markdown("**Analyse:** Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wider.")
                 else:
                     st.container()
             with col_r2_2:
                 if has_c4:
                     plot_comfort_variable(df_final_t1["thermal_acceptability_cat"], ta_labels, ta_colors, f"Thermal Acceptability ({gebaeude} - {belueftung_title})")
-                    st.markdown("**Analyse:** Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten.")
+                    #st.markdown("**Analyse:** Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten.")
                 else:
                     st.container()
             
@@ -288,21 +288,21 @@ with tab2:
     if row1_has_data1 and row1_has_data2:
         r1_col1, r1_col2 = st.columns(2)
         with r1_col1:
-            plot_comfort_variable(df_t1_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "1. Thermal Comfort Verteilung")
-            st.markdown("**Analyse-Leitfaden (Comfort):** Natürlich belüftete Gebäude weisen oft breitere Toleranzgrenzen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
+            plot_comfort_variable(df_t1_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "Thermal Comfort Verteilung")
+            st.markdown("Analyse-Leitfaden (Comfort): Natürlich belüftete Gebäude weisen oft breitere Toleranzgrenzen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
         with r1_col2:
-            plot_comfort_variable(df_t1_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "2. Thermal Sensation Verteilung")
-            st.markdown("**Analyse-Leitfaden (Sensation):** Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die sensorischen Stimmen massiv verschiebt.")
+            plot_comfort_variable(df_t1_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "Thermal Sensation Verteilung")
+            st.markdown("Analyse-Leitfaden (Sensation): Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die sensorischen Stimmen massiv verschiebt.")
     elif row1_has_data1:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t1_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "1. Thermal Comfort Verteilung")
-            st.markdown("**Analyse-Leitfaden (Comfort):** Natürlich belüftete Gebäude weisen oft breitere Toleranzgrenzen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
+            plot_comfort_variable(df_t1_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "Thermal Comfort Verteilung")
+            st.markdown("Analyse-Leitfaden (Comfort): Natürlich belüftete Gebäude weisen oft breitere Toleranzgrenzen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
     elif row1_has_data2:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t1_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "2. Thermal Sensation Verteilung")
-            st.markdown("**Analyse-Leitfaden (Sensation):** Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die sensorischen Stimmen massiv verschiebt.")
+            plot_comfort_variable(df_t1_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "Thermal Sensation Verteilung")
+            st.markdown("Analyse-Leitfaden (Sensation): Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die sensorischen Stimmen massiv verschiebt.")
 
     st.markdown("---")
 
@@ -312,20 +312,20 @@ with tab2:
     if row2_has_data3 and row2_has_data4:
         r2_col1, r2_col2 = st.columns(2)
         with r2_col1:
-            plot_comfort_variable(df_t1_filtered["thermal_preference_cat"], tp_labels, tp_colors, "3. Thermal Preference Verteilung")
-            st.markdown("**Analyse-Leitfaden (Preference):** In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
+            plot_comfort_variable(df_t1_filtered["thermal_preference_cat"], tp_labels, tp_colors, "Thermal Preference Verteilung")
+            st.markdown("Analyse-Leitfaden (Preference): In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
         with r2_col2:
-            plot_comfort_variable(df_t1_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "4. Thermal Acceptability Verteilung")
-            st.markdown("**Analyse-Leitfaden (Acceptability):** Die thermische Akzeptanz sinkt in klimatisierten Räumen drastisch, wenn die relative Luftfeuchtigkeit außerhalb des optimalen Bereichs liegt.")
+            plot_comfort_variable(df_t1_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "Thermal Acceptability Verteilung")
+            st.markdown("Analyse-Leitfaden (Acceptability): Die thermische Akzeptanz sinkt in klimatisierten Räumen drastisch, wenn die relative Luftfeuchtigkeit außerhalb des optimalen Bereichs liegt.")
     elif row2_has_data3:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t1_filtered["thermal_preference_cat"], tp_labels, tp_colors, "3. Thermal Preference Verteilung")
-            st.markdown("**Analyse-Leitfaden (Preference):** In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
+            plot_comfort_variable(df_t1_filtered["thermal_preference_cat"], tp_labels, tp_colors, "Thermal Preference Verteilung")
+            st.markdown("Analyse-Leitfaden (Preference): In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
     elif row2_has_data4:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t1_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "4. Thermal Acceptability Verteilung")
+            plot_comfort_variable(df_t1_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "Thermal Acceptability Verteilung")
                 
 # ==============================================================================
 # 👥 TAB 3: DEMOGRAFISCHE KOMFORTANALYSE (STRIKT GENDER & ALTER IN 2x2 GRID)
@@ -354,6 +354,8 @@ with tab3:
         #df['gender'] = df['gender'].fillna('indefizierte / unbekannt')
         #lista_genders = sorted(df['gender'].unique().tolist())
         #gender_choice = st.selectbox("Gender auswählen:", lista_genders, key="gen_t2")
+
+       
         df['gender'] = df['gender'].fillna('unknown')
         
         # Erstellt die exakte Wunsch-Reihenfolge basierend auf den vorhandenen Werten
@@ -426,20 +428,20 @@ with tab3:
     if t2_has_data1 and t2_has_data2:
         t2_r1c1, t2_r1c2 = st.columns(2)
         with t2_r1c1:
-            plot_comfort_variable(df_t2_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "1. Thermal Comfort (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "Thermal Comfort (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Die demografische Verteilung zeigt, wie das Zusammenspiel aus Lüftungssystem und Genderspezifikation das Wohlbefinden prägt. Bestimmte Gruppen zeigen eine höhere Toleranz in adaptiven Umgebungen.*")
         with t2_r1c2:
-            plot_comfort_variable(df_t2_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "2. Thermal Sensation (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "Thermal Sensation (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Altersabhängige Stoffwechselraten verändern die sensorische Wahrnehmung der operativen Raumtemperatur drastisch. Ältere Kohorten reagieren in frei belüfteten Räumen empfindlicher auf Luftbewegungen.*")
     elif t2_has_data1:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t2_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "1. Thermal Comfort (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "Thermal Comfort (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Die demografische Verteilung zeigt, wie das Zusammenspiel aus高度 lüftungssystem und Genderspezifikation das Wohlbefinden prägt. Bestimmte Gruppen zeigen eine höhere Toleranz in adaptiven Umgebungen.*")
     elif t2_has_data2:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t2_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "2. Thermal Sensation (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "Thermal Sensation (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Altersabhängige Stoffwechselraten verändern die sensorische Wahrnehmung der operativen Raumtemperatur drastisch. Ältere Kohorten reagieren in frei belüfteten Räumen empfindlicher auf Luftbewegungen.*")
 
     st.markdown("---")
@@ -451,20 +453,20 @@ with tab3:
     if t2_has_data3 and t2_has_data4:
         t2_r2c1, t2_r2c2 = st.columns(2)
         with t2_r2c1:
-            plot_comfort_variable(df_t2_filtered["thermal_preference_cat"], tp_labels, tp_colors, "3. Thermal Preference (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_preference_cat"], tp_labels, tp_colors, "Thermal Preference (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Die Neigung zur Anforderung kühlerer Luftströme variiert signifikant zwischen den biologischen Geschlechtern, wobei mechanische Kühlsysteme oft zu ungleichmäßigen Präferenz-Clustern führen.*")
         with t2_r2c2:
-            plot_comfort_variable(df_t2_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "4. Thermal Acceptability (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "Thermal Acceptability (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Die Raumklima-Akzeptanz stabilisiert sich bei Gruppen, denen das Gebäude eine hohe adaptive Freiheit gewährt. Unbekannte demografische Variablen korrelieren oft mit standardisierter mechanischer Belüftung.*")
     elif t2_has_data3:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t2_filtered["thermal_preference_cat"], tp_labels, tp_colors, "3. Thermal Preference (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_preference_cat"], tp_labels, tp_colors, "Thermal Preference (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Die Neigung zur Anforderung kühlerer Luftströme variiert signifikant zwischen den biologischen Geschlechtern, wobei mechanische Kühlsysteme oft zu ungleichmäßigen Präferenz-Clustern führen.*")
     elif t2_has_data4:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
-            plot_comfort_variable(df_t2_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "4. Thermal Acceptability (Demografie)")
+            plot_comfort_variable(df_t2_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "Thermal Acceptability (Demografie)")
             st.markdown("**Analyse-Leitfaden:** *Die Raumklima-Akzeptanz stabilisiert sich bei Gruppen, denen das Gebäude eine hohe adaptive Freiheit gewährt. Unbekannte demografische Variablen korrelieren oft mit standardisierter mechanischer Belüftung.*")
 
 

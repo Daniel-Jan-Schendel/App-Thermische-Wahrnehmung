@@ -9,424 +9,31 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from tabulate import tabulate
 from PIL import Image
+import networkx as nx
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestRegressor
+import plotly.express as px
 
 
 
-st.set_page_config(page_title="Globale Datenanalyse", layout="wide", initial_sidebar_state="expanded")
-  
+
+st.set_page_config(page_title="Thermischekomfort Datenanalyse", layout="wide", initial_sidebar_state="expanded")
+
 # ---------------------------------------------------------
 # Daten laden
 # ---------------------------------------------------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("db_bereinigt_fertig.csv")
+    return pd.read_csv("db_bereinigt_final.csv")
 df = load_data()
 
-st.title("Analyse der Komfortparameter")
-
-# ---------------------------------------------------------
-# Tabs definieren
-# ---------------------------------------------------------
-tab0, tab1, tab2, tab3, tab4 = st.tabs([
-    "Komfortvariablen Korrelation",
-    "MTS vs Indoor Temperature",
-    "Einfluss der Kleidung auf die Komforttemperatur",
-    "Adaptives Komfortmodell",
-    "Korrelationsanalyse"])
-
-with tab0:
-
-    st.subheader("Wie hängen die subjektiven Komfortvariablen miteinander zusammen?")
-    st.markdown("""
-        Die subjektiven Komfortvariablen beschreiben, wie Menschen ihre thermische Umgebung wahrnehmen,
-        bewerten und welche Änderungen sie sich wünschen.
-        """, unsafe_allow_html=True)
-
-    # colA, colB, colC, colD = st.columns(4)
-
-    # # ---- ESTILOS ----
-    # st.markdown("""
-    # <style>
-    #     .vcard {
-    #         background-color: #ffffff;
-    #         padding: 14px;
-    #         border-radius: 12px;
-    #         margin-bottom: 14px;
-    #         box-shadow: 0px 2px 6px rgba(0,0,0,0.12);
-    #         transition: transform 0.2s ease, box-shadow 0.2s ease;
-    #     }
-    #     .vcard:hover {
-    #         transform: translateY(-4px);
-    #         box-shadow: 0px 4px 12px rgba(0,0,0,0.18);
-    #     }
-    #     .vtitle {
-    #         font-size: 18px;
-    #         font-weight: bold;
-    #         margin-bottom: 8px;
-    #         text-align: center;
-    #     }
-    #     .vicons {
-    #         text-align: center;
-    #         font-size: 22px;
-    #         margin-bottom: 6px;
-    #     }
-    #     .vbar {
-    #         height: 14px;
-    #         border-radius: 6px;
-    #         margin: 8px auto;
-    #         width: 90%;
-    #         background: linear-gradient(to right, #005bbb, #7f8c8d, #c0392b);
-    #     }
-    #     .vscale-flex {
-    #         display: flex;
-    #         justify-content: space-between;
-    #         font-size: 14px;
-    #         font-weight: bold;
-    #         margin: 6px 0;
-    #         padding: 0 6px;
-    #     }
-    #     .vtext {
-    #         font-size: 14px;
-    #         text-align: left;
-    #         line-height: 1.3;
-    #     }
-    # </style>
-    # """, unsafe_allow_html=True)
-
-    # # ---- TSV ----
-    # with colA:
-    #     st.markdown("""
-    #     <div class="vcard">
-    #         <div class="vtitle">THERMAL SENSATION (TSV)</div>
-    #         <div class="vicons">❄️ ◄──── ☁️ ────► ☀️</div>
-
-    #         <div class="vscale-flex">
-    #             <span>-3</span><span>-2</span><span>-1</span>
-    #             <span>0</span>
-    #             <span>+1</span><span>+2</span><span>+3</span>
-    #         </div>
-
-    #         <div class="vtext">
-    #             <b>-3:</b> Sehr kalt<br>
-    #             <b>-2:</b> Kalt<br>
-    #             <b>-1:</b> Kühl<br>
-    #             <b>0:</b> Neutral<br>
-    #             <b>+1:</b> Warm<br>
-    #             <b>+2:</b> Heiß<br>
-    #             <b>+3:</b> Sehr heiß
-    #         </div>
-    #     </div>
-    #     """, unsafe_allow_html=True)
-
-    # # ---- TP ----
-    # with colB:
-    #     st.markdown("""
-    #     <div class="vcard">
-    #         <div class="vtitle">THERMAL PREFERENCE (TP)</div>
-    #         <div class="vicons">⬅️ Kühler &nbsp;&nbsp; ⏺️ Neutral &nbsp;&nbsp; ➡️ Wärmer</div>
-
-    #         <!-- SOLO ESTA BARRA DE COLORES -->
-    #         <div class="vbar"></div>
-
-    #         <div class="vscale-flex">
-    #             <span>-1</span><span>0</span><span>+1</span>
-    #         </div>
-
-    #         <div class="vtext">
-    #             <b>-1:</b> Kühler bevorzugt<br>
-    #             <b>0:</b> Keine Präferenz / Neutral<br>
-    #             <b>+1:</b> Wärmer bevorzugt
-    #         </div>
-    #     </div>
-    #     """, unsafe_allow_html=True)
-
-    # # ---- TC ----
-    # with colC:
-    #     st.markdown("""
-    #     <div class="vcard">
-    #         <div class="vtitle">THERMAL COMFORT (TC)</div>
-    #         <div class="vicons">😣 ◄──────────────► 😌</div>
-
-    #         <div class="vscale-flex">
-    #             <span>1</span><span>2</span><span>3</span>
-    #             <span>4</span><span>5</span><span>6</span>
-    #         </div>
-
-    #         <div class="vtext">
-    #             <b>1:</b> Ungemütlich<br>
-    #             <b>2:</b> Leicht ungemütlich<br>
-    #             <b>3:</b> Akzeptabel / Neutral<br>
-    #             <b>4:</b> Gemütlich<br>
-    #             <b>5:</b> Sehr gemütlich<br>
-    #             <b>6:</b> Extrem gemütlich
-    #         </div>
-    #     </div>""", unsafe_allow_html=True)
-
-    # # ---- TA ----
-    # with colD:
-    #     st.markdown("""
-    #     <div class="vcard">
-    #         <div class="vtitle">THERMISCHE AKZEPTANZ (TA)</div>
-    #         <div class="vicons">✔️ Akzeptabel &nbsp;&nbsp; ✖️ Nicht akzeptabel</div>
-
-    #         <div class="vtext">
-    #             ● Akzeptabel<br>
-    #             ○ Nicht akzeptabel
-    #         </div>
-    #     </div>
-    #     """, unsafe_allow_html=True)
-
-    st.markdown("""
-        ##### 1. Thermische Empfindung (TS) 
-        **Kalt  ◄────── Neutral ──────►  Heiß**  
-        `-3    -2    -1    0    +1    +2    +3 `
-
-        ##### 2. Thermische Akzeptanz (TA)
-        ○ Nicht akzeptabel  
-        ○ Akzeptabel  
-
-        ##### 3. Thermische Präferenz (TP)  
-        **Kühler ◄──────── Keine Änderung ────────► Wärmer**  
-        `  -1                         0                         +1     `
-
-        ##### 4. Thermischer Komfort (TC, ASHRAE‑Skala 1–6)  
-        **Sehr unkomfortabel ◄──────────────────────► Sehr komfortabel**  
-               `  1             2            3           4           5            6   `
-        """)
-
-   
-    # Zwei Spalten erstellen
-    col1, col2 = st.columns([1.5, 1])   # linke Spalte etwas breiter für die Heatmap
-
-    with col1:
-        # Relevante Spalten
-        cols = [
-            "thermal_sensation",
-            "thermal_acceptability",
-            "thermal_preference",
-            "thermal_comfort"
-        ]
-
-        df_sub = df[cols].copy()
-
-        # -----------------------------
-        # 1. Numerische Umwandlung
-        # -----------------------------
-        df_sub["thermal_sensation"] = pd.to_numeric(df_sub["thermal_sensation"], errors="coerce")
-        df_sub["thermal_comfort"] = pd.to_numeric(df_sub["thermal_comfort"], errors="coerce")
-
-        # -----------------------------
-        # 2. thermal_preference → numerisch
-        # -----------------------------
-        mapping_preference = {
-            "warmer": 1,
-            "no change": 0,
-            "cooler": -1
-        }
-        df_sub["thermal_preference"] = df_sub["thermal_preference"].map(mapping_preference)
-
-        # -----------------------------
-        # 3. thermal_acceptability → numerisch
-        # -----------------------------
-        mapping_acceptability = {
-            "acceptable": 1,
-            "unacceptable": 0,
-            "Unknown": None   # Unknown → NaN
-        }
-        df_sub["thermal_acceptability"] = df_sub["thermal_acceptability"].map(mapping_acceptability)
-
-        # -----------------------------
-        # 4. Zeilen mit fehlenden Werten entfernen
-        # -----------------------------
-        df_sub = df_sub.dropna()
-
-        # -----------------------------
-        # 5. Korrelationsmatrix
-        # -----------------------------
-        corr_matrix = df_sub.corr(method="spearman")
-
-        # -----------------------------
-        # 6. Heatmap anzeigen
-        # -----------------------------
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.heatmap(
-            corr_matrix,
-            annot=True,
-            cmap="coolwarm",
-            vmin=-1,
-            vmax=1,
-            linewidths=0.5,
-            ax=ax
-        )
-        ax.set_title("Korrelationsmatrix der subjektiven Komfortvariablen")
-        st.pyplot(fig)
-        st.caption(
-        "Diese Korrelationsmatrix zeigt, wie stark die subjektiven Komfortparameter – "
-        "thermische Empfindung, Akzeptanz, Präferenz und Komfortbewertung – miteinander "
-        "verbunden sind. Positive Werte (+): Die Variablen bewegen sich tendenziell gemeinsam. " 
-        "Negative Werte (-): Die Variablen verhalten sich gegensätzlich.")
-    
-
-    # ---------------------------------------------------------
-    # Rechte Spalte: Automatische Interpretation
-    # ---------------------------------------------------------
-    with col2:
-
-        # # --- Werte aus deiner Korrelationsmatrix ---
-        # r_ts_tp = corr_matrix.loc["thermal_sensation", "thermal_preference"]
-        # r_ts_tc = corr_matrix.loc["thermal_sensation", "thermal_comfort"]
-        # r_tp_tc = corr_matrix.loc["thermal_preference", "thermal_comfort"]
-
-        # # --- Farblogik basierend auf Heatmap ---
-        # def color_for_r(r):
-        #     if r <= -0.50:
-        #         return "#005BBB"   # starke negative Korrelation (blau)
-        #     elif r <= -0.20:
-        #         return "#4A90E2"   # mittlere negative Korrelation
-        #     elif r < 0.20:
-        #         return "#7F8C8D"   # schwach (grau)
-        #     elif r < 0.50:
-        #         return "#D1A986"   # mittlere positive Korrelation (orange)
-        #     else:
-        #         return "#C0392B"   # starke positive Korrelation (rot)
-
-        # c_ts_tp = color_for_r(r_ts_tp)
-        # c_ts_tc = color_for_r(r_ts_tc)
-        # c_tp_tc = color_for_r(r_tp_tc)
-
-        # # --- PANEL AUTOMÁTICO ---
-        # st.markdown(f"""
-        # <div style="border-left: 6px solid {c_ts_tp}; padding-left: 12px; margin-bottom: 14px;">
-        #     <h4 style="margin:0;">TSV ↔ TP  
-        #     <span style="color:{c_ts_tp}; font-weight:bold;">(r = {r_ts_tp:.2f})</span></h4>
-        #     Kürzerer Zusammenhang:  
-        #     • Wärmer → Wunsch nach Kühlung  
-        #     • Kälter → Wunsch nach Erwärmung  
-        # </div>
-
-        # <div style="border-left: 6px solid {c_ts_tc}; padding-left: 12px; margin-bottom: 14px;">
-        #     <h4 style="margin:0;">TSV ↔ TC  
-        #     <span style="color:{c_ts_tc}; font-weight:bold;">(r = {r_ts_tc:.2f})</span></h4>
-        #     Kurzinterpretation:  
-        #     • Wärme senkt Komfort leicht  
-        #     • Kühle erhöht Komfort minimal  
-        # </div>
-
-        # <div style="border-left: 6px solid {c_tp_tc}; padding-left: 12px; margin-bottom: 14px;">
-        #     <h4 style="margin:0;">TP ↔ TC  
-        #     <span style="color:{c_tp_tc}; font-weight:bold;">(r = {r_tp_tc:.2f})</span></h4>
-        #     Kurzinterpretation:  
-        #     • Keine Änderung → etwas mehr Komfort  
-        #     • Änderungswunsch → leicht reduzierter Komfort  
-        # </div>
-        # """, unsafe_allow_html=True)
-
-        # st.markdown("""
-        # **Gesamtfazit:**  
-        # Subjektive Empfindung beeinflusst die gewünschte Temperaturänderung deutlich,  
-        # während Komfort nur schwach auf Empfindung und Präferenz reagiert.
-        # """)
-
-        # --- Werte aus deiner Korrelationsmatrix ---
-        r_ts_tp = corr_matrix.loc["thermal_sensation", "thermal_preference"]
-        r_ts_tc = corr_matrix.loc["thermal_sensation", "thermal_comfort"]
-        r_tp_tc = corr_matrix.loc["thermal_preference", "thermal_comfort"]
-
-        # --- Farblogik basierend auf Heatmap ---
-        def color_for_r(r):
-            if r <= -0.50:
-                return "#005BBB"   # starke negative Korrelation (blau)
-            elif r <= -0.15:
-                return "#5F9FE9"   # mittlere negative Korrelation
-            elif r <= 0.17:
-                return "#E9CDA0"   # schwach (grau)
-            elif r < 0.50:
-                return "#D1A986"   # light orange (dein Matrix-Farbton)
-            else:
-                return "#C0392B"   # starke positive Korrelation (rot)
-
-        c_ts_tp = color_for_r(r_ts_tp)
-        c_ts_tc = color_for_r(r_ts_tc)
-        c_tp_tc = color_for_r(r_tp_tc)
-
-        # --- PANEL AUTOMÁTISCH MIT KURZEN, KLAREN ERKLÄRUNGEN ---
-        st.markdown(f"""
-        <div style="border-left: 6px solid {c_ts_tp}; padding-left: 12px; margin-bottom: 14px;">
-            <h4 style="margin:0;">TSV ↔ TP  
-            <span style="color:{c_ts_tp}; font-weight:bold;">(r = {r_ts_tp:.2f})</span></h4>
-            • Wärmeres Empfinden führt klar zu Kühlwunsch<br>
-            • Kälteres Empfinden führt klar zu Wärmewunsch<br>
-            • Präferenz folgt direkt der Empfindung
-        </div>
-
-        <div style="border-left: 6px solid {c_ts_tc}; padding-left: 12px; margin-bottom: 14px;">
-            <h4 style="margin:0;">TSV ↔ TC  
-            <span style="color:{c_ts_tc}; font-weight:bold;">(r = {r_ts_tc:.2f})</span></h4>
-            • Wärme senkt Komfort leicht<br>
-            • Kühle erhöht Komfort minimal<br>
-            • Einfluss insgesamt gering
-        </div>
-
-        <div style="border-left: 6px solid {c_tp_tc}; padding-left: 12px; margin-bottom: 14px;">
-            <h4 style="margin:0;">TP ↔ TC  
-            <span style="color:{c_tp_tc}; font-weight:bold;">(r = {r_tp_tc:.2f})</span></h4>
-            • Keine Änderungswünsche → etwas höherer Komfort<br>
-            • Änderungswunsch → leicht reduzierter Komfort<br>
-            • Zusammenhang schwach, aber plausibel
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        **Gesamtfazit:**  
-        Empfindung beeinflusst die gewünschte Temperaturänderung deutlich,  
-        während Komfort nur schwach auf Empfindung und Präferenz reagiert.
-        """)
-
-
-
-
-with tab1:
-    st.subheader("Welche Gruppen benötigen kühlere oder wärmere Bedingungen für Komfort?")
-    st.text("Die Neutraltemperatur zeigt, bei welcher Raumtemperatur Menschen weder Wärme noch Kälte empfinden – sie ist damit der zentrale Vergleichswert für unterschiedliche Komfortpräferenzen.")
-
-    st.markdown(
-    """
-    **Verständnis der Neutraltemperatur (ASCII‑Grafik):**
-
-           zu kalt              neutral              zu warm
-        (MTS < 0)             (MTS = 0)            (MTS > 0)
-              \\                 |                 /
-               \\                |                /
-                \\               |               /
-                 \\______________|______________/
-                               T_neutral
-""")
-
-#    Die Waage zeigt:
-
-#     - Links: Personen empfinden die Temperatur als **zu kalt** (negative MTS‑Werte).
-#     - Rechts: Personen empfinden die Temperatur als **zu warm** (positive MTS‑Werte).
-#     - In der Mitte: **Neutraltemperatur T_neutral**, bei der die mittlere Empfindung MTS = 0 ist.
-
-
-    # ============================================================
-    # LOAD DATA
-    # ============================================================
-
-    @st.cache_data
-    def load_data():
-        df = pd.read_csv("db_bereinigt_fertig.csv")
-        df["operative_temperature"] = pd.to_numeric(df["operative_temperature"], errors="coerce")
-        df["thermal_sensation"] = pd.to_numeric(df["thermal_sensation"], errors="coerce")
-        return df.dropna(subset=["operative_temperature", "thermal_sensation"])
-    df = load_data()
-
+def apply_sidebar_filters(df):
     # ============================================================
     # RESET BUTTON
     # ============================================================
 
     if st.sidebar.button("Reset filters"):
-        st.experimental_set_query_params()
+        st.query_params.clear()
         st.rerun()
 
     # ============================================================
@@ -475,33 +82,36 @@ with tab1:
     season_list = ["All"] + sorted(df["season"].dropna().unique())
     season = st.sidebar.selectbox("Season", season_list)
 
-    # --- CLO depends on SEASON ---
-    if season != "All":
-        clo_list = ["All"] + sorted(df[df["season"] == season]["clothing_ensemble_insulation"].dropna().unique())
-    else:
-        clo_list = ["All"] + sorted(df["clothing_ensemble_insulation"].dropna().unique())
-    clo = st.sidebar.selectbox("Clothing Insulation (clo)", clo_list)
-
-    # --- METABOLIC RATE depends on CLO ---
-    if clo != "All":
-        met_list = ["All"] + sorted(df[df["clothing_ensemble_insulation"] == clo]["metabolic_rate"].dropna().unique())
-    else:
-        met_list = ["All"] + sorted(df["metabolic_rate"].dropna().unique())
-    metabolic_rate = st.sidebar.selectbox("Metabolic Rate", met_list)
-
     # --- GENDER ---
     gender_list = ["All"] + sorted(df["gender"].dropna().unique())
     gender = st.sidebar.selectbox("Gender", gender_list)
 
-    # --- AGE ---
-    age_list = ["All"] + sorted(df["age"].dropna().unique())
-    age = st.sidebar.selectbox("Age", age_list)
+    if season != "All":
+        clo_min = float(df[df["season"] == season]["clothing_ensemble_insulation"].min())
+        clo_max = float(df[df["season"] == season]["clothing_ensemble_insulation"].max())
+    else:
+        clo_min = float(df["clothing_ensemble_insulation"].min())
+        clo_max = float(df["clothing_ensemble_insulation"].max())
+    clo = st.sidebar.slider("Clothing Insulation (clo)", clo_min, clo_max, (clo_min, clo_max), step=0.01)
+
+    # --- METABOLIC RATE SLIDER ---
+    met_min = float(df["metabolic_rate"].min())
+    met_max = float(df["metabolic_rate"].max())
+    metabolic_rate = st.sidebar.slider("Metabolic Rate (met)", min_value=met_min,max_value=met_max,value=(met_min, met_max),step=0.01)
+
+    # --- AGE SLIDER ---
+    age_min = int(df["age"].min())
+    age_max = int(df["age"].max())
+    age = st.sidebar.slider("Age",min_value=age_min,max_value=age_max,value=(age_min, age_max) )
+
 
     # ============================================================
     # APPLY FILTERS SAFELY
     # ============================================================
 
     df_filtered = df.copy()
+
+
 
     if region != "All": df_filtered = df_filtered[df_filtered["region"] == region]
     if country != "All": df_filtered = df_filtered[df_filtered["country"] == country]
@@ -510,10 +120,11 @@ with tab1:
     if building_type != "All": df_filtered = df_filtered[df_filtered["building_type"] == building_type]
     if cooling_type != "All": df_filtered = df_filtered[df_filtered["cooling_type"] == cooling_type]
     if season != "All": df_filtered = df_filtered[df_filtered["season"] == season]
-    if clo != "All": df_filtered = df_filtered[df_filtered["clothing_ensemble_insulation"] == clo]
-    if metabolic_rate != "All": df_filtered = df_filtered[df_filtered["metabolic_rate"] == metabolic_rate]
     if gender != "All": df_filtered = df_filtered[df_filtered["gender"] == gender]
-    if age != "All": df_filtered = df_filtered[df_filtered["age"] == age]
+    df_filtered = df_filtered[(df_filtered["clothing_ensemble_insulation"] >= clo[0]) &(df_filtered["clothing_ensemble_insulation"] <= clo[1])]
+    df_filtered = df_filtered[(df_filtered["metabolic_rate"] >= metabolic_rate[0]) &(df_filtered["metabolic_rate"] <= metabolic_rate[1])]
+    df_filtered = df_filtered[(df_filtered["age"] >= age[0])&(df_filtered["age"] <= age[1])]
+
 
     # ============================================================
     # FILTER TEXT FOR TITLE
@@ -529,18 +140,503 @@ with tab1:
         ("Building Type", building_type),
         ("Cooling Type", cooling_type),
         ("Season", season),
-        ("Clo", clo),
-        ("Metabolic Rate", metabolic_rate),
-        ("Gender", gender),
-        ("Age", age)
+        ("Gender", gender)
     ]:
         if value != "All":
             active_filters.append(f"{name}: {value}")
+    
+    # Mostrar CLO solo si el usuario modificó el slider
+    if clo[0] != clo_min or clo[1] != clo_max:
+        active_filters.append(f"Clo: {clo[0]:.2f}–{clo[1]:.2f}")
 
-    filter_text = " | ".join(active_filters) if active_filters else "No filters (full dataset)"
+    # Mostrar MET solo si el usuario modificó el slider
+    if metabolic_rate[0] != met_min or metabolic_rate[1] != met_max:
+        active_filters.append(f"Met: {metabolic_rate[0]:.2f}–{metabolic_rate[1]:.2f}")
 
-    st.caption(f"Current filters: {filter_text}")
+    # Mostrar AGE solo si el usuario modificó el slider
+    if age[0] != age_min or age[1] != age_max:
+        active_filters.append(f"Age: {age[0]}–{age[1]}")
 
+
+
+    filter_text = " | ".join(active_filters) 
+
+
+    return df_filtered, filter_text
+  
+df_filtered, filter_text = apply_sidebar_filters(df)
+
+ # --- ASHRAE refined CLO dictionary ---
+ashrae_clo_refined = {
+    0.00: "Nackt",
+    0.05: "Nur Unterwäsche",
+    0.15: "Sehr leicht: Shorts + Tank-Top",
+    0.25: "Leichtes Sommer-Outfit",
+    0.35: "Sommerkleidung: Leichte lange Hose + T‑Shirt",
+    0.45: "Standard-Sommer: Shorts/Rock + kurzärmeliges Hemd",
+    0.55: "Leichte Übergangskleidung",
+    0.65: "Büro-Sommerkleidung",
+    0.75: "Standard-Übergang: Jeans + leichter Pullover",
+    0.85: "Warmes Outfit",
+    1.00: "Business-Anzug",
+    1.15: "Winter-Büro",
+    1.30: "Wärmere Winterkleidung",
+    1.50: "Schwere Außenkleidung",
+    2.00: "Extrem-Winterkleidung"
+}
+# --- CLO mean for selected country ---
+clo_mean = df_filtered["clothing_ensemble_insulation"].mean()
+
+# --- Find closest CLO category ---
+closest_clo = min(ashrae_clo_refined.keys(), key=lambda x: abs(x - clo_mean))
+clothing_label = ashrae_clo_refined[closest_clo]
+
+
+st.title("Analyse der Komfortparameter")
+
+# ---------------------------------------------------------
+# Tabs definieren
+# ---------------------------------------------------------
+tab1, tab2, tab3, tab4,tab5 = st.tabs([
+    "Komfortvariablen Korrelation",
+    "Neutraltemperatur: MTS vs Innentemperatur",
+    "Adaptives Komfortmodell",
+    "Korrelationsanalyse", "Beinfluz in Berkleidung" ])
+
+with tab1:
+
+    german_labels = {
+    "thermal_sensation": "Thermische Empfinden",
+    "thermal_acceptability": "Thermische Akzeptanz",
+    "thermal_preference": "Thermische Präferenz",
+    "thermal_comfort": "Thermischer Komfort"
+}
+
+    st.subheader("Wie hängen die subjektiven Komfortvariablen miteinander zusammen?")
+
+    st.markdown("""
+        Die subjektiven Komfortvariablen beschreiben, wie Menschen ihre thermische Umgebung wahrnehmen,
+        bewerten und welche Änderungen sie sich wünschen. Sie helfen dabei zu verstehen, wie verschiedene
+        Aspekte des thermischen Erlebens miteinander zusammenhängen.
+
+        **Interpretation der Korrelationen:**
+
+        - **Positive Werte:** Zwei Variablen verändern sich gemeinsam (z. B. höhere Empfindung → höhere Komfortbewertung).  
+        - **Negative Werte:** Die Variablen zeigen gegensätzliche Tendenzen (z. B. wärmer empfinden → geringere Akzeptanz).  
+
+        So wird sichtbar, welche Faktoren das thermische Empfinden, die Akzeptanz und den Komfort am stärksten beeinflussen.
+        """)
+
+
+    # st.markdown("""
+    #     ##### 1. Thermische Empfindung (TS) 
+    #     **Kalt  ◄────── Neutral ──────►  Heiß**  
+    #     `-3    -2    -1    0    +1    +2    +3 `
+
+    #     ##### 2. Thermische Akzeptanz (TA)
+    #     ○ Nicht akzeptabel  
+    #     ○ Akzeptabel  
+
+    #     ##### 3. Thermische Präferenz (TP)  
+    #     **Kühler ◄──────── Keine Änderung ────────► Wärmer**  
+    #     `  -1                         0                         +1     `
+
+    #     ##### 4. Thermischer Komfort (TC, ASHRAE‑Skala 1–6)  
+    #     **Sehr unkomfortabel ◄──────────────────────► Sehr komfortabel**  
+    #            `  1             2            3           4           5            6   `
+    #     """)
+
+   
+    # Zwei Spalten erstellen
+    col1, col2 = st.columns([1.8, 1])   # linke Spalte etwas breiter für die Heatmap
+
+
+
+    with col1:
+
+
+        # Relevante Spalten
+        cols = [
+            "thermal_sensation",
+            "thermal_acceptability",
+            "thermal_preference",
+            "thermal_comfort"
+        ]
+
+        df_sub = df[cols].copy()
+
+        # -----------------------------
+        # 1. Numerische Umwandlung
+        # -----------------------------
+        df_sub["thermal_sensation"] = pd.to_numeric(df_sub["thermal_sensation"], errors="coerce")
+        df_sub["thermal_comfort"] = pd.to_numeric(df_sub["thermal_comfort"], errors="coerce")
+
+        # -----------------------------
+        # 2. thermal_preference → numerisch
+        # -----------------------------
+        mapping_preference = {
+            "warmer": 1,
+            "no change": 0,
+            "cooler": -1
+        }
+        df_sub["thermal_preference"] = df_sub["thermal_preference"].map(mapping_preference)
+
+        # -----------------------------
+        # 3. thermal_acceptability → numerisch
+        # -----------------------------
+        mapping_acceptability = {
+            "acceptable": 1,
+            "unacceptable": 0,
+            "Unknown": None   # Unknown → NaN
+        }
+        df_sub["thermal_acceptability"] = df_sub["thermal_acceptability"].map(mapping_acceptability)
+
+        # -----------------------------
+        # 4. Zeilen mit fehlenden Werten entfernen
+        # -----------------------------
+        df_sub = df_sub.dropna()
+
+        # -----------------------------
+        # 5. Korrelationsmatrix
+        # -----------------------------
+        corr_matrix = df_sub.corr(method="spearman")
+        corr_matrix = corr_matrix.rename(index=german_labels, columns=german_labels)
+
+
+            # -----------------------------
+            # 6. Heatmap anzeigen
+            # -----------------------------
+        fig, ax = plt.subplots(figsize=(8, 6))
+        sns.heatmap(
+            corr_matrix,
+            annot=True,
+            cmap="coolwarm",
+            vmin=-1,
+            vmax=1,
+            linewidths=0.5,
+            ax=ax
+        )
+        ax.set_title("Korrelationsmatrix der subjektiven Komfortvariablen")
+        st.pyplot(fig)
+        st.caption(
+        "Diese Korrelationsmatrix zeigt, wie stark die subjektiven Komfortparameter – "
+        "thermische Empfinden, Akzeptanz, Präferenz und Komfortbewertung – miteinander "
+        "verbunden sind.")
+
+    with col2:
+
+        # --- Werte aus der deutschen Korrelationsmatrix ---
+        r_ts_tp = corr_matrix.loc["Thermische Empfinden", "Thermische Präferenz"]
+        r_ts_tc = corr_matrix.loc["Thermische Empfinden", "Thermischer Komfort"]
+        r_tp_tc = corr_matrix.loc["Thermische Präferenz", "Thermischer Komfort"]
+        r_ta_tc = corr_matrix.loc["Thermische Akzeptanz", "Thermischer Komfort"]
+
+        # --- Farblogik basierend auf Heatmap ---
+        def color_for_r(r):
+            if r <= -0.50:
+                return "#005BBB"   # starke negative Korrelation (blau)
+            elif r <= -0.15:
+                return "#5F9FE9"   # mittlere negative Korrelation
+            elif r <= 0.17:
+                return "#E9CDA0"   # schwach (grau)
+            elif r < 0.50:
+                return "#D9BA89"   # light orange
+            else:
+                return "#C0392B"   # starke positive Korrelation (rot)
+
+        c_ts_tp = color_for_r(r_ts_tp)
+        c_ts_tc = color_for_r(r_ts_tc)
+        c_tp_tc = color_for_r(r_tp_tc)
+        c_ta_tc = color_for_r(r_ta_tc)
+
+        # --- PANEL MIT KURZEN ERKLÄRUNGEN ---
+        st.markdown(f"""
+        <div style="padding-left: 12px; margin-bottom: 14px;">
+            <h5 style="margin:0;">Empfinden ↔ Präferenz  
+            <span style="color:{c_ts_tp}; font-weight:bold;">(r = {r_ts_tp:.2f})</span></h4>
+            • Moderate negative Korrelation<br>
+            • Je wärmer man sich fühlt, desto stärker bevorzugt man kühlere Bedingungen
+        </div>
+
+        <div style="padding-left: 12px; margin-bottom: 14px;">
+            <h5 style="margin:0;">Empfinden ↔ Komfort  
+            <span style="color:{c_ts_tc}; font-weight:bold;">(r = {r_ts_tc:.2f})</span></h4>
+            • Schwache negative Korrelation<br>
+            • Mehr Wärmeempfindung führt zu leicht geringerem Komfort
+ 
+        </div>
+
+        <div style="padding-left: 12px; margin-bottom: 14px;">
+            <h5 style="margin:0;">Präferenz ↔ Komfort  
+            <span style="color:{c_tp_tc}; font-weight:bold;">(r = {r_tp_tc:.2f})</span></h4>
+            • Sehr schwache positive Korrelation<br>
+            • Die Präferenz beeinflusst den Komfort nur minimal<br>
+        </div>
+
+        <div style="padding-left: 12px; margin-bottom: 14px;">
+            <h5 style="margin:0;"> Akzeptanz ↔ Komfort  
+            <span style="color:{r_ta_tc}; font-weight:bold;">(r = {r_ta_tc:.2f})</span></h4>
+            • Schwache positive Korrelation<br>
+            • Akzeptable Bedingungen werden als etwas komfortabler empfunden<br>
+        </div>
+        """, unsafe_allow_html=True)
+
+
+
+
+###########################################################################################################################
+###########################################################################################################################
+
+    with st.expander("📊 Beziehungsdiagramme mit Bivariaten Scatterplots"):
+
+        st.markdown("## 📊 Beziehungsdiagramme mit Bivariaten Scatterplots")
+
+        st.write("Die Histogramme auf der Diagonalen zeigen die grundlegenden statistischen Muster der vier Komfortvariablen")
+
+        col01, col02 = st.columns([1.8, 1])   # linke Spalte etwas breiter für die Heatmap
+
+
+        with col01:
+
+            # Relevant columns
+            cols = [
+                "thermal_sensation",
+                "thermal_acceptability",
+                "thermal_preference",
+                "thermal_comfort"
+            ]
+
+            df_sub = df[cols].copy()
+
+            # Numeric conversions
+            df_sub["thermal_sensation"] = pd.to_numeric(df_sub["thermal_sensation"], errors="coerce")
+            df_sub["thermal_comfort"] = pd.to_numeric(df_sub["thermal_comfort"], errors="coerce")
+
+            df_sub["thermal_preference"] = df_sub["thermal_preference"].map({
+                "warmer": 1,
+                "no change": 0,
+                "cooler": -1
+            })
+
+            df_sub["thermal_acceptability"] = df_sub["thermal_acceptability"].map({
+                "acceptable": 1,
+                "unacceptable": 0,
+                "Unknown": None
+            })
+
+            # Remove rows with missing values
+            df_sub = df_sub.dropna()
+
+            # Rename columns to German labels
+            df_sub = df_sub.rename(columns=german_labels)
+
+            # PairGrid for scatterplots + histograms + correlations
+            g = sns.PairGrid(df_sub)
+
+            # Diagonal: histograms
+            g.map_diag(sns.histplot, kde=True, color="#0A2540")
+
+            # Lower triangle: scatter plots
+            g.map_lower(sns.scatterplot, alpha=0.6, color="#0A2540")
+
+            # Upper triangle: correlation coefficients
+            def corr_coefficient(x, y, **kwargs):
+                r = np.corrcoef(x, y)[0, 1]
+                ax = plt.gca()
+                ax.annotate(
+                    f"r = {r:.2f}",
+                    xy=(0.5, 0.5),
+                    xycoords="axes fraction",
+                    ha="center",
+                    va="center",
+                    fontsize=12,
+                    color="red"
+                )
+
+            g.map_upper(corr_coefficient)
+
+            st.pyplot(g.fig)
+
+
+
+        with col02:
+            st.markdown("""
+
+        - **Thermische Empfinden:** Die Werte konzentrieren sich überwiegend im **neutralen Bereich (0)**, was auf eine typische thermische Wahrnehmung in regulierten Innenräumen hinweist.
+
+        - **Thermische Akzeptanz:** Die Verteilung ist stark **nach oben verzerrt (Wert = 1)**. Dies bedeutet, dass die meisten Personen den thermischen Zustand als **akzeptabel** einstufen.
+
+        - **Thermische Präferenz:** Ein deutlicher Peak bei **0 („keine Veränderung gewünscht“)“** zeigt, dass die Mehrheit keine thermische Anpassung bevorzugt. Kleinere Anteile wünschen kühlere oder wärmere Bedingungen.
+
+        - **Thermischer Komfort:** Die Werte häufen sich im **oberen Bereich (4–5)**, was auf ein insgesamt **hohes Komfortniveau** der befragten Personen hinweist.
+            """)
+
+   ###########################################################################################################################
+   ###########################################################################################################################
+   ###########################################################################################################################
+   ###########################################################################################################################
+
+        # -----------------------------
+    # REGIONEN ERMITTELN
+    # -----------------------------
+    if "region" not in df.columns:
+        st.error("Die Spalte 'region' existiert nicht im DataFrame.")
+    else:
+        region_list = sorted(df["region"].dropna().unique().tolist())
+        st.markdown("### 🔥 Korrelationsmatrizen nach Region")
+
+    # Deutsche Labels
+    german_labels = {
+        "thermal_sensation": "Thermische Empfinden",
+        "thermal_acceptability": "Thermische Akzeptanz",
+        "thermal_preference": "Thermische Präferenz",
+        "thermal_comfort": "Thermischer Komfort"
+    }
+
+    for region in region_list:
+
+        with st.expander(f"🌍 Region: **{region}**", expanded=False):
+
+            # -----------------------------
+            # Daten filtern
+            # -----------------------------
+            df_region = df[df["region"] == region].copy()
+
+            cols = [
+                "thermal_sensation",
+                "thermal_acceptability",
+                "thermal_preference",
+                "thermal_comfort"
+            ]
+
+            df_sub = df_region[cols].copy()
+
+            # -----------------------------
+            # Numerische Umwandlung
+            # -----------------------------
+            df_sub["thermal_sensation"] = pd.to_numeric(df_sub["thermal_sensation"], errors="coerce")
+            df_sub["thermal_comfort"] = pd.to_numeric(df_sub["thermal_comfort"], errors="coerce")
+
+            df_sub["thermal_preference"] = df_sub["thermal_preference"].map({
+                "warmer": 1, "no change": 0, "cooler": -1
+            })
+
+            df_sub["thermal_acceptability"] = df_sub["thermal_acceptability"].map({
+                "acceptable": 1, "unacceptable": 0, "Unknown": None
+            })
+
+            df_sub = df_sub.dropna()
+
+            if df_sub.empty:
+                st.warning(f"⚠️ Keine gültigen Daten für Region: {region}")
+                continue
+
+            # -----------------------------
+            # Korrelationsmatrix
+            # -----------------------------
+            corr_matrix = df_sub.corr(method="spearman")
+            corr_matrix = corr_matrix.rename(index=german_labels, columns=german_labels)
+
+            # -----------------------------
+            # Zwei Spalten für die Grafiken
+            # -----------------------------
+            colA, colB = st.columns(2)
+
+            # -----------------------------
+            # HEATMAP (links)
+            # -----------------------------
+            with colA:
+                fig1, ax1 = plt.subplots(figsize=(6, 5))
+                sns.heatmap(
+                    corr_matrix,
+                    annot=True,
+                    cmap="coolwarm",
+                    vmin=-1,
+                    vmax=1,
+                    linewidths=0.5,
+                    ax=ax1
+                )
+                ax1.set_title(f"Korrelationsmatrix – {region}")
+                st.pyplot(fig1)
+
+            # -----------------------------
+            # SCATTER-PLOT MATRIX (rechts)
+            # -----------------------------
+            with colB:
+                g = sns.PairGrid(df_sub.rename(columns=german_labels))
+                g.map_diag(sns.histplot, kde=True, color="#0A2540")
+                g.map_lower(sns.scatterplot, alpha=0.6, color="#0A2540")
+
+                def corr_text(x, y, **kwargs):
+                    r = np.corrcoef(x, y)[0, 1]
+                    ax = plt.gca()
+                    ax.annotate(
+                        f"r = {r:.2f}",
+                        xy=(0.5, 0.5),
+                        xycoords="axes fraction",
+                        ha="center", va="center",
+                        fontsize=10, color="red"
+                    )
+
+                g.map_upper(corr_text)
+
+                st.pyplot(g.fig)
+
+            # -----------------------------
+            # Beschreibung
+            # -----------------------------
+            st.markdown("""
+            **Kurzbeschreibung:**  
+            Diese Darstellungen zeigen die regionalen Zusammenhänge zwischen thermischer Empfinden,
+            Akzeptanz, Präferenz und Komfort. Die Heatmap visualisiert die Stärke der Korrelationen,
+            während die Scatterplots die bivariaten Beziehungen zwischen den Variablen darstellen.
+            """)
+
+    
+
+
+
+
+
+
+
+with tab2:
+    st.subheader("Welche Gruppen benötigen kühlere oder wärmere Bedingungen für Komfort?")
+    st.text("Die Neutraltemperatur zeigt, bei welcher Raumtemperatur Menschen weder Wärme noch Kälte empfinden – sie ist damit der zentrale Vergleichswert für unterschiedliche Komfortpräferenzen.")
+
+    st.markdown(
+    """
+    **Verständnis der Neutraltemperatur (ASCII‑Grafik):**
+
+           zu kalt              neutral              zu warm
+        (MTS < 0)             (MTS = 0)            (MTS > 0)
+              \\                 |                 /
+               \\                |                /
+                \\               |               /
+                 \\______________|______________/
+                               T_neutral
+""")
+
+#    Die Waage zeigt:
+
+#     - Links: Personen empfinden die Temperatur als **zu kalt** (negative MTS‑Werte).
+#     - Rechts: Personen empfinden die Temperatur als **zu warm** (positive MTS‑Werte).
+#     - In der Mitte: **Neutraltemperatur T_neutral**, bei der die mittlere Empfindung MTS = 0 ist.
+
+
+    # ============================================================
+    # LOAD DATA
+    # ============================================================
+
+    @st.cache_data
+    def load_data():
+        df = pd.read_csv("db_bereinigt_final.csv")
+        df["operative_temperature"] = pd.to_numeric(df["operative_temperature"], errors="coerce")
+        df["thermal_sensation"] = pd.to_numeric(df["thermal_sensation"], errors="coerce")
+        return df.dropna(subset=["operative_temperature", "thermal_sensation"])
+    df = load_data()
+
+    
     # ============================================================
     # GERMAN EXPLANATION
     # ============================================================
@@ -553,9 +649,9 @@ with tab1:
     #     "abgeleitet wird. Die vertikale gestrichelte Linie markiert diese neutrale Temperatur."
     # )
 
-    # ============================================================
-    # AUTOMATIC GROUPING
-    # ============================================================
+# ============================================================
+# AUTOMATIC GROUPING
+# ============================================================
 
     grouping_priority = ["building_type", "season", "gender", "region", "country", "city"]
 
@@ -575,36 +671,24 @@ with tab1:
     # ============================================================
 
     if df_filtered.empty:
-        st.warning("No data available for the selected filters.")
+        st.warning("Für die ausgewählten Filter sind keine Daten verfügbar.")
         st.stop()
-
-    fig, axes = plt.subplots(1, len(groups), figsize=(16, 5), sharey=True)
-
-    if len(groups) == 1:
-        axes = [axes]
-
-    colors = plt.cm.tab10(np.linspace(0, 1, len(groups)))
-    markers = ["o", "s", "^", "D", "P", "X", "*"]
-    color_map = dict(zip(groups, colors))
-    marker_map = dict(zip(groups, markers))
 
     results = []
 
-    for ax, g in zip(axes, groups):
+    # Primero calculamos neutral_temp para cada grupo
+    for g in groups:
 
         sub = df_filtered[df_filtered[column_to_group] == g]
 
         if sub.empty:
-            ax.set_title(f"{g} (no data)")
-            ax.axis("off")
             continue
 
         mts_df = sub.groupby("operative_temperature")["thermal_sensation"].mean().reset_index()
         mts_df.columns = ["operative_temperature", "MTS"]
+        mts_df = mts_df.dropna()
 
-        if len(mts_df) < 2:
-            ax.set_title(f"{g} (insufficient data)")
-            ax.axis("off")
+        if mts_df.empty or len(mts_df) < 2:
             continue
 
         X = mts_df["operative_temperature"].values.reshape(-1, 1)
@@ -620,9 +704,58 @@ with tab1:
 
         results.append([g, a, b, r2, neutral_temp])
 
+    # ============================================================
+    # SI NO HAY GRUPOS CON DATOS SUFICIENTES → SALIR
+    # ============================================================
+
+    if len(results) == 0:
+        st.warning("Keine Gruppe verfügt über ausreichende Daten, um die neutrale Temperatur zu berechnen.")
+        st.stop()
+
+    # ============================================================
+    # ORDENAR GRUPOS POR NEUTRAL TEMP (mayor → menor)
+    # ============================================================
+
+    results_sorted = sorted(results, key=lambda x: x[4], reverse=True)
+    groups_sorted = [r[0] for r in results_sorted]
+
+    # ============================================================
+    # MOSTRAR TABLA DE NEUTRAL TEMP ARRIBA DEL GRÁFICO
+    # ============================================================
+
+    st.markdown("### 🔥 Sortiert nach Neutraltemperatur (höher → niedriger)")
+
+    st.write(f"Aktuelle Filter : {filter_text}")
+
+
+    # ============================================================
+    # CREAR FIGURA
+    # ============================================================
+
+    fig, axes = plt.subplots(1, len(groups_sorted), figsize=(16, 5), sharey=True)
+
+    if len(groups_sorted) == 1:
+        axes = [axes]
+
+    colors = plt.cm.tab10(np.linspace(0, 1, len(groups_sorted)))
+    markers = ["o", "s", "^", "D", "P", "X", "*"]
+    color_map = dict(zip(groups_sorted, colors))
+    marker_map = dict(zip(groups_sorted, markers))
+
+    # ============================================================
+    # DIBUJAR CADA GRUPO (ya ordenado)
+    # ============================================================
+
+    for ax, (g, a, b, r2, neutral_temp) in zip(axes, results_sorted):
+
+        sub = df_filtered[df_filtered[column_to_group] == g]
+        mts_df = sub.groupby("operative_temperature")["thermal_sensation"].mean().reset_index()
+        mts_df.columns = ["operative_temperature", "MTS"]
+        mts_df = mts_df.dropna()
+
         x_range = np.linspace(mts_df["operative_temperature"].min(),
-                              mts_df["operative_temperature"].max(), 100)
-        y_pred = model.predict(x_range.reshape(-1, 1))
+                            mts_df["operative_temperature"].max(), 100)
+        y_pred = a * x_range + b
 
         ax.plot(x_range, y_pred, color=color_map[g], linewidth=2)
         ax.scatter(
@@ -638,9 +771,9 @@ with tab1:
 
         ax.text(
             0.05, 0.95,
-            f"{g}\nMTS = {a:.3f}·T + {b:.3f}\nR² = {r2:.3f}\nNeutral = {neutral_temp:.2f} °C",
+            f"T_neutral = {neutral_temp:.2f} °C",
             transform=ax.transAxes,
-            fontsize=9,
+            fontsize=12,
             color=color_map[g],
             verticalalignment="top",
             bbox=dict(facecolor="white", alpha=0.7, edgecolor=color_map[g])
@@ -651,15 +784,18 @@ with tab1:
         ax.grid(True)
 
     axes[0].set_ylabel("Mean Thermal Sensation (MTS)")
-    fig.suptitle(f"MTS vs Indoor Temperature | {filter_text}", fontsize=14)
+    fig.suptitle(f"MTS vs Innentemperatur", fontsize=18)
     plt.tight_layout()
     st.pyplot(fig)
+
     st.caption("""
-    Die Grafik zeigt, wie sich die mittlere thermische Empfindung (MTS) in verschiedenen Kategorien  
-    mit der Innenraumtemperatur verändert. Die sortierte Tabelle oben verdeutlicht, welche Gruppen  
-    niedrigere oder höhere T_neutral‑Werte aufweisen und damit kühlere bzw. wärmere Bedingungen als  
-    komfortabel empfinden.
+    Die Grafik zeigt, wie sich die mittlere thermische Empfinden (MTS) in verschiedenen Kategorien mit der Innenraumtemperatur verändert. 
+    Die sortierte Tabelle oben verdeutlicht, welche Gruppen niedrigere oder höhere T_neutral‑Werte aufweisen und damit kühlere bzw. wärmere Bedingungen als komfortabel empfinden.
     """)
+
+    for g, a, b, r2, nt in results_sorted:
+        st.markdown(f"**{g}:** Neutraltemperatur = **{nt:.2f} °C**")
+
 
     # ============================================================
     # SUMMARY TABLE
@@ -668,152 +804,28 @@ with tab1:
     if results:
         summary_df = pd.DataFrame(
             results,
-            columns=[column_to_group, "Slope a", "Intercept b", "R²", "Neutraltemperatur"]
+            columns=[column_to_group, "Steigung a", "Achsenabschnitt b", "R²", "Neutraltemperatur"]
         )
 
-        # ORDENAR DE MENOR A MAYOR POR TEMPERATURA NEUTRAL
-        summary_df = summary_df.sort_values("Neutraltemperatur", ascending=True)
+        # ORDENAR DE MAYOR A MENOR POR TEMPERATURA NEUTRAL
+        summary_df = summary_df.sort_values("Neutraltemperatur", ascending=False)
 
-        st.subheader("Neutral Temperature Summary")
+        st.subheader("Zusammenfassung der neutralen Temperatur")
 
         st.dataframe(
             summary_df.style.format({
-                "Slope a": "{:.2f}",
-                "Intercept b": "{:.2f}",
+                "Steigung a": "{:.2f}",
+                "Achsenabschnitt b": "{:.2f}",
                 "R²": "{:.2f}",
                 "Neutraltemperatur": "{:.2f}"
             })
         )
     else:
-        st.info("No valid regression results for the selected filters.")
-
+        st.info("Keine gültigen Regressionsresultate für die ausgewählten Filter.")
 
 
 #########################################################################################################################
 #########################################################################################################################
-
-with tab2:
-
-    st.subheader("Wie stark verändert Kleidung die Komforttemperatur?")
-    st.text(
-        "Kleidung beeinflusst die Wärmeisolierung des Körpers. Höhere Clo‑Werte führen dazu, "
-        "dass Personen sich bereits bei niedrigeren Temperaturen thermisch neutral fühlen. "
-        "Leichtere Kleidung hingegen verschiebt die Neutraltemperatur nach oben.")
-
-
-    # CLO-Werte Erklärung
-    st.markdown(
-        """
-        **Was bedeuten die Clo‑Werte?**
-
-        - **0.0–0.2 clo:** sehr leichte Kleidung (Shorts, Tanktop)  
-        - **0.3–0.5 clo:** leichte Sommerkleidung (T‑Shirt, dünne Hose)  
-        - **0.6–0.8 clo:** normale Alltagskleidung (Hemd + Hose)  
-        - **0.9–1.0 clo:** leichte Winterkleidung (Pullover, lange Hose)  
-        - **1.1–1.3 clo:** warme Kleidung (Pullover + Jacke)  
-        - **1.4–1.7 clo:** sehr warme Kleidung (Winterjacke)  
-        - **> 2.0 clo:** extreme Isolation (Ski‑Anzug)
-        """
-    )
-
-    df_clo = df.copy()
-    results_clo = []
-
-    for clo_value in sorted(df_clo["clothing_ensemble_insulation"].dropna().unique()):
-        sub = df_clo[df_clo["clothing_ensemble_insulation"] == clo_value]
-
-        if sub.empty:
-            continue
-
-        mts_df = sub.groupby("operative_temperature")["thermal_sensation"].mean().reset_index()
-        mts_df.columns = ["operative_temperature", "MTS"]
-
-        if len(mts_df) < 2:
-            continue
-
-        X = mts_df["operative_temperature"].values.reshape(-1, 1)
-        y = mts_df["MTS"].values.reshape(-1, 1)
-
-        model = LinearRegression()
-        model.fit(X, y)
-
-        a = model.coef_[0][0]
-        b = model.intercept_[0]
-        r2 = model.score(X, y)
-
-        # Fehler vermeiden: a = 0 → NeutralTemp = NaN statt -Infinity
-        if abs(a) < 1e-6:
-            neutral_temp = np.nan
-        else:
-            neutral_temp = -b / a
-
-        results_clo.append([clo_value, a, b, r2, neutral_temp])
-
-    summary_clo = pd.DataFrame(
-        results_clo,
-        columns=["Clo-Level", "Slope a", "Intercept b", "R²", "Neutraltemperatur"]).sort_values("Neutraltemperatur", ascending=True)
-
-    st.subheader("Neutraltemperatur pro Clo‑Level")
-    st.dataframe(
-        summary_clo.style.format({
-            "Slope a": "{:.3f}",
-            "Intercept b": "{:.3f}",
-            "R²": "{:.3f}",
-            "Neutraltemperatur": "{:.3f}"
-        })
-    )
-
-    st.caption(
-        "Die Tabelle zeigt, wie Kleidung die Neutraltemperatur beeinflusst. "
-        "Höhere Clo‑Werte führen zu niedrigeren Komforttemperaturen."
-    )
-
-
-    # --- ASHRAE-style graphic for clothing vs neutral temperature ---
-    st.subheader("Graphical Interpretation – Clothing Influence on Neutral Temperature")
-
-    if not summary_clo.empty:
-
-        fig, ax = plt.subplots(figsize=(8, 5))
-
-        # Sort by clo-level
-        summary_clo_sorted = summary_clo.sort_values("Clo-Level")
-
-        # ASHRAE-style neutral line (orange)
-        ax.plot(
-            summary_clo_sorted["Clo-Level"],
-            summary_clo_sorted["Neutraltemperatur"],
-            marker="o",
-            linestyle="-",
-            color="#ff7f0e",   # ASHRAE neutral orange
-            linewidth=2,
-            markersize=8,
-            label="Neutral Temperature Trend"
-        )
-
-        # Color-coded points (blue = cold, orange = neutral, red = warm)
-        for clo, temp in zip(summary_clo_sorted["Clo-Level"], summary_clo_sorted["Neutraltemperatur"]):
-            if temp < 22:
-                color = "#1f77b4"   # cold zone (ASHRAE blue)
-            elif temp > 25:
-                color = "#d62728"   # warm zone (ASHRAE red)
-            else:
-                color = "#ff7f0e"   # neutral zone (ASHRAE orange)
-
-            ax.scatter(clo, temp, color=color, s=90)
-
-        ax.set_title("Neutral Temperature as a Function of Clothing Insulation (clo)", fontsize=14)
-        ax.set_xlabel("Clothing Insulation (clo)", fontsize=12)
-        ax.set_ylabel("Neutral Temperature (°C)", fontsize=12)
-
-        ax.grid(True, linestyle="--", alpha=0.5)
-        ax.legend()
-
-        st.pyplot(fig)
-
-    else:
-        st.info("No data available to generate the ASHRAE-style graphic.")
-
 
 ########################################################################################################################
 ########################################################################################################################
@@ -853,7 +865,7 @@ with tab3:
     # 1. LOAD DATA
     # ============================================================
 
-    df = pd.read_csv("db_bereinigt_fertig.csv")
+    df = pd.read_csv("db_bereinigt_final.csv")
 
     cols_to_numeric = [
         "operative_temperature",
@@ -1255,42 +1267,43 @@ with tab3:
 # 8. Natürliche Zusammenfassung: Welche Kategorie ist am besten?
 # ============================================================
 
-    st.subheader("Zusammenfassung")
+    with st.expander("Zusammenfassung"):
+        # st.subheader("Zusammenfassung")
 
-    # Beste und schlechteste Kategorie anhand der 80%-Komfortzone
-    best_row = df_compliance.loc[df_compliance["80%-Komfortzone (%)"].idxmax()]
-    worst_row = df_compliance.loc[df_compliance["80%-Komfortzone (%)"].idxmin()]
+        # Beste und schlechteste Kategorie anhand der 80%-Komfortzone
+        best_row = df_compliance.loc[df_compliance["80%-Komfortzone (%)"].idxmax()]
+        worst_row = df_compliance.loc[df_compliance["80%-Komfortzone (%)"].idxmin()]
 
-    best_cat = best_row["Kategorie"]
-    best_80 = best_row["80%-Komfortzone (%)"]
-    best_90 = best_row["90%-Komfortzone (%)"]
+        best_cat = best_row["Kategorie"]
+        best_80 = best_row["80%-Komfortzone (%)"]
+        best_90 = best_row["90%-Komfortzone (%)"]
 
-    worst_cat = worst_row["Kategorie"]
-    worst_80 = worst_row["80%-Komfortzone (%)"]
-    worst_90 = worst_row["90%-Komfortzone (%)"]
+        worst_cat = worst_row["Kategorie"]
+        worst_80 = worst_row["80%-Komfortzone (%)"]
+        worst_90 = worst_row["90%-Komfortzone (%)"]
 
-    summary_text = f"""
-    **Welche Kategorie zeigt die beste Komfortleistung?**
+        summary_text = f"""
+        **Welche Kategorie zeigt die beste Komfortleistung?**
 
-    Die Kategorie **{best_cat}** weist die höchste Übereinstimmung mit dem adaptiven Komfortmodell auf.
-    Mit **{best_80}%** innerhalb der 80%-Komfortzone und **{best_90}%** innerhalb der 90%-Komfortzone
-    zeigt diese Gruppe die stabilsten thermischen Bedingungen.
+        Die Kategorie **{best_cat}** weist die höchste Übereinstimmung mit dem adaptiven Komfortmodell auf.
+        Mit **{best_80}%** innerhalb der 80%-Komfortzone und **{best_90}%** innerhalb der 90%-Komfortzone
+        zeigt diese Gruppe die stabilsten thermischen Bedingungen.
 
-    **Welche Kategorie schneidet am schlechtesten ab?**
+        **Welche Kategorie schneidet am schlechtesten ab?**
 
-    Die Kategorie **{worst_cat}** liegt mit nur **{worst_80}%** in der 80%-Komfortzone deutlich unter den
-    anderen Gruppen. Auch die 90%-Komfortzone (**{worst_90}%**) zeigt eine geringere Übereinstimmung,
-    was auf stärkere Abweichungen vom Komfortmodell hindeutet.
+        Die Kategorie **{worst_cat}** liegt mit nur **{worst_80}%** in der 80%-Komfortzone deutlich unter den
+        anderen Gruppen. Auch die 90%-Komfortzone (**{worst_90}%**) zeigt eine geringere Übereinstimmung,
+        was auf stärkere Abweichungen vom Komfortmodell hindeutet.
 
-    **Was bedeutet das insgesamt?**
+        **Was bedeutet das insgesamt?**
 
-    Die Analyse zeigt, dass sich die Kategorien klar unterscheiden: Einige Gruppen passen sich gut an
-    die Außentemperatur an und bleiben überwiegend innerhalb der Komfortbereiche, während andere
-    deutliche Tendenzen zu Überhitzung oder Unterkühlung aufweisen. Diese Unterschiede können durch
-    Gebäudetypen, Klimazonen, Nutzungsverhalten oder saisonale Effekte beeinflusst sein.
-    """
+        Die Analyse zeigt, dass sich die Kategorien klar unterscheiden: Einige Gruppen passen sich gut an
+        die Außentemperatur an und bleiben überwiegend innerhalb der Komfortbereiche, während andere
+        deutliche Tendenzen zu Überhitzung oder Unterkühlung aufweisen. Diese Unterschiede können durch
+        Gebäudetypen, Klimazonen, Nutzungsverhalten oder saisonale Effekte beeinflusst sein.
+        """
 
-    st.markdown(summary_text)
+        st.markdown(summary_text)
 
 
 ########################################################################################################################
@@ -1445,365 +1458,561 @@ with tab4:
 
 
 
+with tab5:
+
+    st.subheader("Optimale Raumtemperatur nach Aktivität und Bekleidung")
+
+    # Sicherstellen, dass die Felder numerisch sind
+    df["metabolic_rate"] = pd.to_numeric(df["metabolic_rate"], errors="coerce")
+    df["clothing_ensemble_insulation"] = pd.to_numeric(df["clothing_ensemble_insulation"], errors="coerce")
+
+    # Nur gültige Zeilen
+    df8 = df.dropna(subset=["metabolic_rate", "clothing_ensemble_insulation"])
+
+    # Funktion zur Berechnung der optimalen Temperatur nach ISO 7730 (vereinfachte Näherung)
+    def optimal_temp(met, clo):
+        """
+        Vereinfachte Näherung basierend auf ISO 7730:
+        - höhere Aktivität → niedrigere optimale Temperatur
+        - höhere Bekleidung → niedrigere optimale Temperatur
+        """
+        return 22 - (met - 1.2)*2 - (clo - 0.5)*4
+
+    # Temperatur berechnen
+    df8["optimal_temp"] = df8.apply(lambda r: optimal_temp(r["metabolic_rate"], r["clothing_ensemble_insulation"]), axis=1)
+
+    # Plot vorbereiten
+    fig, ax = plt.subplots(figsize=(6, 5))
+
+    scatter = ax.scatter(
+        df8["metabolic_rate"],
+        df8["clothing_ensemble_insulation"],
+        c=df8["optimal_temp"],
+        cmap="coolwarm",
+        s=70,
+        edgecolor="black"
+    )
+
+    cbar = plt.colorbar(scatter, ax=ax)
+    cbar.set_label("Optimale Raumtemperatur (°C)")
+
+    ax.set_xlabel("Aktivität (met)")
+    ax.set_ylabel("Bekleidung (clo)")
+    ax.set_title("Optimale Raumtemperatur in Abhängigkeit von Aktivität und Bekleidung)")
+
+    ax.grid(True)
+
+    st.pyplot(fig)
+
 ######################################################################################################################################
 ######################################################################################################################################
 
-    # st.header("PCA (Principal Component Analysis) of Physical Comfort Variables")
+   
+
+    st.subheader("Optimale Raumtemperatur nach Aktivität und Bekleidung")
+    # st.text("Diese Abbildung zeigt, wie sich die optimale Raumtemperatur in Abhängigkeit von Aktivitätsniveau (met) und Bekleidungsisolation (clo) verändert. Die Farbskala verdeutlicht die geschätzte Komforttemperatur. Typische Kleidungsetiketten – von kurzärmligen Sommeroutfits bis hin zu Jacken und Wintermänteln – machen sichtbar, dass schwerere Kleidung den Komfortbereich zu niedrigeren Temperaturen verschiebt, während leichtere Kleidung höhere Temperaturen erfordert.")
+
+    # Asegurar que los campos sean numéricos
+    df["metabolic_rate"] = pd.to_numeric(df["metabolic_rate"], errors="coerce")
+    df["clothing_ensemble_insulation"] = pd.to_numeric(df["clothing_ensemble_insulation"], errors="coerce")
 
-    # # ============================================================
-    # # 1. Select relevant physical variables
-    # # ============================================================
+    df8 = df.dropna(subset=["metabolic_rate", "clothing_ensemble_insulation"])
+
+    # Fórmula aproximada ISO 7730 para temperatura óptima
+    def optimal_temp(met, clo):
+        return 22 - (met - 1.2)*2 - (clo - 0.5)*4
+
+    df8["optimal_temp"] = df8.apply(
+        lambda r: optimal_temp(r["metabolic_rate"], r["clothing_ensemble_insulation"]),axis=1)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    scatter = ax.scatter(
+        df8["metabolic_rate"],
+        df8["clothing_ensemble_insulation"],
+        c=df8["optimal_temp"],
+        cmap="coolwarm",
+        s=80,
+        edgecolor="black"
+    )
 
-    # cols_phys = [
-    #     "metabolic_rate",
-    #     "clothing_ensemble_insulation",
-    #     "air_temperature",
-    #     "air_speed",
-    #     "radiant_temperature",
-    #     "relative_humidity"
-    # ]
+    cbar = plt.colorbar(scatter, ax=ax)
+    cbar.set_label("Optimale operative Temperatur (°C)")
+
+    ax.set_xlabel("Aktivität (met)")
+    ax.set_ylabel("Bekleidung (clo)")
+    #ax.set_title("Optimale Raumtemperatur in Abhängigkeit von Aktivität und Bekleidung")
+    ax.grid(True)
 
-    # df_phys = df[cols_phys].copy()
-
-    # # Convert to numeric
-    # for c in cols_phys:
-    #     df_phys[c] = pd.to_numeric(df_phys[c], errors="coerce")
-
-    # df_phys = df_phys.dropna()
-
-    # # ============================================================
-    # # 2. Standardize data (PCA requires scaling)
-    # # ============================================================
-
-    # from sklearn.preprocessing import StandardScaler
-    # from sklearn.decomposition import PCA
-
-    # scaler = StandardScaler()
-    # X_scaled = scaler.fit_transform(df_phys)
-
-    # # ============================================================
-    # # 3. PCA computation (2 components)
-    # # ============================================================
-
-    # pca = PCA(n_components=2)
-    # pca_result = pca.fit_transform(X_scaled)
-
-    # df_pca = pd.DataFrame({
-    #     "PC1": pca_result[:, 0],
-    #     "PC2": pca_result[:, 1]
-    # })
-
-    # # Loadings (variable contributions)
-    # loadings = pd.DataFrame(
-    #     pca.components_.T,
-    #     columns=["PC1", "PC2"],
-    #     index=cols_phys
-    # )
-
-    # # ============================================================
-    # # 4. PCA Scatter Plot
-    # # ============================================================
-
-    # st.subheader("PCA Scatter Plot (PC1 vs PC2)")
-
-    # fig, ax = plt.subplots(figsize=(10, 7))
-    # ax.scatter(df_pca["PC1"], df_pca["PC2"], alpha=0.6)
-
-    # ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% variance)")
-    # ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% variance)")
-    # ax.set_title("PCA of Physical Comfort Variables")
-
-    # ax.grid(True)
-    # st.pyplot(fig)
-
-    # # ============================================================
-    # # 5. PCA Loadings Plot (Variable Influence)
-    # # ============================================================
-
-    # st.subheader("Variable Contributions to PCA Components")
-
-    # fig2, ax2 = plt.subplots(figsize=(10, 6))
-    # loadings.plot(kind="bar", ax=ax2)
-    # ax2.set_title("PCA Loadings (Influence of Each Variable)")
-    # ax2.set_ylabel("Loading Value")
-    # ax2.grid(True)
-
-    # st.pyplot(fig2)
-
-    # # ============================================================
-    # # 6. Automatic Interpretation
-    # # ============================================================
-
-    # st.subheader("Automatic Interpretation of PCA Results")
-
-    # interpret = []
-
-    # # PC1 interpretation
-    # pc1_top = loadings["PC1"].abs().sort_values(ascending=False).index[:2]
-    # interpret.append(
-    #     f"- **PC1** wird hauptsächlich durch **{pc1_top[0]}** und **{pc1_top[1]}** bestimmt."
-    # )
-
-    # # PC2 interpretation
-    # pc2_top = loadings["PC2"].abs().sort_values(ascending=False).index[:2]
-    # interpret.append(
-    #     f"- **PC2** wird hauptsächlich durch **{pc2_top[0]}** und **{pc2_top[1]}** beeinflusst."
-    # )
-
-    # # Variance explanation
-    # interpret.append(
-    #     f"- PC1 erklärt **{pca.explained_variance_ratio_[0]*100:.1f}%** der Gesamtvarianz, "
-    #     f"PC2 erklärt **{pca.explained_variance_ratio_[1]*100:.1f}%**."
-    # )
-
-    # # Comfort insight
-    # interpret.append(
-    #     "- Die PCA zeigt, welche physikalischen Faktoren gemeinsam variieren und "
-    #     "welche Variablen die dominanten thermischen Einflussachsen bilden."
-    # )
-
-    # st.markdown("\n".join(interpret))
-
-    # # ============================================================
-    # # 7. Caption
-    # # ============================================================
-
-    # st.caption(
-    #     "Die PCA zeigt die Hauptvariationsachsen der physikalischen Komfortparameter. "
-    #     "Dadurch wird sichtbar, welche Faktoren gemeinsam auftreten und welche Variablen "
-    #     "die thermische Umgebung am stärksten prägen."
-    # )
-
-
-
-
-    # st.header("Grouped PCA of Physical Comfort Variables")
-
-    # # ============================================================
-    # # 1. Select grouping variable
-    # # ============================================================
-
-    # group_option = st.selectbox(
-    #     "Group PCA by:",
-    #     ["season", "climate", "building_type"]
-    # )
-
-    # # Clean grouping column
-    # df_grouped = df.copy()
-    # df_grouped[group_option] = df_grouped[group_option].replace({"Unknown": None})
-    # df_grouped = df_grouped.dropna(subset=[group_option])
-
-    # # ============================================================
-    # # 2. Select physical comfort variables
-    # # ============================================================
-
-    # cols_phys = [
-    #     "metabolic_rate",
-    #     "clothing_ensemble_insulation",
-    #     "air_temperature",
-    #     "air_speed",
-    #     "radiant_temperature",
-    #     "relative_humidity"
-    # ]
-
-    # df_phys = df_grouped[cols_phys + [group_option]].copy()
-
-    # # Convert to numeric
-    # for c in cols_phys:
-    #     df_phys[c] = pd.to_numeric(df_phys[c], errors="coerce")
-
-    # df_phys = df_phys.dropna()
-
-    # # ============================================================
-    # # 3. Standardize data
-    # # ============================================================
-
-    # from sklearn.preprocessing import StandardScaler
-    # from sklearn.decomposition import PCA
-
-    # scaler = StandardScaler()
-    # X_scaled = scaler.fit_transform(df_phys[cols_phys])
-
-    # # ============================================================
-    # # 4. PCA computation
-    # # ============================================================
-
-    # pca = PCA(n_components=2)
-    # pca_result = pca.fit_transform(X_scaled)
-
-    # df_pca = pd.DataFrame({
-    #     "PC1": pca_result[:, 0],
-    #     "PC2": pca_result[:, 1],
-    #     group_option: df_phys[group_option].values
-    # })
-
-    # # Loadings (variable contributions)
-    # loadings = pd.DataFrame(
-    #     pca.components_.T,
-    #     columns=["PC1", "PC2"],
-    #     index=cols_phys
-    # )
-
-    # # ============================================================
-    # # 5. PCA Scatter Plot (Grouped)
-    # # ============================================================
-
-    # st.subheader(f"PCA grouped by {group_option}")
-
-    # fig, ax = plt.subplots(figsize=(10, 7))
-
-    # groups = df_pca[group_option].unique()
-    # palette = sns.color_palette("tab10", len(groups))
-
-    # for g, color in zip(groups, palette):
-    #     subset = df_pca[df_pca[group_option] == g]
-    #     ax.scatter(
-    #         subset["PC1"],
-    #         subset["PC2"],
-    #         label=g,
-    #         alpha=0.7,
-    #         color=color
-    #     )
-
-    # ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% variance)")
-    # ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% variance)")
-    # ax.set_title(f"PCA of Physical Comfort Variables grouped by {group_option}")
-    # ax.grid(True)
-    # ax.legend(title=group_option)
-
-    # st.pyplot(fig)
-
-    # # ============================================================
-    # # 6. PCA Loadings Plot
-    # # ============================================================
-
-    # st.subheader("Variable Contributions to PCA Components")
-
-    # fig2, ax2 = plt.subplots(figsize=(10, 6))
-    # loadings.plot(kind="bar", ax=ax2)
-    # ax2.set_title("PCA Loadings (Influence of Each Variable)")
-    # ax2.set_ylabel("Loading Value")
-    # ax2.grid(True)
-
-    # st.pyplot(fig2)
-
-    # # ============================================================
-    # # 7. Automatic Interpretation
-    # # ============================================================
-
-    # st.subheader("Automatic Interpretation of Grouped PCA")
-
-    # interpret = []
-
-    # pc1_top = loadings["PC1"].abs().sort_values(ascending=False).index[:2]
-    # pc2_top = loadings["PC2"].abs().sort_values(ascending=False).index[:2]
-
-    # interpret.append(
-    #     f"- **PC1** is mainly driven by **{pc1_top[0]}** and **{pc1_top[1]}**."
-    # )
-    # interpret.append(
-    #     f"- **PC2** is mainly influenced by **{pc2_top[0]}** and **{pc2_top[1]}**."
-    # )
-    # interpret.append(
-    #     f"- PC1 explains **{pca.explained_variance_ratio_[0]*100:.1f}%** of total variance, "
-    #     f"PC2 explains **{pca.explained_variance_ratio_[1]*100:.1f}%**."
-    # )
-    # interpret.append(
-    #     f"- Grouping by **{group_option}** reveals how physical comfort conditions differ "
-    #     "across seasons, climates, or building types."
-    # )
-
-    # st.markdown("\n".join(interpret))
-
-    # # ============================================================
-    # # 8. Caption
-    # # ============================================================
-
-    # st.caption(
-    #     "This grouped PCA shows how physical comfort variables cluster differently across "
-    #     "seasons, climate zones, or building types. It highlights dominant comfort drivers "
-    #     "and reveals structural differences between environmental conditions."
-    # )
-
-
-
-
-
-
-
-
-
-
-    # st.text("tests")
-
-    # df_year = df.groupby("year").agg({
-    # "operative_temperature": "mean",
-    # "outdoor_air_temperature": "mean"
-    # }).reset_index()
-
-    # fig, ax = plt.subplots(figsize=(12, 6))
-
-    # ax.plot(df_year["year"], df_year["operative_temperature"], marker="o", label="Indoor (Ø)")
-    # ax.plot(df_year["year"], df_year["outdoor_air_temperature"], marker="o", label="Outdoor (Ø)")
-
-    # ax.set_xlabel("Jahr")
-    # ax.set_ylabel("Temperatur (°C)")
-    # ax.set_title("Durchschnittliche Innen- und Außentemperatur pro Jahr")
-    # ax.grid(True)
-    # ax.legend()
-
-    # st.pyplot(fig)
-
-
-    # st.subheader("Occupants’ Preferred Thermal Comfort Vote")
-
-    # # Clean preference column
-    # df_pref = df.copy()
-    # df_pref["thermal_preference"] = df_pref["thermal_preference"].replace({
-    #     "Unknown": None
-    # })
-
-    # # Count votes
-    # pref_counts = df_pref["thermal_preference"].value_counts().reset_index()
-    # pref_counts.columns = ["thermal_preference", "count"]
-
-    # # Plot
-    # fig, ax = plt.subplots(figsize=(10, 6))
-
-    # sns.barplot(
-    #     data=pref_counts,
-    #     x="thermal_preference",
-    #     y="count",
-    #     palette="viridis",
-    #     ax=ax
-    # )
-
-    # ax.set_xlabel("Thermal Preference")
-    # ax.set_ylabel("Number of Votes")
-    # ax.set_title("Occupants’ Preferred Thermal Comfort Vote")
-
-    # st.pyplot(fig)
-
-
-    # st.subheader("Thermal Preference vs Other Comfort Indicators")
-
-    # fig, ax = plt.subplots(figsize=(12, 6))
-
-    # sns.countplot(
-    #     data=df,
-    #     x="thermal_preference",
-    #     hue="thermal_acceptability",
-    #     palette="coolwarm",
-    #     ax=ax
-    # )
-
-    # ax.set_xlabel("Thermal Preference")
-    # ax.set_ylabel("Count")
-    # ax.set_title("Thermal Preference by Acceptability")
-
-    # st.pyplot(fig)
-
-
-
-
+
+    with st.expander("Optimale Raumtemperatur in Abhängigkeit von Aktivität und Bekleidung - mit Labels"):
+
+        # Ensure numeric fields
+        df["metabolic_rate"] = pd.to_numeric(df["metabolic_rate"], errors="coerce")
+        df["clothing_ensemble_insulation"] = pd.to_numeric(df["clothing_ensemble_insulation"], errors="coerce")
+
+        df8 = df.dropna(subset=["metabolic_rate", "clothing_ensemble_insulation"])
+
+        # Simplified ISO 7730 formula for optimal temperature
+        def optimal_temp(met, clo):
+            return 22 - (met - 1.2)*2 - (clo - 0.5)*4
+
+        df8["optimal_temp"] = df8.apply(
+            lambda r: optimal_temp(r["metabolic_rate"], r["clothing_ensemble_insulation"]),
+            axis=1)
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        scatter = ax.scatter(
+            df8["metabolic_rate"],
+            df8["clothing_ensemble_insulation"],
+            c=df8["optimal_temp"],
+            cmap="coolwarm",
+            s=80,
+            edgecolor="black"
+        )
+
+        cbar = plt.colorbar(scatter, ax=ax)
+        cbar.set_label("Optimal operative temperature (°C)")
+        ax.set_xlabel("Aktivität (met)")
+        ax.set_ylabel("Bekleidung (clo)")
+        ax.set_title("Optimale Raumtemperatur nach Aktivität und Bekleidung")
+
+        ax.grid(True)
+
+        # Clothing labels (example CLO values)
+        clothing_labels = [
+            (1.2, 0.30, "Short sleeves + shorts"),
+            (1.2, 0.50, "T‑shirt + pants"),
+            (1.2, 0.80, "Light jacket"),
+            (1.2, 1.20, "Winter coat"),
+        ]
+
+        for met, clo, label in clothing_labels:
+            t_opt = optimal_temp(met, clo)
+            ax.scatter(met, clo, c="black", s=40)
+            ax.text(
+                met + 0.02,
+                clo + 0.02,
+                f"{label}\n≈ {t_opt:.1f} °C",
+                fontsize=9,
+                color="black",
+                bbox=dict(facecolor="white", alpha=0.7, edgecolor="gray")
+            )
+
+        st.pyplot(fig)
+        st.caption("Diese Grafik zeigt, wie sich die optimale Raumtemperatur in Abhängigkeit vom Aktivitätsniveau (met) und der Bekleidungsisolation (clo) verändert." \
+        " Leichte Kleidung wie kurzärmlige Shirts oder Sommeroutfits erfordert eine wärmere Innenraumtemperatur, um thermischen Komfort zu gewährleisten.  " \
+        "Schwerere Kleidung wie leichte Jacken oder Wintermäntel verschiebt den Komfortbereich zu niedrigeren Temperaturen. Die Farbskala zeigt die geschätzte optimale operative Temperatur basierend auf den Prinzipien der ISO 7730.")
+
+
+
+    with st.expander("Empfohlene Kleidung nach Land"):
+# ============================================================
+# CLO RECOMMENDATION BY COUNTRY
+# ============================================================
+
+        st.header("Empfohlene Kleidung nach Land")
+
+        # --- Table ---
+        st.subheader("CLO-Kategorisierung")
+        table_df = pd.DataFrame({
+            "CLO-Wert": [clo_mean, closest_clo],
+            "Kategorie": ["Gemessener Durchschnitt", clothing_label]
+        })
+        st.table(table_df)
+
+        # --- Plot CLO distribution ---
+        st.subheader("Verteilung der CLO-Werte im ausgewählten Land")
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+        ax.hist(df_filtered["clothing_ensemble_insulation"], bins=20, color="skyblue", edgecolor="black")
+        ax.axvline(clo_mean, color="red", linestyle="--", label=f"Durchschnitt CLO = {clo_mean:.2f}")
+        ax.set_xlabel("CLO-Wert")
+        ax.set_ylabel("Häufigkeit")
+        ax.legend()
+        st.pyplot(fig)
+
+
+
+# ============================================================
+# GENERAL TABLE: CLO recommendation for all countries by season
+# ============================================================
+
+    st.subheader("Empfohlene Kleidung nach Saison und Land")
+
+    # English comment:
+    # This section creates a general table for ALL countries,
+    # grouped by season (Summer, Winter, etc.).
+    # Each season is shown inside an expander.
+    # It does NOT use the sidebar filters.
+
+    # --- ASHRAE refined CLO dictionary ---
+    ashrae_clo_refined = {
+        0.00: "Nackt",
+        0.05: "Nur Unterwäsche",
+        0.15: "Sehr leicht: Shorts + Tank-Top",
+        0.25: "Leichtes Sommer-Outfit",
+        0.35: "Sommerkleidung: Leichte lange Hose + T‑Shirt",
+        0.45: "Standard-Sommer: Shorts/Rock + kurzärmeliges Hemd",
+        0.55: "Leichte Übergangskleidung",
+        0.65: "Büro-Sommerkleidung",
+        0.75: "Standard-Übergang: Jeans + leichter Pullover",
+        0.85: "Warmes Outfit",
+        1.00: "Business-Anzug",
+        1.15: "Winter-Büro",
+        1.30: "Wärmere Winterkleidung",
+        1.50: "Schwere Außenkleidung",
+        2.00: "Extrem-Winterkleidung"
+    }
+
+    # Helper: find closest clothing label
+    def closest_clothing_label(clo_value):
+        closest_key = min(ashrae_clo_refined.keys(), key=lambda x: abs(x - clo_value))
+        return closest_key, ashrae_clo_refined[closest_key]
+
+    # --- Seasons available in the dataset ---
+    seasons = sorted(df["season"].dropna().unique())
+
+    # --- Loop through seasons and create an expander for each ---
+    for season in seasons:
+
+        with st.expander(f"Saison: {season}"):
+
+            # Filter dataset for this season
+            season_df = df[df["season"] == season]
+
+            # Group by country
+            rows = []
+
+            for country, subset in season_df.groupby("country"):
+
+                clo_mean = subset["clothing_ensemble_insulation"].mean()
+                clo_key, clo_label = closest_clothing_label(clo_mean)
+
+                rows.append({
+                    "Land": country,
+                    "Saison": season,
+                    "Durchschnittlicher CLO": f"{clo_mean:.2f}",
+                    "Empfohlene Kategorie (ASHRAE)": clo_label,
+                    "Nächstgelegener CLO-Wert": f"{clo_key:.2f}"
+                })
+
+            # Create table
+            season_table = pd.DataFrame(rows)
+
+            st.table(season_table)
+
+        # English explanation
+            st.markdown("""
+        **Comment (English):**  
+        This section shows a general overview of recommended clothing for all countries, grouped by season.  
+        For each season, the average clothing insulation (CLO) is calculated per country and mapped to the closest ASHRAE clothing category.  
+        Each season is displayed inside its own expander for clarity.
+        """)
+
+    
+    # ============================================================
+    # STATISTICAL MAP: Most Influential CLO Variable per Country
+    # ============================================================
+
+    st.subheader("Weltkarte – Wichtigste statistische Einflussvariable auf CLO nach Land")
+
+    import pandas as pd
+    import numpy as np
+    import plotly.express as px
+    from scipy.stats import pearsonr, f_oneway
+
+    numeric_vars = [
+        "metabolic_rate", "operative_temperature",
+        "air_temperature", "radiant_temperature",
+        "age"
+    ]
+
+    categorical_vars = [
+        "season", "climate", "gender",
+        "building_type", "cooling_type"
+    ]
+
+    results = []
+
+    for country in sorted(df["country"].dropna().unique()):
+
+        country_df = df[df["country"] == country].dropna(subset=["clothing_ensemble_insulation"])
+
+        if len(country_df) < 10:
+            results.append({
+                "country": country,
+                "top_variable": "Keine Daten",
+                "effect_strength": 0
+            })
+            continue
+
+        effects = {}
+
+        # NUMERIC VARIABLES
+        for var in numeric_vars:
+            if var not in country_df.columns:
+                effects[var] = 0
+                continue
+
+            col_data = pd.to_numeric(country_df[var], errors="coerce").dropna()
+            clo_data = country_df["clothing_ensemble_insulation"].loc[col_data.index]
+
+            if len(col_data) < 5:
+                effects[var] = 0
+                continue
+
+            try:
+                corr, _ = pearsonr(col_data, clo_data)
+                effects[var] = abs(corr)
+            except:
+                effects[var] = 0
+
+        # CATEGORICAL VARIABLES
+        for var in categorical_vars:
+            if var not in country_df.columns:
+                effects[var] = 0
+                continue
+
+            try:
+                groups = [
+                    group["clothing_ensemble_insulation"].values
+                    for _, group in country_df.groupby(var)
+                    if len(group) >= 3
+                ]
+                if len(groups) > 1:
+                    f_stat, _ = f_oneway(*groups)
+                    effects[var] = f_stat
+                else:
+                    effects[var] = 0
+            except:
+                effects[var] = 0
+
+        top_var = max(effects, key=effects.get)
+        effect_strength = effects[top_var]
+
+        results.append({
+            "country": country,
+            "top_variable": top_var,
+            "effect_strength": effect_strength
+        })
+
+    stat_df = pd.DataFrame(results)
+
+    unique_vars = stat_df["top_variable"].unique()
+    var_to_code = {v: i for i, v in enumerate(unique_vars)}
+    stat_df["var_code"] = stat_df["top_variable"].map(var_to_code)
+
+    fig = px.choropleth(
+        stat_df,
+        locations="country",
+        locationmode="country names",
+        color="var_code",
+        hover_name="country",
+        hover_data={
+            "top_variable": True,
+            "effect_strength": True,
+            "var_code": False
+        },
+        color_continuous_scale="Turbo",
+        title="Wichtigste statistische Einflussvariable auf CLO nach Land"
+    )
+
+    fig.update_layout(
+        title_font_size=22,
+        geo=dict(showframe=False, showcoastlines=True)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown("""
+        Diese Unterschiede sind **normal**:  
+        Jedes Land hat **eigenes Klima**, **eigene Gebäude**, **eigene Kultur** und **eigene Datenverteilung**.  
+        Darum zeigt die Statistik **verschiedene dominante Variablen**.
+        """)
+
+    
+    with st.expander("🔍 Legende – Wichtigste Einflussvariable (statistisch)"):
+
+        st.markdown("""
+        **season** → Kleidung ändert sich stark zwischen Sommer/Winter  
+        **climate** → Klimazone bestimmt typische Kleidung  
+        **gender** → Geschlechtsspezifische Kleidungsgewohnheiten  
+        **building_type** → Innenraumumgebung beeinflusst CLO  
+        **cooling_type** → AC / natürliche Lüftung beeinflusst Kleidung  
+        **metabolic_rate** → Aktivitätsniveau bestimmt Wärmeproduktion  
+        **operative_temperature** → Innenraumtemperatur beeinflusst Kleidung  
+        **air_temperature** → Außentemperatur beeinflusst Kleidung  
+        **radiant_temperature** → Strahlungswärme (Sonne/Wände) beeinflusst Kleidung  
+        **age** → Altersbedingte Unterschiede im Wärmeempfinden
+
+        ---
+        ### 🧭 Warum unterscheiden sich die Länder? (Kurz erklärt)
+
+        **Klima <--> Kleidung**  
+        Heiße Länder → Temperatur dominiert  
+        Kalte Länder → Saison dominiert  
+
+        **Gebäude <--> Innenraumklima**  
+        Starke Klimaanlagen → operative_temperature ↑  
+        Natürliche Lüftung → air_temperature ↑  
+
+        **Kultur <--> Kleidung**  
+        Strenge Kleidungsnormen → gender / building_type ↑  
+
+        **Aktivität <--> Wärmeproduktion**  
+        Hohe körperliche Aktivität → metabolic_rate ↑  
+
+        **Strahlung <--> Komfort**  
+        Starke Sonneneinstrahlung → radiant_temperature ↑  
+
+        Diese Unterschiede sind **normal**:  
+        Jedes Land hat **eigenes Klima**, **eigene Gebäude**, **eigene Kultur** und **eigene Datenverteilung**.  
+        Darum zeigt die Statistik **verschiedene dominante Variablen**.
+        """)
+
+
+################################################################################################################
+ # ============================================================
+# Adaptive behaviours analysis – table, bar chart, heatmap
+# ============================================================
+
+    import pandas as pd
+    import numpy as np
+    import plotly.express as px
+    from scipy.stats import f_oneway
+
+    # English comment:
+    # Adaptive variables available in your dataset.
+    adaptive_vars = ["blind_curtain", "fan", "window", "door", "heater"]
+
+    # English comment:
+    # This function computes ANOVA-based effect strength of each adaptive variable on CLO per country.
+    def compute_adaptive_effects(df):
+        results = []
+        for country in sorted(df["country"].dropna().unique()):
+            country_df = df[df["country"] == country].dropna(subset=["clothing_ensemble_insulation"])
+            if len(country_df) < 10:
+                continue
+
+            effects = {}
+            for var in adaptive_vars:
+                if var not in country_df.columns:
+                    effects[var] = 0
+                    continue
+
+                col = pd.to_numeric(country_df[var], errors="coerce")
+                clo = country_df["clothing_ensemble_insulation"]
+
+                # English comment:
+                # We assume binary 0/1 behaviour and use ANOVA.
+                try:
+                    groups = [
+                        clo[col == 0].values,
+                        clo[col == 1].values
+                    ]
+                    if len(groups[0]) >= 3 and len(groups[1]) >= 3:
+                        f_stat, _ = f_oneway(*groups)
+                        effects[var] = f_stat
+                    else:
+                        effects[var] = 0
+                except:
+                    effects[var] = 0
+
+            for var, eff in effects.items():
+                results.append({
+                    "country": country,
+                    "adaptive_var": var,
+                    "effect_strength": eff
+                })
+
+        return pd.DataFrame(results)
+
+    adaptive_df = compute_adaptive_effects(df)
+
+
+    # ============================================================
+    # EXPANDER 1 – TABLE (Ranking per country)
+    # ============================================================
+
+    with st.expander("Adaptive behaviours – ranking table", expanded=False):
+        st.markdown("""
+        ### Tabellenansicht – Wichtigkeit der adaptiven Verhaltensweisen  
+        *Kurze Beschreibung:*  
+        Diese Tabelle zeigt für jedes Land, welche adaptive Verhaltensweise (z. B. Fenster öffnen, Ventilator nutzen) den stärksten statistischen Einfluss auf die Kleidung (CLO) hat.
+        """)
+
+        # English comment:
+        # For each country, show the adaptive variable with highest effect.
+        top_per_country = (
+            adaptive_df
+            .sort_values("effect_strength", ascending=False)
+            .groupby("country")
+            .head(1)
+            .reset_index(drop=True)
+        )
+
+        st.dataframe(top_per_country)
+
+
+    # ============================================================
+    # EXPANDER 2 – BAR CHART (effect per behaviour)
+    # ============================================================
+
+    with st.expander("Adaptive behaviours – bar chart", expanded=False):
+        st.markdown("""
+        ### Balkendiagramm – Durchschnittlicher Einfluss  
+        *Kurze Beschreibung:*  
+        Dieses Diagramm zeigt, welche adaptive Verhaltensweise weltweit den größten durchschnittlichen Einfluss auf CLO hat.
+        """)
+
+        # English comment:
+        # Aggregate effect strength per adaptive variable across all countries.
+        agg_effects = (
+            adaptive_df
+            .groupby("adaptive_var")["effect_strength"]
+            .mean()
+            .reset_index()
+            .sort_values("effect_strength", ascending=False)
+        )
+
+        fig_bar = px.bar(
+            agg_effects,
+            x="adaptive_var",
+            y="effect_strength",
+            labels={"adaptive_var": "Adaptive Verhaltensweise", "effect_strength": "Durchschnittliche Effektstärke"},
+            title="Durchschnittlicher statistischer Einfluss der adaptiven Verhaltensweisen"
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+
+    # ============================================================
+    # EXPANDER 3 – HEATMAP (country × behaviour)
+    # ============================================================
+
+    with st.expander("Adaptive behaviours – heatmap", expanded=False):
+        st.markdown("""
+        ### Heatmap – Länder und adaptive Verhaltensweisen  
+        *Kurze Beschreibung:*  
+        Diese Heatmap zeigt, wie stark jede adaptive Verhaltensweise in jedem Land wirkt.  
+        Dunklere Farben bedeuten stärkeren Einfluss.
+        """)
+
+        # English comment:
+        # Pivot to create a matrix of effect_strength (country × adaptive_var).
+        heat_df = adaptive_df.pivot_table(
+            index="country",
+            columns="adaptive_var",
+            values="effect_strength",
+            aggfunc="mean",
+            fill_value=0
+        )
+
+        fig_heat = px.imshow(
+            heat_df,
+            labels=dict(x="Adaptive Verhaltensweise", y="Land", color="Effektstärke"),
+            title="Heatmap – Statistischer Einfluss der adaptiven Verhaltensweisen nach Land",
+            aspect="auto"
+        )
+        st.plotly_chart(fig_heat, use_container_width=True)
 
