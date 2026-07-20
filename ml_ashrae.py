@@ -94,7 +94,7 @@ st.title(":material/smart_toy: Machine Learning")
 
 # Create two tabs
 # ---------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋Bearbeitete Themen", "🌡️Subjektive Komfortbewertungen", "🌡️ Modelle Subjektive Komfortbewertungen", "🌡️Klassifikation - Kühlungstyp", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🌡️Subjektive Komfortbewertungen", "🌡️ Modelle Subjektive Komfortbewertungen", "🌡️Klassifikation - Kühlungstyp", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
 
 
 FONT_SIZE_TEXT = "24px"
@@ -175,21 +175,25 @@ with tab2:
     st.subheader("Subjektive Komfortbewertungen")
 
     st.html(slide_point("Idee: Vorhersage der subjektiven Komfortbewertungen (<b>thermal comfort, thermal sensation, therman preference</b>) mit Hilfe von Featuren wie,"))
-    st.html(slide_smallpoint("Lufttemperatur"))
-    st.html(slide_smallpoint("Außentemperatur"))
-    st.html(slide_smallpoint("relative Luftfeuchtigkeit"))
-    st.html(slide_smallpoint("Luftgeschwindigkeit"))
-    st.html(slide_smallpoint("Wärmedurchgangswiderstand der Bekleidung"))
-    st.html(slide_smallpoint("Mittlere Strahlungstemperatur"))
-    st.html(slide_smallpoint("Aktivitätsgrad"))
+    links, mitte, rechts = st.columns(3)
+    with links:
+        st.html(slide_smallpoint("Lufttemperatur"))
+        st.html(slide_smallpoint("Außentemperatur"))
+        st.html(slide_smallpoint("relative Luftfeuchtigkeit"))
+    with mitte:
+        st.html(slide_smallpoint("Luftgeschwindigkeit"))
+        st.html(slide_smallpoint("Wärmedurchgangswiderstand der Bekleidung"))
+    with rechts:
+        st.html(slide_smallpoint("Mittlere Strahlungstemperatur"))
+        st.html(slide_smallpoint("Aktivitätsgrad"))
 
 
     st.subheader("Aufgetretende Probleme")
 
     st.html(slide_point("Label Noise"))
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Die gleichen Bedingungen führen zu subjektiv unterschiedlichen Ergebnisse.<br>")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Menschliche Varianz: Zwei Personen sitzen nebeneinander bei exakt 22 °C, gleicher Kleidung und Aktivität. Person A (hat gerade Kaffee getrunken) wählt cooler. Person B (isst gerade ein Eis) wählt no change oder warmer.")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Subjektive Unentschlossenheit: Der Übergang von „Es ist okay“ (no change) zu „Ich hätte es gerne etwas wärmer“ (warmer) ist fließend. \n Derselbe Mensch würde an zwei verschiedenen Tagen bei exakt identischen Sensorwerten mal so und mal so abstimmen.")
+    #st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Menschliche Varianz: Zwei Personen sitzen nebeneinander bei exakt 22 °C, gleicher Kleidung und Aktivität. Person A (hat gerade Kaffee getrunken) wählt cooler. Person B (isst gerade ein Eis) wählt no change oder warmer.")
+    #st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Subjektive Unentschlossenheit: Der Übergang von „Es ist okay“ (no change) zu „Ich hätte es gerne etwas wärmer“ (warmer) ist fließend. \n Derselbe Mensch würde an zwei verschiedenen Tagen bei exakt identischen Sensorwerten mal so und mal so abstimmen.")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es bilden sich keine klassischen Cluster oder Möglichkeiten für einen Classifier für Unterscheidungen.")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Klassifizierungen erzielen eine Genauigkeit die kaum Mehrwert bietet.")
 
@@ -219,18 +223,21 @@ with tab2:
     #st.dataframe(df_thermal_clf, use_container_width=True)
     #st.image("ML/images/tabelle_thermal.png", caption="Untersuchungen - subjektive Komfortbewertungen")
 
-    img_base64 = get_base64_image("ML/images/tabelle_thermal.png")
+    img_base64 = get_base64_image("ML/images/tabelle_thermal.svg")
 
-    # HTML/CSS-Einbindung für maximale Schärfe von Text und Linien
-    st.markdown(
-        f"""
-        <div style="display: flex; justify-content: center;">
-            <img src="data:image/png;base64,{img_base64}" 
-                 style="width: 100%; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+ 
+
+    # Pfad zu deiner in Schritt 1 gespeicherten SVG-Datei
+    svg_path = "ML/images/tabelle_thermal.svg"
+
+    # Datei als Text/String einlesen
+    with open(svg_path, "r", encoding="utf-8") as f:
+        svg_code = f.read()
+
+    # Nativ in Streamlit anzeigen (wichtig: width="stretch" für die volle Breite)
+    st.image(svg_code, width="stretch")
+
+
 
 
     st.html("<div style='height: 140px;'></div>")    
@@ -240,6 +247,7 @@ with tab2:
 
 
         st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Vergleich der Ergebnisse - Thermal preference")    
+
 
 with tab3:
 
@@ -276,7 +284,7 @@ with tab3:
         
         with row1_col1:
             st.subheader("📋 Features")
-            possible_features = ['air_temperature', 'outdoor_air_temperature', 'relative_humidity', 'air_speed', 'metabolic_rate', 'clothing_ensemble_insulation', 'radiant_temperature']
+            possible_features = ['air_temperature', 'relative_humidity', 'air_speed', 'metabolic_rate', 'clothing_ensemble_insulation', 'radiant_temperature']
             selected_features = []
             for feature in possible_features:
                 if st.checkbox(feature, value=True, key=f"feat_{feature}"):
@@ -367,7 +375,7 @@ with tab3:
             param = {
             "classifier__max_depth": [6, 9, 12],
             "classifier__n_estimators": [100],
-            "classifier__min_samples_leaf": [2, 20, 50],
+            "classifier__min_samples_leaf": [20, 50],
             "classifier__min_samples_split": [50],
             "classifier__max_features": ["sqrt"],
             #"classifier__class_weight": ["balanced"],
@@ -389,7 +397,7 @@ with tab3:
             # Maximale Baumtiefe (Der gesuchte Sweet-Spot zwischen 3 und 16)
             'classifier__max_depth': [6, 9, 12],
             # Mindestanzahl an Datenpunkten pro Endblatt (Schutz vor Rauschen/Overfitting)
-            'classifier__min_samples_leaf': [2, 10, 30, 60],
+            'classifier__min_samples_leaf': [10, 30, 60],
             # Mindestanzahl an Datenpunkten, um einen Knoten überhaupt zu teilen
             'classifier__min_samples_split': [25, 70],
             # Feature-Begrenzung pro Split ('sqrt' nutzt ca. 2 von 5 Features, None nutzt alle 5)
@@ -558,46 +566,25 @@ with tab3:
     # Button zum Starten des Trainings
     if st.button("🚀 Modell trainieren & validieren"):
 
-        # Container für die Live-Zeitanzeige erstellen
-        timer_placeholder = st.empty()
-
         # Variablen für die Zeitmessung initialisieren
         start_time = time.time()
-        suche_aktiv = True
-
-        # Diese Funktion läuft im Hintergrund und aktualisiert den Timer jede Sekunde
-        def zeige_live_timer():
-            while suche_aktiv:
-                vergangene_zeit = time.time() - start_time
-                # Zeigt den aktuellen Zwischenstand im Vortrag an
-                timer_placeholder.markdown(
-                    f"⏳ **Berechnung läuft... Aktuelle Dauer:** `{vergangene_zeit:.1f} Sekunden`"
-                )
-                time.sleep(0.1)
-
-        # Den Live-Timer in einem separaten Hintergrund-Thread starten
-        timer_thread = threading.Thread(target=zeige_live_timer)
-
+       
 
         if (use_random_search):
             searchtext = 'RandomSearch läuft... Bitte warten...'
         else:
             searchtext = 'GridSearch läuft... Bitte warten...'
 
-        with st.spinner(searchtext):
-            timer_thread.start()
+        
+        with st.status(searchtext, expanded=True) as status_box:
+
             best_pipeline, best_params = train_model(   ################################################################################ Aufruf RANDOM FOREST FUNCTION ##################
                 X_train, y_train, tuple(selected_features), param, #tuple(n_estimators_options), tuple(max_depth_options), 
                 impute_strategy, tuple(selected_seasons), tuple(selected_climates), tuple(selected_coolings), tuple(selected_buildings), max_kombinationen, cv_folds
             )
         
-        # Finale Endzeit berechnen
-        end_time = time.time()
-        gesamtdauer = end_time - start_time
 
-        # Den provisorischen Timer-Text löschen und durch die Erfolgsmeldung ersetzen
-        timer_placeholder.empty()
-
+            gesamtdauer = time.time() - start_time
 
         st.session_state['model_thermal'] = best_pipeline
         st.session_state['best_params'] = best_params
@@ -768,12 +755,11 @@ with tab3:
         #with col3:
 
 
-
 with tab4:
 
     # Dashboard Titel
     st.title("🌡️ Vorhersage Kühlungsart (Cooling Type)")
-    st.markdown("Dieses Dashboard prognostiziert den Kühlungstyp basierend auf thermodynamischen und personenspezifischen Features.")
+
 
     tab1, tab2, tab3 = st.tabs(["🔮 Livevorhersage & SHAP", "📈 Modellperformance", "⚙️ Modellaufbau"])
 
@@ -786,7 +772,6 @@ with tab4:
         # 2. Sidebar für Benutzereingaben (Schieberegler)
         with col_sidebar:
             st.header("🎛️ Featureeingabe")
-            st.markdown("Passen Sie die Parameter an, um eine Echtzeit-Vorhersage zu erhalten.")
             
             air_temp = st.slider("Innentemperatur (air_temperature) [°C]", 10.0, 40.0, 23.0, step=0.1, format="%0.1f")
             out_temp = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, 20.0, step=0.1, format="%0.1f")
@@ -884,7 +869,7 @@ with tab4:
                     # ==========================================
                     # DIAGRAMM 2: LOKALER WATERFALL-PLOT (Fehlerfreie Prozent-Kalibrierung)
                     # ==========================================
-                    st.markdown("### 📍 Lokale Erklärung für Ihre aktuelle Slider-Auswahl")
+                    st.markdown("### 📍 Lokale Erklärung für die aktuelle Slider-Auswahl")
                     
                     # 1. Ermittle den numerischen Index der echten Live-Vorhersage (0, 1 oder 2)
                     predicted_class_idx = int(num_prediction) if hasattr(num_prediction, "__len__") else int(num_prediction)
@@ -902,7 +887,7 @@ with tab4:
 
                     # 3. Die Selectbox greift nun stabil auf den manipulierten Session State zu
                     selected_class_local = st.selectbox(
-                        "Wählen Sie einen Kühlungstyp für die LOKALE Erklärung (Waterfall):",
+                        "Kühlungstyp für die LOKALE Erklärung (Waterfall):",
                         options=target_names,
                         key="sb_local_shap"  # Über diesen Key ist sie mit dem State verknüpft
                     )
@@ -915,10 +900,7 @@ with tab4:
                     fig_local, ax_local = plt.subplots(figsize=(8, 4))
                     
                     if len(single_shap.shape) == 3: 
-                        st.caption(
-                            f"Der Waterfall-Plot zeigt direkt in **Wahrscheinlichkeits-Prozenten**, "
-                            f"wie stark jedes Feature die Chance für **{selected_class_local}** verändert."
-                        )
+
                         
                         # --- MATHEMATISCHE KALIBRIERUNG AUF PREDICT_PROBA ---
                         true_end_prob = probabilities[class_idx_local]
@@ -1669,3 +1651,28 @@ with tab6:
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Schnittmengen der Anomalien")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - SHAP-Analyse der Datenpunkte zur Analyse und Erklärung der Anomalien")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einfluss auf ML-Modelle (erste Ergebnisse zeigten keinen Einfluss mit rausgefilterten Anomaliewerten.)")
+
+
+with tab7:
+
+    st.subheader("Fazit")
+
+    links, rechts = st.columns([3,1])
+    with links:
+        st.html(slide_point("Subjektive Werte sind im Gegensatz zu physikalischen Werten oft nur schwer über Machine Learning zu bestimmen."))
+
+    links, rechts = st.columns([3,1])
+    with links:
+        st.html(slide_point("Eine Vorhersage der Werte für das thermische Empfinden ist stark geprägt von Label Noise und liefert deshalb keine ausreichend genaue Vorhersagen."))
+
+    links, rechts = st.columns([3,1])
+    with links:
+        st.html(slide_point("Der Kühlsungstyp konnte recht gut aus den physichen Daten vorhergesagt werden."))
+
+    links, rechts = st.columns([3,1])
+    with links:
+        st.html(slide_point("Eine durchgeführte Regression zur Bestimmung des Kleidungsisolationswerte zeigte Ergebnisse mit einer durchschnittlichen Genauigkeit von etwa 0.12, was in etwas einer Strickjacke oder einem dünnen Shirt entspricht."))
+
+    links, rechts = st.columns([3,1])
+    with links:
+        st.html(slide_point("Die durchgeführten Anomaliebetrachtungen zeigen auffällige Werte die noch genauer zu betrachten wären. Ein erster Versuch zeigt keine Verbesserungen der Vorhersagen durch Ausfiltern der Werte."))
