@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from scipy.stats import chi2_contingency
 import plotly.express as px
+import math
 
 
 
@@ -170,8 +171,6 @@ with tab1:
             "Temperate": [0, 180, 0, 180],
             "Continental": [150, 0, 150, 180]
         }
-
-    import math
 
     # Mehrfarbige Kreise erstellen
     def create_pie_segments(df, climate_column, radius=1.5):
@@ -389,16 +388,16 @@ with tab1:
     with st.expander("Weitere Informationen zu Klimata und Klimazonen"):
         st.markdown("""  
         - Hinweise:
-            - Die 5. Hauptklimazone Polar ist hier nicht mit aufgeführt, da es für diese Klimazone in diesem Datensatz keine Daten gibt
-            - Es wurde keine offizielle Zuordnung der Klimata zu den Klimazonen gefunden, daher kann sich die hier gewählte Zuordnung von anderen unterscheiden
+            - Die **5. Hauptklimazone Polar** ist hier nicht mit aufgeführt, da es für diese Klimazone in diesem Datensatz keine Daten gibt
+            - Es wurde **keine offizielle Zuordnung der Klimata zu den Klimazonen** gefunden, daher kann sich die hier gewählte Zuordnung von anderen unterscheiden
         """)
 
         st.markdown(""" 
-        - Beschreibungen zu Klimazonen:
-            - Tropical: Ganzjährig hohe Temperaturen, geringe jahreszeitliche Schwankungen 
-            - Dry: Geringe Niederschläge, aride und semiaride Gebiete
-            - Temperate: Moderate Temperaturen, ausgeprägte Jahreszeiten
-            - Continental: Große Temperaturunterschiede zwischen Sommer und Winter
+        - **Beschreibungen zu Klimazonen:**
+            - **Tropical**: Ganzjährig hohe Temperaturen, geringe jahreszeitliche Schwankungen 
+            - **Dry**: Geringe Niederschläge, aride und semiaride Gebiete
+            - **Temperate**: Moderate Temperaturen, ausgeprägte Jahreszeiten
+            - **Continental**: Große Temperaturunterschiede zwischen Sommer und Winter
         """)
 
 
@@ -1254,9 +1253,9 @@ with tab3:
                     
         ➡️ **Land: schwache** Zusammenhänge  
                     
-        ➡️ **Klimazone: sehr schwache bis Schwache** Zusammenhänge 
+        ➡️ **Klimazone: sehr schwache bis schwache** Zusammenhänge 
                     
-        ➡️ **Region: sehr schwache bis Schwache** Zusammenhänge
+        ➡️ **Region: sehr schwache bis schwache** Zusammenhänge
     """
     )
 
@@ -1318,7 +1317,6 @@ with tab3:
 
             - ⭐**Zusammenhang** zwischen allen vier thermischen Bewertungsvariablen und allen vier klimatischen/geografischen Variablen ✅
             - **Klima** hat den **größten Zusammenhang mit der thermischen Bewertung**
-            - Klimazone und Region haben den geringsten Zusammenhang mit der thermischen Bewertung
             - Tendenziell ist der Zusammenhang allgemein am **stärksten bei Thermischem Komfort und Thermischer Akzeptanz**
             """
         )
@@ -1328,13 +1326,11 @@ with tab3:
             **Bedeutung:**
 
             - ⭐ **Feinere klimatische Klassifikation hat insgesamt stärkeren Zusammenhang** mit der thermischen Bewertung als Länder-/Regionszugehörigkeit oder größer gefasste Klimazonen
-                
-                ➝ mögliche Erklärungen:
-                - Klimazone: Komplexität wird stark reduziert ➝ klimatische Unterschiede werden stark vereinfacht
-                - Land: hier können große Unterschiede bestehen z.B. in mehreren Klimata, unterschiedlichen Normen und Standards, kulturellen Unterschieden
-                - Region: noch stärkere Zusammenfassung als Land
-
-
             - ⭐ Ergebnisse deuten darauf hin, dass klimatische/geografische Variablen einen **relevanten, aber nicht dominierenden Einfluss auf die thermische Bewertung** haben
             """
         )
+
+                # ➝ mögliche Erklärungen:
+                # - Klimazone: Komplexität wird stark reduziert ➝ klimatische Unterschiede werden stark vereinfacht
+                # - Land: hier können große Unterschiede bestehen z.B. in mehreren Klimata, unterschiedlichen Normen und Standards, kulturellen Unterschieden
+                # - Region: noch stärkere Zusammenfassung als Land
