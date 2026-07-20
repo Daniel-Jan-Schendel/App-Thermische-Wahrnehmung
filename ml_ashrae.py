@@ -33,8 +33,6 @@ import io
 import threading
 import time
 
-
-
 # Seiteneinstellungen konfigurieren
 st.set_page_config(
     page_title="ASHRAE Cooling Type Classifier",
@@ -176,19 +174,35 @@ with tab2:
 
     st.subheader("Subjektive Komfortbewertungen")
 
-    st.html(slide_point("Idee: Vorhersage der subjektiven Komfortbewertungen (thermal comfort, thermal sensation, therman preference) mit Hilfe von Featuren wie, ..."))
+    st.html(slide_point("Idee: Vorhersage der subjektiven Komfortbewertungen (<b>thermal comfort, thermal sensation, therman preference</b>) mit Hilfe von Featuren wie,"))
+    st.html(slide_smallpoint("Lufttemperatur"))
+    st.html(slide_smallpoint("Außentemperatur"))
+    st.html(slide_smallpoint("relative Luftfeuchtigkeit"))
+    st.html(slide_smallpoint("Luftgeschwindigkeit"))
+    st.html(slide_smallpoint("Wärmedurchgangswiderstand der Bekleidung"))
+    st.html(slide_smallpoint("Mittlere Strahlungstemperatur"))
+    st.html(slide_smallpoint("Aktivitätsgrad"))
 
 
     st.subheader("Aufgetretende Probleme")
 
     st.html(slide_point("Label Noise"))
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Die gleichen Bedingungen führen zu subjektiv unterschiedlichen Ergebnisse.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Die gleichen Bedingungen führen zu subjektiv unterschiedlichen Ergebnisse.<br>")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Menschliche Varianz: Zwei Personen sitzen nebeneinander bei exakt 22 °C, gleicher Kleidung und Aktivität. Person A (hat gerade Kaffee getrunken) wählt cooler. Person B (isst gerade ein Eis) wählt no change oder warmer.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Subjektive Unentschlossenheit: Der Übergang von „Es ist okay“ (no change) zu „Ich hätte es gerne etwas wärmer“ (warmer) ist fließend. \n Derselbe Mensch würde an zwei verschiedenen Tagen bei exakt identischen Sensorwerten mal so und mal so abstimmen.")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es bilden sich keine klassischen Cluster oder Möglichkeiten für einen Classifier für Unterscheidungen.")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Klassifizierungen erzielen eine Genauigkeit die kaum Mehrwert bietet.")
 
+    links, rechts = st.columns([1,1])
+
+    with links:
+        st.image("ML/images/Problem_label_noise_thermal_comfort.png", caption="Label Noise - Beispiel Thermal Comfort")
+
+    with rechts:
+        st.image("ML/images/Problem_label_noise_thermal_preference.png", caption="Label Noise - Beispiel Thermal Comfort")
+
     links, mitte, rechts = st.columns([1,2,1])
     with mitte:
-        st.image("ML/images/Problem_label_noise_thermal_comfort.png", caption="Label Noise - Beispiel Thermal Comfort")
 
         st.image("ML/images/confusion_matrix_thermal_comfort.png", caption="Beispiel Confusion matrix - Thermal Comfort")
 
@@ -218,6 +232,14 @@ with tab2:
         unsafe_allow_html=True
     )
 
+
+    st.html("<div style='height: 140px;'></div>")    
+
+    links, mitte, rechts = st.columns([1,2,1])
+    with mitte:
+
+
+        st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Vergleich der Ergebnisse - Thermal preference")    
 
 with tab3:
 
@@ -254,7 +276,7 @@ with tab3:
         
         with row1_col1:
             st.subheader("📋 Features")
-            possible_features = ['air_temperature', 'relative_humidity', 'air_speed', 'metabolic_rate', 'clothing_ensemble_insulation', 'radiant_temperature']
+            possible_features = ['air_temperature', 'outdoor_air_temperature', 'relative_humidity', 'air_speed', 'metabolic_rate', 'clothing_ensemble_insulation', 'radiant_temperature']
             selected_features = []
             for feature in possible_features:
                 if st.checkbox(feature, value=True, key=f"feat_{feature}"):
@@ -345,7 +367,7 @@ with tab3:
             param = {
             "classifier__max_depth": [6, 9, 12],
             "classifier__n_estimators": [100],
-            "classifier__min_samples_leaf": [20, 50],
+            "classifier__min_samples_leaf": [2, 20, 50],
             "classifier__min_samples_split": [50],
             "classifier__max_features": ["sqrt"],
             #"classifier__class_weight": ["balanced"],
@@ -367,7 +389,7 @@ with tab3:
             # Maximale Baumtiefe (Der gesuchte Sweet-Spot zwischen 3 und 16)
             'classifier__max_depth': [6, 9, 12],
             # Mindestanzahl an Datenpunkten pro Endblatt (Schutz vor Rauschen/Overfitting)
-            'classifier__min_samples_leaf': [10, 30, 60],
+            'classifier__min_samples_leaf': [2, 10, 30, 60],
             # Mindestanzahl an Datenpunkten, um einen Knoten überhaupt zu teilen
             'classifier__min_samples_split': [25, 70],
             # Feature-Begrenzung pro Split ('sqrt' nutzt ca. 2 von 5 Features, None nutzt alle 5)
