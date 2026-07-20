@@ -30,9 +30,9 @@ pg = st.navigation(
         #st.Page("ML_test_iris.py", title="Machine Learning Test", icon=":material/smart_toy:"),
         #st.Page("ML_test_ASHRAE.py", title="Machine Learning Test 2", icon=":material/smart_toy:"),
         st.Page("ml_ashrae.py", title="Machine Learning Modelling", icon=":material/smart_toy:"),
-        st.Page("./ML/ml_streamlit.py", title="Machine Learning Modelling - Klassifikation", icon=":material/smart_toy:"),
-        st.Page("./ML/ml_streamlit_cooling_type.py", title="Machine Learning - Klassifikation", icon=":material/smart_toy:"),
-        st.Page("./ML/ml_streamlit_clo.py", title="Machine Learning - Regression", icon=":material/smart_toy:"),
+        #st.Page("./ML/ml_streamlit.py", title="Machine Learning Modelling - Klassifikation", icon=":material/smart_toy:"),
+        #st.Page("./ML/ml_streamlit_cooling_type.py", title="Machine Learning - Klassifikation", icon=":material/smart_toy:"),
+        #st.Page("./ML/ml_streamlit_clo.py", title="Machine Learning - Regression", icon=":material/smart_toy:"),
         st.Page("zusammenfassung.py", title="Zusammenfassung", icon=":material/menu_book:"),
         st.Page("dashboard.py", title="Dashboard", icon=":material/menu_book:")
     ]
