@@ -302,7 +302,7 @@ with tab2:
             """
             <h5 style="text-align: center;">
                🌍 Klima-Analyse
-            </h3>
+            </h5>
             """,
             unsafe_allow_html=True
         )
@@ -330,7 +330,7 @@ with tab2:
             """
             <h5 style="text-align: center;">
                 🌀 Cooling Type und Gender Analyse
-            </h3>
+            </h5>
             """,
             unsafe_allow_html=True
         )
@@ -360,7 +360,7 @@ with tab2:
             <h5 style="text-align: center;">
                 🌡️ Thermische Bewertung und Innen-
                 raumklima Analyse
-            </h3>
+            </h5>
             """,
             unsafe_allow_html=True
         )
@@ -387,13 +387,17 @@ with tab2:
     with col4:
 
  
-        st.markdown("""
-            #### 🎯Machine Learning
-        """
+        st.markdown(
+            """
+            <h5 style="text-align: center;">
+            🎯Machine Learning
+            </h5>
+            """,
+            unsafe_allow_html=True
         )
         
         #st.markdown("<br>", unsafe_allow_html=True)
-        st.html("<div style='height: 27px;'></div>")    
+        st.html("<div style='height: 33px;'></div>")    
 
         st.markdown(
             """
