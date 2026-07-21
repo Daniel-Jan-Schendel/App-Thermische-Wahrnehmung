@@ -307,7 +307,8 @@ with tab2:
             unsafe_allow_html=True
         )
         st.markdown("<br>", unsafe_allow_html=True)
-
+        st.html("<div style='height: 10px;'></div>")   
+        
         st.markdown(
             """
             <div style="
@@ -321,7 +322,7 @@ with tab2:
             """,
             unsafe_allow_html=True
         )
-        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        #st.markdown("<br><br><br>", unsafe_allow_html=True)
     
     # - Fragestellung 2 -
     with col2:
@@ -363,7 +364,8 @@ with tab2:
             """,
             unsafe_allow_html=True
         )
-        st.markdown("<br>", unsafe_allow_html=True)
+        #st.markdown("<br>", unsafe_allow_html=True)
+        st.html("<div style='height: 10px;'></div>")   
 
         st.markdown(
             """
@@ -390,7 +392,24 @@ with tab2:
         """
         )
         
-        st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+        #st.markdown("<br>", unsafe_allow_html=True)
+        st.html("<div style='height: 27px;'></div>")    
+
+        st.markdown(
+            """
+            <div style="
+                background-color: #f7f7f7;
+                padding: 15px;
+                border-radius: 8px;
+            ">
+                - Lässt sich thermisches Empfinden mit Hilfe von Machine Learning bestimmen?
+                <br>
+                - Gibt es andere Kenngrößen die das Wohlbefinden beeinflussen die sich vorhersagen lassen?
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # -------------------------
 # TAB 5 – Tools und Prozess
