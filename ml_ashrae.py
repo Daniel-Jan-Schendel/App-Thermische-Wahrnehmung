@@ -205,10 +205,16 @@ with tab2:
     with rechts:
         st.image("ML/images/Problem_label_noise_thermal_preference.png", caption="Label Noise - Beispiel Thermal Comfort")
 
-    links, mitte, rechts = st.columns([1,2,1])
+    links, links_links, mitte_links, mitte, mitte_rechts, rechts = st.columns([0.5,2,2,2,2,0.5], vertical_alignment='center')
+    with links_links:
+        st.image("ML/images/verteilung_target_thermal_comfort.png", caption="Beispiel Classifcation Report - Thermal Comfort Basismodell")
+    with mitte_links:
+        st.image("ML/images/classification_report_random_forest_thermal_comfort_basis_.png", caption="Beispiel Classifcation Report - Thermal Comfort Basismodell")
     with mitte:
-
         st.image("ML/images/confusion_matrix_thermal_comfort.png", caption="Beispiel Confusion matrix - Thermal Comfort")
+    with mitte_rechts:
+        st.html(slide_point("Label Noise und Klassenimbalance machen es dem Random Forest schwer."))
+        #st.html(slide_point("."))
 
     st.subheader("Versuchte Maßnahmen")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Kleinere Datensätze mit Filterung für homogenere Datensätze")
@@ -237,16 +243,26 @@ with tab2:
     # Nativ in Streamlit anzeigen (wichtig: width="stretch" für die volle Breite)
     st.image(svg_code, width="stretch")
 
-
+    st.html(slide_point("Es liegt anscheinend ein nichtlineares Problem vor (z.B. U-förmiger Einfluss der Temperatur auf das Befinden), dass sich mit den linearen Algorithmen nicht gut abbilden lässt. "))
+    st.html(slide_point("Auch die Klassenungleichheit kann durch lineare Modelle schlechter berücksichtigt werden. Sie neigen zur Dominanz der Mehrheitsklasse. Entscheidungsbäume haben es damit leichter."))
+    st.html(slide_point("Entscheidungsbäume und kNN können die nichtlineare Situation besser abbilden, zeigen aber infolge des Label Noise keine guten Ergebnisse."))
+    st.html(slide_point("Gerade für kNN ist Label Noise problematisch. Entscheidungsbäume neigen zu Overfitting und sprunghaftem Wechsel zwischen Klassen (Auswendiglernen des Trainsets)"))
+    st.html(slide_point("Ensemble-Methoden, wie RandomForest und HistGradientBoosting können das Label Noise bedingt glätten und sind immun gegen Multikolinearität."))
+    st.html(slide_point("Die besten, wenn auch recht schwachen, Ergebnisse zeigen Random Forest und HistGradientBoosting. Diese sind zudem weniger anfällig bzgl. Korrelationen und benötigen keine Skalierung der Features."))
+    st.html(slide_point("Eine Reduzierung der Klassen verbessert die Werte der Metriken primär scheinbar, da dadurch auch die Wahrscheinlichkeiten für jede Klasse steigen. Das Problem des Label Noise bleibt."))
+    st.html(slide_point("An angesrebter Zielwert des macro F1-Score von ungefähr 0.7 wird nicht erreicht. Das Modell ist nur bedingt praxistauglich."))
+    st.html(slide_point("Für bessere Ergebnisse wären wahrscheinlich weitere subjektive Informationen der befragten Personen wichtig."))
+    st.html(slide_point("In der ASHRAE-Norm heißt es, dass eine Klimatisierung dann als erfolgreich und normgerecht gilt, wenn mindestens 80% der Raumnutzer zufrieden sind."))
 
 
     st.html("<div style='height: 140px;'></div>")    
 
-    links, mitte, rechts = st.columns([1,2,1])
-    with mitte:
+    links, rechts = st.columns([1,1])
+    with links:
+        st.image("ML/images/VergleichModelle_thermal_comfort_F1.png", caption="Vergleich der Ergebnisse - Thermal comfort")    
 
-
-        st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Vergleich der Ergebnisse - Thermal preference")    
+    with rechts:
+        st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Vergleich der Ergebnisse - Thermal Preference")    
 
 
 with tab3:
@@ -290,12 +306,14 @@ with tab3:
                 if st.checkbox(feature, value=True, key=f"feat_{feature}"):
                     selected_features.append(feature)
 
-        with row1_col2:
-            st.subheader("🧽 Daten-Handling")
-            impute_strategy = st.radio(
-                "Strategie für Fehlwerte:",
-                options=["Zeilen mit Fehlwerten löschen (dropna)", "Mit Median auffüllen (Imputer)"]
-            )
+        # with row1_col2:
+        #     st.subheader("🧽 Daten-Handling")
+        #     impute_strategy = st.radio(
+        #         "Strategie für Fehlwerte:",
+        #         options=["Zeilen mit Fehlwerten löschen (dropna)", "Mit Median auffüllen (Imputer)"]
+        #     )
+
+        impute_strategy = "Zeilen mit Fehlwerten löschen (dropna)"
 
         # Zweite Reihe: 3 Spalten für Features, Seasons und Climates
         row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4)
@@ -1173,9 +1191,18 @@ with tab4:
             * GridSearchCV ausgeführt, brachte aber keine Verbesserung
                     """)
         
-        Fscore_left, Fscore_middle, Fscore_right = st.columns([1,3,1])
-        with Fscore_middle:
+        links, mitte_links, mitte_rechts, rechts = st.columns([1,3,3,1], vertical_alignment='center')
+        with mitte_links:
             st.image("ML/images/VergleichModelle_cooling_type.png", caption="Modellvergleich: Macro F1-Score")
+
+        with mitte_rechts:
+            st.html(slide_point("Das beste Modell ergibt sich über ein RandomForest."))
+            st.html(slide_point("Lineare Modelle können die nichtlinearen Probleme schlecht abbilden."))
+            st.html(slide_point("Das Problem Label Noise ist deutlich geringer als bei der Werten des thermischen Empfindens."))
+            st.html(slide_point("HistGradientBoosting hat den Vorteil eines deutlich schnelleren Modells und kleiner Exportdatei."))
+
+        Fscore_left, Fscore_middle, Fscore_right = st.columns([1,3,3.5])
+        with Fscore_middle:
             st.image("ML/images/pairplot_cooling_type.png", caption="Modellvergleich: Macro F1-Score")
 
 
@@ -1594,9 +1621,14 @@ with tab5:
             * Über GridSearch Hyperparameter optimiert
             """)
         
-        R_left, R_middle, R_right = st.columns([1,3,1])
-        with R_middle:
-            st.image("ML/images/VergleichModelle_clo_MAE.png", caption="Modellvergleich: Macro F1-Score")
+        links, mitte_links, mitte_rechts, rechts = st.columns([1,3,3,1], vertical_alignment='center')
+        with mitte_links:
+            st.image("ML/images/VergleichModelle_clo_MAE.png", caption="Modellvergleich: MAE")
+        
+        with mitte_rechts:
+            st.html(slide_point("Auch in dieser Regressionsbetrachtung zeigen die Ensemblemethoden die besten Werte."))
+            st.html(slide_point("Die Abweichung liegt im Mittel bei einem clo-Wert von 0.12, was einer praxistauglichen Vorhersage entspricht."))
+            st.html(slide_point("..."))
 
 
 with tab6:
