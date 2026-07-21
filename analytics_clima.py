@@ -30,39 +30,103 @@ def interpret_effect(v):
     else:
         return "sehr stark"
 
-
-def interpret_significance(p):
-    if p < 0.05:
-        return "✓"
-    else:
-        return "✗"
-
-
-# Load data
-
+# ---------------------------------------------------------
+# 📌 Daten laden
+# ---------------------------------------------------------
 df = pd.read_csv("db_bereinigt_final.csv")
 
-
+# ---------------------------------------------------------
+# 📌 Seitentitel
+# ---------------------------------------------------------
 st.title("🌍 Analyse Klima und thermische Bewertung")
 
-
-tab1, tab2, tab3 = st.tabs(["Geografische Verteilung", "Betrachtung Klima und thermische Bewertung", "Zusammenhang Klima und thermische Bewertung"])
+# ---------------------------------------------------------
+# 📌 tabs definieren
+# ---------------------------------------------------------
+tab1, tab2, tab3 = st.tabs(["Geografische Verteilung", "Betrachtung Klima und thermisches Befinden", "Zusammenhang Klima und thermisches Befinden"])
 
 #########################################################################################################
 #########################################################################################################
 
+# ---------------------------------------------------------
+# 📌 Geografische Verteilung
+# ---------------------------------------------------------
 with tab1:
-
-    # ---------------------------------------------------------
-    # 📌 1. Daten laden
-    # ---------------------------------------------------------
-    df = pd.read_csv("db_bereinigt_final.csv")
 
     # Nur Zeilen behalten, die gültige Koordinaten haben
     df = df.dropna(subset=["latitude", "longitude"])
 
     st.subheader("Geografische Verteilung der ASHRAE Feldstudien")
 
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    col1, spacer, col2, spacer, col3, spacer, col4 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
+
+    with col1:
+        st.markdown(
+                """
+                <div style="
+                    background-color: #E3F2FD;
+                    padding: 15px;
+                    text-align:center;
+                    border-radius: 8px;
+                ">
+                    4 Hauptklimazonen
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+    with col2:
+        st.markdown(
+                """
+                <div style="
+                    background-color: #E3F2FD;
+                    padding: 15px;
+                    text-align:center;
+                    border-radius: 8px;
+                ">
+                    31 Klimata
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+    with col3:
+        st.markdown(
+                """
+                <div style="
+                    background-color: #E3F2FD;
+                    padding: 15px;
+                    text-align:center;
+                    border-radius: 8px;
+                ">
+                    5 Regionen
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+    
+    with col4:
+        st.markdown(
+                """
+                <div style="
+                    background-color: #E3F2FD;
+                    padding: 15px;
+                    text-align:center;
+                    border-radius: 8px;
+                ">
+                    29 Länder
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
     # 🔍 2. Filter-Widget (Kima/Klimazone)
@@ -404,25 +468,20 @@ with tab1:
 #########################################################################################################
 #########################################################################################################
 
-
+# ---------------------------------------------------------
+# 📌 Betrachtung Klima und thermische Bewertung
+# ---------------------------------------------------------
 with tab2:
     
-    st.subheader("Betrachtung von klimatischen/geografischen Variablen und thermischer Bewertung")
-    
+    st.subheader("Betrachtung von klimatischen/geografischen Variablen und thermischem Befinden")
     st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------------------------------------------------------
-    # 📌 1. Einführungstext
-    # ---------------------------------------------------------
-    
-
+  
     col1, col2, col3 = st.columns([1,0.08, 1])
     col4, spacer, col5 = st.columns([2,0.8,2])
     col6, spacer, col7 = st.columns([2,0.8,2])
     col8, col9 = st.columns([10,0.2])
+         
 
-
-          
     # ---------------------------------------------------------
     # 🔎 1. Mapping-Dictionary
     # ---------------------------------------------------------
@@ -434,7 +493,6 @@ with tab2:
         "Land": "country"            
     }
 
-
     # Mapping-Dictionary thermische Variablen
     thermal_mapping = {
         "Thermischer Komfort": "thermal_comfort",
@@ -443,12 +501,6 @@ with tab2:
         "Thermische Akzeptanz": "thermal_acceptability"
     }
 
-    # # Filter-Widget (thermische Variablen)
-    # selected_variable_thermal = st.selectbox(
-    #     "Thermische Bewertungsvariable auswählen",
-    #     list(thermal_mapping.keys()),
-    #     key="selectbox_thermal"
-    # )
 
     with col1:
         # ---------------------------------------------------------
@@ -460,43 +512,20 @@ with tab2:
             list(environment_mapping.keys()),
             key="selectbox_environment"
         )
-
         st.markdown("<br>", unsafe_allow_html=True)
-
-    # with col2:
-    #     st.markdown("<br>", unsafe_allow_html=True)
-    #     st.markdown("""###### und""")
-
-
-    # with col3:
-    #     st.info("""
-    #     **Thermischer Bewertung:**
-    #     - Thermischer Komfort
-    #     - Thermisches Empfinden
-    #     - Thermische Präferenz
-    #     - Thermische Akzeptanz
-    #     """
-    #     )
-    
-    #    st.markdown("<br>", unsafe_allow_html=True)
 
         
     # ---------------------------------------------------------
     # 🔍 3. Mapping anwenden
     # ---------------------------------------------------------
     # Mapping für Klima anwenden
-    selected_environment_column = environment_mapping[selected_variable_environment]
-
-    # Mapping für thermsiche Variablen anwenden
-    #selected_thermal_column = thermal_mapping[selected_variable_thermal]
-    
+    selected_environment_column = environment_mapping[selected_variable_environment]    
     st.markdown("<br><br>", unsafe_allow_html=True)
 
 
     # ---------------------------------------------------------
     # 📊 4. Grafiken erstellen
     # ---------------------------------------------------------
-
     # Diagramm Thermischer Komfort
     with col4:
         # Titel für Diagramm Thermischer Komfort
@@ -519,10 +548,7 @@ with tab2:
         thermal_comfort_stats["Mittelwert"] = thermal_comfort_stats["Mittelwert"].round(2)
         thermal_comfort_stats["Median"] = thermal_comfort_stats["Median"].round(2)
 
-        thermal_comfort_stats = thermal_comfort_stats.sort_values(
-            by="Mittelwert",
-            ascending=False
-        )
+        thermal_comfort_stats = thermal_comfort_stats.sort_values(by="Mittelwert", ascending=False)
 
         # Grafik erstellen
         # Balken: Mittelwert
@@ -590,7 +616,6 @@ with tab2:
             use_container_width=True
         )
 
-        
         # Ergebnistabelle und Bedeutung der Ergebnisse
         with st.expander(
                 f"**📈 Ergebnisse Thermischer Komfort und {selected_variable_environment}**"
@@ -613,8 +638,6 @@ with tab2:
                                 
                         
                         - Bewertung des thermischen Komforts **unterscheidet sich zwischen den Klimata stärker** als zwischen den Hauptklimazonen 
-                        - Klimata mit moderaten thermischen Bedingungen: hohe Komfortbewertungen (Medianwerte zwischen 5 und 6)
-                        - Klimata mit stärkeren thermischen Belastungen: niedrigere Komfortbewertungen (Medianwerte zwischen 2 und 3)
                     """
                     )
                 elif selected_variable_environment == "Region":
@@ -624,7 +647,7 @@ with tab2:
                         
                         - Thermischer Komfort wird **in allen Regionen ähnlich** bewertet 
                                 
-                                ➝ Mittelwerte unterscheiden sich nur gering 
+                            ➝ Mittelwerte unterscheiden sich nur gering 
                         - Leicht niedrigere Bewertung des thermischen Komforts in Europa (Median = 4) im Vergleich zu anderen Kontinenten (Median = 5)
                     """
                     )
@@ -919,10 +942,7 @@ with tab2:
                                 
                         
                         - Thermische Präferenz wird auch bei Klimata **tendenziell** als **neutral** bewertet (Median fast überall = 0)
-                        - Aber es gibt **mehr Variation** als bei den Hauptklimazonen (Mittelwerte zwischen -0.5 und +0.35)
-
-                            - Wärmere und feuchtere Klimata: tendenziell stärkere Präferenz für kühlere Bedingungen 
-                            - Einzelne gemäßigte Klimatypen: leichte Präferenz für wärmere Bedingungen                  
+                        - Aber es gibt **mehr Variation** als bei den Hauptklimazonen (Mittelwerte zwischen -0.5 und +0.35)                
                     """
                     )
                 elif selected_variable_environment == "Region":
@@ -1127,7 +1147,7 @@ with tab2:
     # ---------------------------------------------------------
     # 📊 7. Expander mit Hinweisen
     # ---------------------------------------------------------
-    with st.expander("Allgemeine Hinweise"):
+    with st.expander("ℹ️ Allgemeine Hinweise zum Lesen und zur Interpretation der Diagramme"):
         st.markdown("""
         - **Hinweise zum Lesen der Diagramme:**
                     
@@ -1147,15 +1167,34 @@ with tab2:
         """
         )
 
+    st.info("""
+    **Zwischenfazit:**
+    
+    - **Thermischer Komfort**: wird tendenziell positiv bewertet
+        ➝ es gibt aber teilweise Unterschiede in der Bewertung des Komforts
+    - **Thermisches Empfinden**: wird tendenziell als neutral bewertet
+    - **Thermische Präferenz**: tendenziell keine Änderung gewünscht
+    - **Thermische Akzeptanz**: tendenziell überwiegt akzeptabel gegenüber unakzeptabel
+        ➝ aber es gibt auch Ausnahmen
+            
+    **➝ mit zunehmendem Detailgrad wird die Variation größer** 
+    """
+    )
+
+#########################################################################################################
+#########################################################################################################
+
+# ---------------------------------------------------------
+# 📌 Zusammenhang Klima und thermische Bewertung
+# ---------------------------------------------------------
 with tab3:
 
-    st.subheader("📊 Untersuchung des Zusammenhangs zwischen klimatischen/geografischen Variablen und thermischer Bewertung")
+    st.subheader("📊 Untersuchung des Zusammenhangs zwischen klimatischen/geografischen Variablen und thermischem Befinden")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     col1, col2 = st.columns([2,1.5])
     col3, col4 = st.columns([2, 1])
-    col5, col6 = st.columns([2,1])
     
     # ---------------------------------------------------------
     # 📊 1. Statistischen Zusammenhang berechnen
@@ -1168,13 +1207,8 @@ with tab3:
         for thermal_label, thermal_column in thermal_mapping.items():
 
             # Unknown entfernen
-            if thermal_column in [
-                "thermal_preference",
-                "thermal_acceptability"
-            ]:
-                df_test = df[
-                    df[thermal_column] != "Unknown"
-                ]
+            if thermal_column in ["thermal_preference", "thermal_acceptability"]:
+                df_test = df[df[thermal_column] != "Unknown"]
             else:
                 df_test = df
 
@@ -1183,18 +1217,14 @@ with tab3:
                 df_test[thermal_column]
             )
 
-            chi2, p, dof, expected = chi2_contingency(
-                contingency_table
-            )
+            chi2, p, dof, expected = chi2_contingency(contingency_table)
 
             n = contingency_table.sum().sum()
             phi2 = chi2 / n
 
             r, k = contingency_table.shape
 
-            cramers_v = np.sqrt(
-                phi2 / min(k-1, r-1)
-            )
+            cramers_v = np.sqrt(phi2 / min(k-1, r-1))
 
             results.append({
                 "Umweltvariable": environment_label,
@@ -1270,13 +1300,9 @@ with tab3:
 
         for variable in environment_mapping.keys():
 
-            with st.expander(
-                f"**📈 Zusammenhang {variable} ↔ thermische Variablen**"
-            ):
+            with st.expander(f"**📈 Zusammenhang {variable} ↔ thermische Variablen**"):
                 st.dataframe(
-                    chi2_results_df[
-                        chi2_results_df["Umweltvariable"] == variable
-                    ],
+                    chi2_results_df[chi2_results_df["Umweltvariable"] == variable],
                     hide_index=True,
                     use_container_width=True
                 )
@@ -1308,27 +1334,28 @@ with tab3:
     # 📊 4. Zusammenfassung und Bedeutung der Ergebnisse
     # --------------------------------------------------------- 
   
-    with col5:
-        st.subheader("ℹ️ Zusammenfassung und Bedeutung der Ergebnisse")
+  
+    st.subheader("ℹ️ Zusammenfassung und Bedeutung der Ergebnisse")
 
-        st.info(
-            """
-            **Ergebnisse:**
+    st.info(
+        """
+        **Ergebnisse:**
 
-            - ⭐**Zusammenhang** zwischen allen vier thermischen Bewertungsvariablen und allen vier klimatischen/geografischen Variablen ✅
-            - **Klima** hat den **größten Zusammenhang mit der thermischen Bewertung**
-            - Tendenziell ist der Zusammenhang allgemein am **stärksten bei Thermischem Komfort und Thermischer Akzeptanz**
-            """
-        )
+        ⭐**Zusammenhang** zwischen allen vier thermischen Bewertungsvariablen und allen vier klimatischen/geografischen Variablen ✅
+        - **Klima** hat den **größten Zusammenhang mit thermischem Befinden**
+        - Tendenziell ist der Zusammenhang allgemein am **stärksten bei Thermischem Komfort und Thermischer Akzeptanz**
+        """
+    )
 
-        st.info(
-            """
-            **Bedeutung:**
+    st.info(
+        """
+        **Bedeutung:**
 
-            - ⭐ **Feinere klimatische Klassifikation hat insgesamt stärkeren Zusammenhang** mit der thermischen Bewertung als Länder-/Regionszugehörigkeit oder größer gefasste Klimazonen
-            - ⭐ Ergebnisse deuten darauf hin, dass klimatische/geografische Variablen einen **relevanten, aber nicht dominierenden Einfluss auf die thermische Bewertung** haben
-            """
-        )
+        ⭐ **Feinere klimatische Klassifikation hat insgesamt stärkeren Zusammenhang** mit thermischem Befinden als größer gefasste Klimazonen oder Länder-/Regionszugehörigkeit
+
+        ⭐ Ergebnisse deuten darauf hin, dass klimatische/geografische Variablen einen **relevanten, aber nicht dominierenden Einfluss auf das thermische Befinden** haben
+        """
+    )
 
                 # ➝ mögliche Erklärungen:
                 # - Klimazone: Komplexität wird stark reduziert ➝ klimatische Unterschiede werden stark vereinfacht

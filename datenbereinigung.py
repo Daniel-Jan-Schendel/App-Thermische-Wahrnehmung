@@ -11,11 +11,9 @@ st.set_page_config(page_title="Datenbereinigung - ASHRAE", layout="wide",initial
 st.header("🔍 Inspektion und Bereinigung des Datensatzes")
 
 # Datensätze laden
-
 metadata = pd.read_csv("db_metadata.csv")
 measurements = pd.read_csv("db_measurements_v210.csv")
 df = measurements.merge(metadata, on="building_id", how="inner")
-
 df_bereinigt = pd.read_csv("db_bereinigt_final.csv")
 df = pd.read_csv("db_bereinigt.csv")
 
@@ -23,7 +21,6 @@ tab1, tab2, tab3 = st.tabs([
     "ℹ️ Datensatz",
     "⚠️ Prozess und Herausforderungen",
     "🧹 Bereinigter Datensatz"
-#    "🔢 Standardisierung von Kategorien"
 ])
 
 ###############################################################################################################################################
@@ -38,7 +35,7 @@ with tab1:
     col1, spacer, col2 = st.columns([2, 0.2, 2])
 
     with col1:
-        st.info("""
+        st.markdown("""
         **`metadata` Tabelle**
 
         - Enthält allgemeine **Gebäude- und Studieninformationen**
@@ -47,7 +44,7 @@ with tab1:
         
 
     with col2:
-        st.info("""
+        st.markdown("""
         **`measurements` Tabelle**
 
         - Enthält die **Messdaten** (z.B.)
@@ -199,7 +196,7 @@ with tab2:
         - **Entscheidung:**
 
             - kategoriale Spalten: mit "Unknown" auffüllen
-            - numerische Spalten: fehlende Werte nicht bearbeiten, um Analysen nicht zu verzerren
+            - numerische Spalten: fehlende Werte nicht bearbeiten
             - für Machine Learning: Entfernen der Zeilen mit fehlenden Werten in relevanten Variablen
         """
         )
@@ -264,8 +261,7 @@ with tab2:
             **Worin liegt die Schwierigkeit?**
                         
             - ASHRAE Global Thermal Comfort Database II sammelt Daten aus vielen verschiedenen Studien, Ländern, Klimazonen und Gebäudetypen
-            - Dadurch entstehen **unterschiedliche Werte, Skalen und Formate** für dieselben Komfortparameter
-            - Zudem werden in manchen Studien **Aggregationen** vorgenommen und in anderen nicht
+            - Folge: **unterschiedliche Werte, Skalen und Formate, teilweise auch Aggregationen** für dieselben Komfortparameter
         """)
                       
     with col11:
@@ -358,6 +354,8 @@ with tab2:
 
         st.markdown("<br><br><br>", unsafe_allow_html=True)
 
+###############################################################################################################################################
+###############################################################################################################################################
    
 with tab3:
     col1, col2, col3, spacer = st.columns([1,0.2, 1, 0.3])
@@ -386,119 +384,16 @@ with tab3:
     # Tabelle Datensatz nach Bereinigung
     st.subheader("🧾 Datensatz nach der Bereinigung")
 
-    tab1, tab2 = st.tabs([
-        "Übersicht Datensatz",
-        "Übersicht fehlende Werte"
-    ])
+    # tab1, tab2 = st.tabs([
+    #     "Übersicht Datensatz",
+    #     "Übersicht fehlende Werte"
+    # ])
 
-    with tab1:
-        st.dataframe(df_bereinigt)
+    #with tab1:
+    st.dataframe(df_bereinigt)
 
     #with tab2:
         # Dataframe fehlende Werte erstellen
         #st.dataframe(df_nans)
-  
 
 
-###############################################################################################################################################
-###############################################################################################################################################
-
-# with tab3:
-
-#     st.subheader("Worin liegt die Schwierigkeit?")
-
-#     st.markdown(
-#         """
-#         - ASHRAE Global Thermal Comfort Database II sammelt Daten aus vielen verschiedenen Studien, Ländern, Klimazonen und Gebäudetypen
-#         - Dadurch entstehen **unterschiedliche Werte, Skalen und Formate** für dieselben Komfortparameter
-#         - Zudem werden in manchen Studien **Aggregationen** vorgenommen und in anderen nicht
-        
-#         ➜ Für bessere Vergleichbarkeit und Auswertung der Daten: **Standardisierung**
-
-#         ➜ Durch Standardisierung werden alle Werte auf die **ASHRAE‑Skala** (z.B. 1–6) abgebildet
-#     """
-#     )
-    
-#     st.markdown("<br>", unsafe_allow_html=True)
-
-#     st.subheader("Standardisierte thermische Komfortparameter (TSV, TP, TC)")
-
-#     image = Image.open("thermal_parameters_code_numbers.png")
-
-#     # Bild anzeigen mit definierter Breite
-#     st.image(image, caption="Thermische Komfortparameter (TSV, TP, TC) – Standardisierte Codes", width=700)
-
-#     st.markdown("<br>", unsafe_allow_html=True)
-
-#     # ---------------------------------------------------------
-#     # 📍 Layout: Zwei Spalten
-#     # ---------------------------------------------------------
-#     st.subheader("🔢 Runden der thermischen Komfortparameter")
-    
-#     st.info(
-#             """
-#             - Thermischer Komfort
-#         """
-#         )
-    
-#     col1, spacer, col2 = st.columns([0.5, 0.1, 0.5])
-
-#     # ---------------------------------------------------------
-#     # 🟦 Spalte 1: Originalwerte
-#     # ---------------------------------------------------------
-#     with col1:
-        
-#         # Grafik für thermal_comfort
-#         fig, ax = plt.subplots(figsize=(6,4))
-#         ax.hist(df["thermal_comfort"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
-#         ax.set_title("Originale Thermal Comfort Werte")
-#         ax.set_xlabel("Wert")
-#         ax.set_ylabel("Häufigkeit")
-#         st.pyplot(fig)
-
-#         st.markdown("<br>", unsafe_allow_html=True)
-
-#     # ---------------------------------------------------------
-#     # 🟩 Spalte 2: Standardisierte / gerundete Werte
-#     # ---------------------------------------------------------
-#     with col2:
-#         # Grafik für thermal_comfort
-#         fig, ax = plt.subplots(figsize=(6,4))
-#         ax.hist(df_bereinigt["thermal_comfort"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
-#         ax.set_title("Standardisierte Thermal Comfort Werte")
-#         ax.set_xlabel("Wert")
-#         ax.set_ylabel("Häufigkeit")
-#         st.pyplot(fig)
-
-#         st.markdown("<br>", unsafe_allow_html=True)
-
-#     st.info(
-#         """
-#         - Thermisches Empfinden
-#     """
-#     )
-
-#     col3, spacer, col4 = st.columns([0.5, 0.1, 0.5])
-
-#     with col3:
-#         # Grafik für thermal_sensation
-#         fig, ax = plt.subplots(figsize=(6,4))
-#         ax.hist(df["thermal_sensation"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
-#         ax.set_title("Originale Thermal Sensation Werte")
-#         ax.set_xlabel("Wert")
-#         ax.set_ylabel("Häufigkeit")
-#         st.pyplot(fig)
-
-    
-
-#     with col4:
-#         # Grafik für thermal_sensation
-#         fig, ax = plt.subplots(figsize=(6,4))
-#         ax.hist(df_bereinigt["thermal_sensation"].dropna(), bins=20, color="#4C72B0", edgecolor="white")
-#         ax.set_title("Standardisierte Thermal Sensation Werte")
-#         ax.set_xlabel("Wert")
-#         ax.set_ylabel("Häufigkeit")
-#         st.pyplot(fig)
-
-
-    
