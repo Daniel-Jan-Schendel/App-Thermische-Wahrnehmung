@@ -1,0 +1,101 @@
+outdoor_air_temperature,air_temperature,relative_humidity,season,building_type,air_speed,metabolic_rate,climate_zone,cooling_type,Ziel,berechnet,delta_abs,country
+15.0,23.4,40.9,winter,office,0.01,1.1,Temperate,mixed mode,1.48,0.85,0.63,india
+13.5,17.8,67.7,winter,office,0.154,0.7679180887372011,Dry,naturally ventilated,2.29,1.26,1.03,pakistan
+-16.65,23.1,10.7,winter,office,0.0899999999999999,1.0,Continental,air conditioned,1.5,0.76,0.74,canada
+10.2,18.3,47.4,winter,office,0.07,1.2,Temperate,naturally ventilated,1.97,1.37,0.6,iran
+18.8,23.1,43.1,summer,office,0.0899999999999999,1.3,Continental,air conditioned,1.6,0.61,0.99,canada
+13.4,19.9,18.4,winter,office,0.06,1.3,Temperate,naturally ventilated,1.9,1.18,0.72,india
+-0.4499999999999999,27.0,74.2,winter,classroom,0.1,1.2,Temperate,mixed mode,1.88,0.67,1.21,china
+-21.05,19.6,62.6,winter,classroom,0.03,1.2,Temperate,mixed mode,0.26,0.85,0.59,china
+-14.7,17.0,75.7,winter,classroom,0.2,1.2,Temperate,mixed mode,0.56,1.2,0.64,china
+9.05,24.2,57.2,winter,classroom,0.1,1.2,Temperate,mixed mode,1.36,0.6,0.76,china
+0.6500000000000001,20.7,56.7,winter,classroom,0.03,1.2,Temperate,mixed mode,1.95,0.94,1.01,china
+14.5,14.6,69.3,winter,office,0.1049270618404146,1.1262798634812288,Dry,naturally ventilated,0.76,1.4,0.64,pakistan
+7.4,28.3,61.5,summer,classroom,0.11,1.2,Temperate,mixed mode,1.11,0.38,0.73,china
+-7.6,23.9,14.4,winter,office,0.07,1.1,Continental,air conditioned,1.7,0.89,0.81,canada
+15.5,20.3,50.80000000000001,winter,office,0.1121694886978701,1.877133105802048,Dry,naturally ventilated,1.66,0.99,0.67,pakistan
+-23.75,17.2,50.6,winter,others,0.05,1.2,Temperate,mixed mode,1.62,0.91,0.71,china
+19.75,25.8,65.2,winter,office,0.3586929997719822,1.877133105802048,Dry,naturally ventilated,1.49,0.92,0.57,pakistan
+-12.2,18.6,61.8,winter,others,0.1,1.2,Temperate,mixed mode,0.48,1.06,0.58,china
+12.5,16.2,61.80000000000001,winter,office,0.0786172139789015,1.877133105802048,Dry,naturally ventilated,2.09,1.48,0.61,pakistan
+0.8999999999999999,19.4,27.5,winter,classroom,0.23,1.0,Continental,air conditioned,2.13,1.5,0.63,china
+7.9,19.5,74.6,winter,classroom,0.0,1.2,Temperate,mixed mode,1.8,0.76,1.04,china
+13.43,17.0,52.7,summer,office,0.239121,1.0,Temperate,naturally ventilated,0.47,1.03,0.56,uk
+14.5,16.2,60.5,winter,office,0.1845133318569862,0.8873720136518772,Dry,naturally ventilated,2.09,1.51,0.58,pakistan
+15.75,30.4,66.1,summer,classroom,0.52,1.2,Temperate,mixed mode,1.0,0.36,0.64,china
+27.15,29.9,74.7,cool/dry,office,0.68,1.1,Tropical,naturally ventilated,1.18,0.57,0.61,india
+29.22,31.7,57.1,hot/wet,multifamily housing,0.13,0.7,Tropical,naturally ventilated,2.34,0.52,1.82,india
+18.9,24.0,64.6,winter,multifamily housing,0.03,1.1,Temperate,mixed mode,1.71,0.65,1.06,india
+13.5,16.8,63.6,winter,office,0.067671803232797,1.1262798634812288,Dry,naturally ventilated,0.92,1.55,0.63,pakistan
+-15.4,17.6,59.8,winter,classroom,0.1,1.2,Temperate,mixed mode,1.82,1.09,0.73,china
+22.25,26.8,77.7,hot/wet,multifamily housing,0.68,1.6,Tropical,naturally ventilated,1.49,0.5,0.99,india
+0.1500000000000003,18.9,59.2,winter,classroom,0.0,1.2,Temperate,mixed mode,1.9,0.87,1.03,china
+12.37,16.2,59.4,winter,multifamily housing,0.0,1.2,Temperate,mixed mode,1.74,1.08,0.66,india
+13.67232143,21.7,55.1,winter,senior center,0.07,0.8,Temperate,mixed mode,2.47,1.88,0.59,australia
+7.9,19.5,74.5,winter,classroom,0.0,1.6,Temperate,mixed mode,1.44,0.66,0.78,china
+22.22222222222221,22.93,62.50956815228603,summer,office,0.07,1.0,Temperate,air conditioned,1.23,0.63,0.6,usa
+25.1,24.4,54.174151102516255,summer,office,0.21,1.0580204778156996,Temperate,air conditioned,1.36,0.56,0.8,australia
+-4.65,22.8,32.30000000000001,winter,office,0.1,1.2,Continental,air conditioned,1.8,0.82,0.98,canada
+12.960000000000004,20.9,42.0,winter,office,0.14,0.985494880546075,Temperate,air conditioned,1.78,0.73,1.05,australia
+18.74,22.8,55.2,winter,multifamily housing,0.13,1.0,Temperate,mixed mode,1.3,0.72,0.58,india
+20.7,22.5,56.2,summer,office,0.0899999999999999,1.3,Continental,air conditioned,1.3,0.58,0.72,canada
+23.3,24.5,45.30000000000001,summer,office,0.1,1.1,Continental,air conditioned,1.1,0.54,0.56,canada
+11.5,13.4,51.30000000000001,winter,office,0.0551625875049001,0.7679180887372011,Dry,naturally ventilated,0.73,1.36,0.63,pakistan
+13.5,15.7,68.9,winter,office,0.0185466309182955,1.006825938566553,Dry,naturally ventilated,0.78,1.44,0.66,pakistan
+24.25345238,23.4,59.4,summer,senior center,0.08,1.0,Temperate,mixed mode,0.3,0.93,0.63,australia
+-14.35,24.6,30.2,winter,classroom,0.02,1.2,Temperate,mixed mode,1.46,0.75,0.71,china
+14.6,24.1,34.30000000000001,summer,office,0.1,1.2,Continental,air conditioned,1.1,0.54,0.56,canada
+11.5,12.2,68.1,winter,office,0.2254038933522164,0.8873720136518772,Dry,naturally ventilated,0.76,1.36,0.6,pakistan
+13.5,15.7,67.7,winter,office,0.036213969922553,1.877133105802048,Dry,naturally ventilated,0.76,1.33,0.57,pakistan
+11.5,11.6,51.30000000000001,winter,office,0.0032766736345221,1.006825938566553,Dry,naturally ventilated,0.78,1.34,0.56,pakistan
+13.75,20.8,62.30000000000001,winter,office,0.0551625875048999,1.006825938566553,Dry,naturally ventilated,2.0,0.98,1.02,pakistan
+-2.1,24.9,55.6,winter,others,0.2,1.2,Temperate,mixed mode,1.14,0.57,0.57,china
+7.9,19.3,72.5,winter,classroom,0.0,1.2,Temperate,mixed mode,0.18,0.79,0.61,china
+9.41,24.1,37.0,winter,office,0.12,1.1092150170648465,Temperate,mixed mode,1.42,0.74,0.68,australia
+19.75,25.6,68.0,winter,office,0.2254038933522167,1.006825938566553,Dry,naturally ventilated,1.87,1.07,0.8,pakistan
+22.05,24.0,33.900000000000006,winter,office,0.0742204225832373,1.1262798634812288,Dry,naturally ventilated,1.87,0.88,0.99,pakistan
+22.68833333,27.4,59.0,spring,senior center,0.79,0.8,Temperate,mixed mode,1.54,0.56,0.98,australia
+22.05,24.9,62.5,winter,office,0.0742204225832368,1.1262798634812288,Dry,naturally ventilated,1.87,0.96,0.91,pakistan
+25.7,26.3,51.3,cool/dry,multifamily housing,0.0,1.9,Tropical,naturally ventilated,2.28,0.64,1.64,india
+21.3,22.7,16.7,winter,office,0.0909999999999999,1.877133105802048,Dry,naturally ventilated,0.37,0.97,0.6,pakistan
+-4.75,21.6,50.3,winter,others,0.07,1.2,Temperate,mixed mode,1.53,0.58,0.95,china
+15.0,24.3,39.9,winter,office,0.03,1.4,Temperate,mixed mode,1.5,0.87,0.63,india
+20.5,24.5,22.7,winter,office,0.1457459471949615,0.6484641638225255,Dry,naturally ventilated,1.87,1.1,0.77,pakistan
+7.0,18.3,32.80000000000001,winter,office,0.0398443097319739,0.7679180887372011,Dry,naturally ventilated,1.76,1.2,0.56,pakistan
+4.9,16.3,52.1,winter,office,0.02,1.2,Temperate,naturally ventilated,2.19,1.62,0.57,iran
+0.1500000000000003,18.9,59.5,winter,classroom,0.0,1.2,Temperate,mixed mode,1.64,0.87,0.77,china
+10.2,20.3,62.0,winter,office,0.06,2.0,Temperate,naturally ventilated,1.7,1.13,0.57,iran
+-16.95,23.6,38.5,winter,others,0.07,1.2,Temperate,mixed mode,1.56,0.61,0.95,china
+13.5,24.1,40.6,winter,others,0.0,1.2,Temperate,mixed mode,0.18,0.85,0.67,greece
+17.60418155,21.3,35.7,autumn,senior center,0.08,0.8,Temperate,mixed mode,2.29,1.72,0.57,australia
+12.960000000000004,21.1,39.0,winter,office,0.13,1.7918088737201363,Temperate,air conditioned,1.44,0.77,0.67,australia
+0.6500000000000001,20.7,55.5,winter,classroom,0.13,1.2,Temperate,mixed mode,2.01,0.85,1.16,china
+0.6500000000000001,22.8,50.6,winter,others,0.0,1.2,Temperate,mixed mode,2.01,0.75,1.26,china
+-0.4499999999999999,27.0,74.3,winter,classroom,0.11,1.2,Temperate,mixed mode,1.31,0.62,0.69,china
+16.5,25.0,23.8,winter,office,0.03,1.1,Dry,naturally ventilated,1.49,0.93,0.56,india
+28.7,28.9,45.9,winter,multifamily housing,0.1,1.0,Dry,mixed mode,1.11,0.52,0.59,india
+6.95,19.3,38.900000000000006,winter,office,0.0398443097319739,0.7679180887372011,Dry,naturally ventilated,1.73,1.12,0.61,pakistan
+12.65,18.9,49.9,winter,office,0.03,1.1,Temperate,mixed mode,1.86,1.3,0.56,india
+11.5,13.4,61.80000000000001,winter,office,0.0165537598620539,1.006825938566553,Dry,naturally ventilated,0.78,1.53,0.75,pakistan
+26.2,23.44,59.0,hot/wet,office,0.16,0.9931740614334472,Tropical,air conditioned,1.15,0.47,0.68,australia
+29.79,32.1,68.1,hot/wet,multifamily housing,0.27,0.9,Tropical,naturally ventilated,1.52,0.67,0.85,india
+2.4,24.2,70.4,winter,others,0.0,1.2,Temperate,mixed mode,1.57,0.74,0.83,china
+20.8,24.1,64.0,cool/dry,office,0.1,1.4897610921501698,Tropical,air conditioned,1.17,0.51,0.66,australia
+13.3,19.7,50.3,winter,others,0.05,1.4,Temperate,naturally ventilated,1.54,0.98,0.56,portugal
+-16.299999999999997,16.9,43.9,winter,others,0.01,1.6,Temperate,mixed mode,0.21,0.97,0.76,china
+15.0,26.1,34.4,winter,office,0.06,1.4,Temperate,mixed mode,1.81,0.81,1.0,india
+-6.65,23.5,28.5,winter,office,0.1,1.3999999999999997,Continental,air conditioned,1.5,0.85,0.65,canada
+23.53619048,24.9,56.5,summer,senior center,0.41,0.8,Temperate,mixed mode,1.87,1.04,0.83,australia
+-15.4,17.6,59.8,winter,classroom,0.1,1.2,Temperate,mixed mode,0.39,1.09,0.7,china
+12.58220238,24.3,30.7,winter,senior center,0.05,0.8,Temperate,mixed mode,0.81,1.53,0.72,australia
+14.5,18.8,56.5,winter,office,0.2970295134333269,1.006825938566553,Dry,naturally ventilated,2.09,1.36,0.73,pakistan
+5.7,18.3,34.5,winter,office,0.1207555868075206,0.7679180887372011,Dry,naturally ventilated,1.73,1.16,0.57,pakistan
+-17.45,18.6,57.4,winter,others,0.09,1.6,Temperate,mixed mode,1.48,0.92,0.56,china
+9.05,24.2,57.2,winter,classroom,0.1,1.2,Temperate,mixed mode,1.28,0.6,0.68,china
+13.5,15.7,68.5,winter,office,0.0185466309182955,1.877133105802048,Dry,naturally ventilated,0.76,1.42,0.66,pakistan
+12.5,15.1,68.5,winter,office,0.0156121677106876,1.877133105802048,Dry,naturally ventilated,2.09,1.46,0.63,pakistan
+6.8,19.8,44.2,winter,office,0.0612310465098767,1.006825938566553,Dry,naturally ventilated,1.76,1.09,0.67,pakistan
+19.4,24.5,63.0,winter,office,5.371261024838689e-31,0.7679180887372011,Dry,naturally ventilated,1.47,0.91,0.56,pakistan
+-15.4,17.6,59.8,winter,classroom,0.1,1.2,Temperate,mixed mode,1.94,1.09,0.85,china
+13.4,16.7,21.9,winter,office,0.04,1.1,Temperate,naturally ventilated,0.9,1.67,0.77,india
+-12.2,18.3,58.3,winter,others,0.1,1.2,Temperate,mixed mode,1.87,0.93,0.94,china
