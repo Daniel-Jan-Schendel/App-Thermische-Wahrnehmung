@@ -344,9 +344,9 @@ with tab2:
                 padding: 15px;
                 border-radius: 8px;
             ">
-                - Gibt es einen Zusammenhang zwischen Cooling Type und thermischer Bewertung?
+                - Inwiefern beeinflusst die gewählte Belüftungsart die vier zentralen Parameter Thermal Sensation, Comfort, Preference und Acceptability?
                 <br>
-                - Gibt es einen Zusammenhang zwischen Gender und thermischer Bewertung?
+                - Welche Unterschiede gibt es bei Gender und Alter innerhalb der verschiedenen Kühlungssysteme?
                 </p>
             </div>
             """,
