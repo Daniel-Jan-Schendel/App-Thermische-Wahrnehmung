@@ -21,10 +21,6 @@ tab1, tab2, tab3 = st.tabs([
 # TAB 1 – Einführung
 # -------------------------
 with tab1:
-    st.subheader("1️⃣ Einführung")
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
     st.markdown("""
         #### 👥 Team
     """
@@ -119,7 +115,7 @@ with tab1:
 # -------------------------
 with tab2:
 
-    st.subheader("2️⃣ Ein datengetriebener Ansatz für Komfort & Energieeffizienz")
+    st.subheader("Ein datengetriebener Ansatz für Komfort & Energieeffizienz")
 
     # ---------------------------------------------------------
     # THREE COLUMNS
@@ -294,7 +290,7 @@ with tab2:
     st.markdown("<br>", unsafe_allow_html=True)
     
     col1, spacer, col2, spacer, col3, spacer, col4 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
-   
+    col5, spacer, col6, spacer, col7, spacer, col8 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
     
     # - Fragestellung 1 -
     with col1:
@@ -308,7 +304,8 @@ with tab2:
         )
         st.markdown("<br>", unsafe_allow_html=True)
         st.html("<div style='height: 10px;'></div>")   
-        
+    
+    with col5:
         st.markdown(
             """
             <div style="
@@ -316,7 +313,7 @@ with tab2:
                 padding: 15px;
                 border-radius: 8px;
             ">
-                Gibt es einen Zusammenhang zwischen Klima und thermischem Befinden?
+                - Gibt es einen Zusammenhang zwischen Klima und thermischem Befinden?
                 </p>
             </div>
             """,
@@ -329,7 +326,7 @@ with tab2:
         st.markdown(
             """
             <h5 style="text-align: center;">
-                🌀 Cooling Type und Gender Analyse
+                🌀 Belüftungsart-Analyse
             </h5>
             """,
             unsafe_allow_html=True
@@ -337,6 +334,7 @@ with tab2:
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
+    with col6:
         st.markdown(
             """
             <div style="
@@ -344,7 +342,7 @@ with tab2:
                 padding: 15px;
                 border-radius: 8px;
             ">
-                - Inwiefern beeinflusst die gewählte Belüftungsart die vier zentralen Parameter Thermal Sensation, Comfort, Preference und Acceptability?
+                - Inwiefern beeinflusst die gewählte Belüftungsart das themische Befinden?
                 <br>
                 - Welche Unterschiede gibt es bei Gender und Alter innerhalb der verschiedenen Kühlungssysteme?
                 </p>
@@ -358,8 +356,7 @@ with tab2:
         st.markdown(
             """
             <h5 style="text-align: center;">
-                🌡️ Thermische Bewertung und Innen-
-                raumklima Analyse
+                🌡️ Thermisches Befinden Analyse
             </h5>
             """,
             unsafe_allow_html=True
@@ -367,6 +364,7 @@ with tab2:
         #st.markdown("<br>", unsafe_allow_html=True)
         st.html("<div style='height: 10px;'></div>")   
 
+    with col7:
         st.markdown(
             """
             <div style="
@@ -374,9 +372,7 @@ with tab2:
                 padding: 15px;
                 border-radius: 8px;
             ">
-                - Wie hängen verschiedene Faktoren der thermischen Bewertung miteinander zusammen?
-                <br>
-                - Gibt es einen Zusammenhang zwischen Innenraumklima und thermischer Bewertung?
+                - Wie hängen die subjektiven und physikalischen thermischen Komfortvariablen miteinander zusammen?
                 </p>
             </div>
             """,
@@ -384,9 +380,7 @@ with tab2:
         )
         st.markdown("<br>", unsafe_allow_html=True)
 
-    with col4:
-
- 
+    with col4: 
         st.markdown(
             """
             <h5 style="text-align: center;">
@@ -399,6 +393,7 @@ with tab2:
         #st.markdown("<br>", unsafe_allow_html=True)
         st.html("<div style='height: 33px;'></div>")    
 
+    with col8:
         st.markdown(
             """
             <div style="
@@ -419,13 +414,9 @@ with tab2:
 # TAB 5 – Tools und Prozess
 # -------------------------
 with tab3:
-    st.subheader("5️⃣ Data Science & Analytics Tools")
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
     # Tools
     st.markdown("""
-        #### 🛠️ Tools
+        #### 🛠️ Data Science & Analytics Tools
     """
     )
 

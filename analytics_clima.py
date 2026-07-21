@@ -12,7 +12,7 @@ import math
 
 
 
-st.set_page_config(page_title="Analyse Klima und thermische Bewertung", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Analyse Klima und thermisches Befinden", layout="wide", initial_sidebar_state="expanded")
 
 # ---------------------------------------------------------
 # 📌 Funktionen definieren
@@ -38,7 +38,7 @@ df = pd.read_csv("db_bereinigt_final.csv")
 # ---------------------------------------------------------
 # 📌 Seitentitel
 # ---------------------------------------------------------
-st.title("🌍 Analyse Klima und thermische Bewertung")
+st.title("🌍 Analyse Klima und thermisches Befinden")
 
 # ---------------------------------------------------------
 # 📌 tabs definieren
@@ -565,7 +565,8 @@ with tab2:
                 y=alt.Y(
                     "Mittelwert:Q",
                     title="Mittelwert Thermal Comfort",
-                    scale=alt.Scale(domain=[0, 6])
+                    scale=alt.Scale(domain=[0, 6]),
+                    axis=alt.Axis(tickMinStep=1)
                 ),
                 tooltip=[
                     alt.Tooltip(
@@ -597,11 +598,10 @@ with tab2:
             )
             .encode(
                 x=alt.X(
-                    f"{selected_environment_column}:N"
+                    f"{selected_environment_column}:N",
+                    sort="-y"
                 ),
-                y=alt.Y(
-                    "Median:Q"
-                )
+                y=alt.Y("Median:Q")
             )
         )
 
@@ -626,7 +626,7 @@ with tab2:
                         ℹ️**Interpretation**
                                 
                         
-                        - Thermische Komfortbewertung unterscheidet sich zwischen den Klimazonen
+                        - Thermische Komfortbewertung **unterscheidet sich zwischen den Klimazonen**
                                 
                             - **Dry, Temperate und Tropical**: bewerten thermischen Komfort **tendenziell positiv** (Median = 5)
                             - **Continental**: bewertet thermischen Komfort **tendenziell niedriger** (Median = 3)
@@ -712,7 +712,8 @@ with tab2:
                 y=alt.Y(
                     "Mittelwert:Q",
                     title="Mittelwert Thermal Sensationa",
-                    scale=alt.Scale(domain=[-3, 3])
+                    scale=alt.Scale(domain=[-3, 3]),
+                    axis=alt.Axis(tickMinStep=1)
                 ),
                 tooltip=[
                     alt.Tooltip(
@@ -744,7 +745,8 @@ with tab2:
             )
             .encode(
                 x=alt.X(
-                    f"{selected_environment_column}:N"
+                    f"{selected_environment_column}:N",
+                    sort="-y"
                 ),
                 y=alt.Y(
                     "Median:Q"
@@ -870,7 +872,8 @@ with tab2:
                 y=alt.Y(
                     "Mittelwert:Q",
                     title=f"Mittelwert Thermal Preference",
-                    scale=alt.Scale(domain=[-1, 1])
+                    scale=alt.Scale(domain=[-1, 1]),
+                    axis=alt.Axis(values=[-1, 0, 1])
                 ),
                 tooltip=[
                     alt.Tooltip(
@@ -900,7 +903,8 @@ with tab2:
             )
             .encode(
                 x=alt.X(
-                    f"{selected_environment_column}:N"
+                    f"{selected_environment_column}:N",
+                    sort="-y"
                 ),
                 y=alt.Y(
                     "Median:Q"
@@ -1018,6 +1022,7 @@ with tab2:
                 ascending=False
             )
         )
+        order = acceptability_pct[selected_environment_column].tolist()
 
         # Spaltenreihenfolge ändern: Unknown nach hinten
         cols = [
@@ -1046,7 +1051,8 @@ with tab2:
                 x=alt.X(
                     f"{selected_environment_column}:N",
                     title=selected_variable_environment,
-                    axis=alt.Axis(labelAngle=-45)
+                    axis=alt.Axis(labelAngle=-45),
+                    sort=order,
                 ),
                 y=alt.Y(
                     "Prozent:Q",
@@ -1171,11 +1177,11 @@ with tab2:
     **Zwischenfazit:**
     
     - **Thermischer Komfort**: wird tendenziell positiv bewertet
-        ➝ es gibt aber teilweise Unterschiede in der Bewertung des Komforts
+        ➝ es gibt aber Unterschiede in der Bewertung des Komforts
     - **Thermisches Empfinden**: wird tendenziell als neutral bewertet
     - **Thermische Präferenz**: tendenziell keine Änderung gewünscht
     - **Thermische Akzeptanz**: tendenziell überwiegt akzeptabel gegenüber unakzeptabel
-        ➝ aber es gibt auch Ausnahmen
+        ➝ aber es gibt auch Unterschiede in der Bewertung der Akzeptanz
             
     **➝ mit zunehmendem Detailgrad wird die Variation größer** 
     """
