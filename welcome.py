@@ -37,13 +37,13 @@ if image_base64:
         <p style="font-size: 1.1em; opacity: 0.85; margin-bottom: 1px;">
             Abschlussprojekt in Data Science & Data Analytics</p>
 
-    <h1 style="font-size: 3.4em; font-weight: 700; margin-bottom: 10px;">
-        Smart Building Analytics
+    <h1 style="font-size: 3em; font-weight: 500; margin-bottom: 10px;">
+        Thermisches Befinden in Innenräumen
     </h1>
 
-    <h3 style="font-size: 2.4em; font-weight: 700; margin-bottom: 25px;">
-        Datenanalyse und Machine Learning Modellierung des thermischen Komforts in Innenräumen
-    </h3>
+    <h1 style="font-size: 3em; font-weight: 500; margin-bottom: 10px;">
+        - Datenanalyse und Machine Learning Modellierung
+    </h1>
 
     <p style="font-size: 1.15em; margin-top: 25px;">
         <strong>Team:</strong><br>

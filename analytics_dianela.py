@@ -109,7 +109,7 @@ tp_map = {"cooler": -1, "no change": 0, "warmer": 1, "unknown": np.nan}
 ta_map = {"acceptable": 1, "unacceptable": 0, "unknown": np.nan}
 
 # REITER INITIALISIERUNG
-tab1, tab2, tab3 = st.tabs(["Globale Übersicht", "Cooling typ", "Gender"])
+tab1, tab2, tab3 = st.tabs(["Globale Übersicht", "Belüftungsart", "Alter und Geschlecht"])
 
 # ==============================================================================
 # 💾 3. DATENLADUNG & VARIABLEN-MAPPING

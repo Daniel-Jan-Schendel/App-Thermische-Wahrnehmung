@@ -72,14 +72,25 @@ tab_summary, tab_challenges = st.tabs(["📘 Summary", "⚠️ Herausforderungen
 with tab_summary:
     st.markdown("""
     ## 📘 Zusammenfassung des Abschlussprojekts
+    """
+    )
 
-    Dieses Projekt wurde im Rahmen einer beruflichen Weiterbildung entwickelt und von einem
+    # st.markdown("""
+    #     - **Abschlussprojekt** im Rahmen der Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH
+    #     - **cloudnative, prädiktive Webanwendung**, die modernste Machine‑Learning‑Algorithmen nutzt
+    #     - Ziel des Projekts: Brücke zwischen **Analyse von thermodynamischen Big Data** und **Machine Learning** schlagen, um thermischen Komfort in Gebäuden nicht nur zu analysieren, sondern proaktiv vorherzusagen
+    # """
+    # )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""  
+    Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH entwickelt und von einem
     interdisziplinären Team durchgeführt:
 
-    **👩‍⚕️ Sabrina – Psychologin | Data Analyst**  
-    **👩‍💻 Dianela – Informatikingenieurin | Data Analyst**  
-    **👩‍🔬 Mirtha – Physikerin | Data Scientist**  
-    **👷‍♂️ Daniel – Bauingenieur | Data Scientist**
+    ** Sabrina | Data Analyst**  
+    ** Dianela | Data Analyst**  
+    ** Mirtha  | Data Scientist**  
+    ** Daniel  | Data Scientist**
 
     Gemeinsam analysierten wir die *ASHRAE Global Thermal Comfort Database II*, eine der
     umfangreichsten internationalen Datenquellen zum thermischen Komfort. 
@@ -97,6 +108,7 @@ with tab_summary:
     dient als interaktive Plattform, um diese Erkenntnisse verständlich und zugänglich zu machen.
     """)
 
+    st.write("Gebäudekonzepte müssen an lokale Klimabedingungen und kulturelle Gewohnheiten angepasst werden.")
 
     # Ziel des Projekts war es, 
     # weltweit erhobene Daten zum thermischen Komfort wissenschaftlich aufzubereiten, zu visualisieren, 
