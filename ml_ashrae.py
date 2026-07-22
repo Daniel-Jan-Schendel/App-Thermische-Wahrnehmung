@@ -137,7 +137,7 @@ with tab1: # Übersicht
     with col1:
         #st.write("\n")
         st.html(slide_point("Untersuchungen zur Vorhersage der subjektive Komfortbewertungen (Klassifizierung)"))
-        st.html(slide_smallpoint("Dashboard zur Erstellung von Modellen"))
+        st.html(slide_smallpoint("<b>Dashboard zur Erstellung von Modellen zur Bestimmung der möglichen Genauigkeit</b>"))
         st.html(slide_smallpoint("<span style='color: #FF0000; font-weight: bold;'>Kein Dashboard zur Vorhersage von Klassen!</span>"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
@@ -148,7 +148,7 @@ with tab1: # Übersicht
     with col1:
         #st.write("\n")
         st.html(slide_point("Untersuchungen zur Vorhersage der Kühlungsstrategie (Cooling Type) (Klassifizierung)"))
-        st.html(slide_smallpoint("Dashboard zur Vorhersage der Kühlungsstrategie"))
+        st.html(slide_smallpoint("<b>Dashboard zur Vorhersage der Kühlungsstrategie</b>"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
@@ -158,7 +158,7 @@ with tab1: # Übersicht
     with col1:
         #st.write("\n")
         st.html(slide_point("Untersuchungen zur Vorhersage des Bekleidungsisolationswertes (clothing_ensemble_insulation) (Regression)"))
-        st.html(slide_smallpoint("Dashboard zur Vorhersage des Bekleidungsisolationswertes"))
+        st.html(slide_smallpoint("<b>Dashboard zur Vorhersage des Bekleidungsisolationswertes</b>"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
@@ -177,9 +177,9 @@ with tab1: # Übersicht
 
 with tab2: # subjektive Komfortbewertungen
 
-    st.subheader("Subjektive Befindungen")
+    st.subheader("Subjektive thermische Wahrnehmung")
 
-    st.html(slide_point("Idee: Vorhersage der subjektiven Befndungen<br> (<b>thermal comfort, thermal sensation, thermal preference</b>) mit Hilfe von Featuren wie,"))
+    st.html(slide_point("Idee: Vorhersage der subjektiven thermischen Wahrnehmung<br> (<b>thermal comfort, thermal sensation, thermal preference</b>) mit Hilfe von Featuren wie,"))
     links, mitte, rechts = st.columns(3)
     with links:
         st.html(slide_smallpoint("Lufttemperatur"))
@@ -197,38 +197,40 @@ with tab2: # subjektive Komfortbewertungen
     st.subheader("Aufgetretende Probleme")
 
     st.html(slide_point("Label Noise"))
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Die gleichen Bedingungen führen zu subjektiv unterschiedlichen Ergebnisse.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Die gleichen Bedingungen führen zu subjektiv unterschiedlichen Ergebnissen.")
     #st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Menschliche Varianz: Zwei Personen sitzen nebeneinander bei exakt 22 °C, gleicher Kleidung und Aktivität. Person A (hat gerade Kaffee getrunken) wählt cooler. Person B (isst gerade ein Eis) wählt no change oder warmer.")
     #st.markdown("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Subjektive Unentschlossenheit: Der Übergang von „Es ist okay“ (no change) zu „Ich hätte es gerne etwas wärmer“ (warmer) ist fließend. \n Derselbe Mensch würde an zwei verschiedenen Tagen bei exakt identischen Sensorwerten mal so und mal so abstimmen.")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es bilden sich keine klassischen Cluster oder Möglichkeiten für einen Classifier für Unterscheidungen.")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Klassifizierungen erzielen eine Genauigkeit die kaum Mehrwert bietet.")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Klassifizierungen für diese Zielgrößen erzielen eine Genauigkeit die kaum Mehrwert bietet.")
 
     links, rechts = st.columns([1,1])
 
     with links:
-        st.image("ML/images/Problem_label_noise_thermal_comfort.png", caption="Label Noise - Beispiel Thermal Comfort")
+        #st.markdown("<p style='text-align: center; color: gray; font-size: 1.0rem;'>Beispiel Label Noise thermal comfort mit 6 Klassen</p>", unsafe_allow_html=True)
+        st.image("ML/images/Problem_label_noise_thermal_comfort.png", caption="Beispiel Label Noise thermal comfort mit 6 Klassen")
 
     with rechts:
-        st.image("ML/images/Problem_label_noise_thermal_preference.png", caption="Label Noise - Beispiel Thermal Comfort")
+        #st.markdown("<p style='text-align: center; color: gray; font-size: 1.0rem;'>Beispiel Label Noise thermal preference mit 3 Klassen</p>", unsafe_allow_html=True)
+        st.image("ML/images/Problem_label_noise_thermal_preference.png", caption="Beispiel Label Noise thermal preference mit 3 Klassen")
 
-    links, links_links, mitte_links, mitte, mitte_rechts, rechts = st.columns([0.5,2,2,2,2,0.5], vertical_alignment='center')
+    links, links_links, p1, mitte_links, p2, mitte, p3, mitte_rechts, rechts = st.columns([0.5,2,0.1,2,0.1,2,0.1,2,0.5], vertical_alignment='center')
     with links_links:
-        st.image("ML/images/verteilung_target_thermal_comfort.png", caption="Beispiel Classifcation Report - Thermal Comfort Basismodell")
+        st.image("ML/images/verteilung_target_thermal_comfort.png", caption="Beispielverteilung - Thermal Comfort Basismodell - Klassenimbalance")
     with mitte_links:
         st.image("ML/images/classification_report_random_forest_thermal_comfort_basis_.png", caption="Beispiel Classifcation Report - Thermal Comfort Basismodell")
     with mitte:
         st.image("ML/images/confusion_matrix_thermal_comfort.png", caption="Beispiel Confusion matrix - Thermal Comfort")
     with mitte_rechts:
-        st.html(slide_point("Label Noise und Klassenimbalance machen es dem Random Forest schwer."))
+        st.html(slide_point("<center>Label Noise und Klassenimbalance machen es dem Random Forest schwer.</center>"))
         #st.html(slide_point("."))
 
     st.html("<div style='margin-bottom: 50px;'></div>")
 
     st.subheader("Versuchte Maßnahmen")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Kleinere Datensätze mit Filterung für homogenere Datensätze")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Kleinere Datensätze mit Filterung für homogenere Daten")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Reduzierung der Klassen des Targets")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einsatz von TomekLink Filtern und SMOTE (Schärfen der Klassengrenzen und Data Augmentation)")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Aufbau eines Dashboards zum schnellen Untersuchen möglicher Modelle")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einsatz von TomekLink Filtern und SMOTE (\"künstliches\" Schärfen der Klassengrenzen und Data Augmentation)")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - **Aufbau eines Dashboards zum schnellen Untersuchen möglicher Modelle durch Filterung und Featureauswahl**")
 
     st.html(slide_point("Auf Grund der Daten lassen sich keine verlässlichen Vorhersagen bezüglich der subjektiven Komfortbewertungen treffen."))
 
@@ -250,29 +252,38 @@ with tab2: # subjektive Komfortbewertungen
     # Nativ in Streamlit anzeigen (wichtig: width="stretch" für die volle Breite)
     st.image(svg_code, width="stretch")
 
-    # with st.expander("🔍 Detaillierte Tabellen-Analyse und Erklärungen anzeigen"):
-    #     st.markdown("- **Erkenntnis 1:** ...")
+    with st.expander("🔍 Detaillierte Tabellenanalyse und Erklärungen"):
+        st.markdown("- Es liegt anscheinend ein **nichtlineares Problem** vor (z.B. U-förmiger Einfluss der Temperatur auf das Befinden), dass sich mit den linearen Algorithmen nicht gut abbilden lässt.")
+        st.markdown("- Auch die **Klassenungleichheit kann durch lineare Modelle schlechter berücksichtigt werden**. Sie neigen zur Dominanz der Mehrheitsklasse. Entscheidungsbäume haben es damit leichter.")
+        st.markdown("- Entscheidungsbäume und kNN können die nichtlineare Situation besser abbilden, zeigen aber infolge des Label Noise keine guten Ergebnisse.")
+        st.markdown("- Gerade für kNN ist Label Noise problematisch. Entscheidungsbäume neigen hingegen zu Overfitting und einem sprunghaften Wechsel zwischen den Klassen (Auswendiglernen des Trainingssets), ohne hohe Genauigkeiten im Testset zu liefern.")
+        st.markdown("- Ensemblemethoden, wie RandomForest und HistGradientBoosting können das Label Noise etwas glätten und sind immun gegen Multikolinearität.")
+        st.markdown("- **Die besten**, wenn auch recht schwachen, **Ergebnisse zeigen Random Forest und HistGradientBoosting**. Diese sind zudem weniger anfällig bzgl. Korrelationen und benötigen keine Skalierung der Features.")
+        st.markdown("- Eine Reduzierung der Klassen verbessert die Werte der Metriken primär scheinbar, da dadurch auch die Wahrscheinlichkeiten für jede Klasse steigen. Das Problem des Label Noise bleibt.")
+        st.markdown("- An angesrebter Zielwert des **macro F1-Score von ungefähr 0.7 wird nicht erreicht**. Das Modell ist nur bedingt praxistauglich.")
+        st.markdown("- Für bessere Ergebnisse wären wahrscheinlich weitere subjektive Informationen der befragten Personen wichtig.")
+        st.markdown("- In der ASHRAE-Norm heißt es, dass eine Klimatisierung dann als erfolgreich und normgerecht gilt, wenn mindestens 80% der Raumnutzer zufrieden sind.")
 
-    st.html(slide_smallpoint("Es liegt anscheinend ein <b>nichtlineares Problem</b> vor (z.B. U-förmiger Einfluss der Temperatur auf das Befinden), dass sich mit den linearen Algorithmen nicht gut abbilden lässt. "))
-    st.html(slide_smallpoint("Auch die <b>Klassenungleichheit kann durch lineare Modelle schlechter berücksichtigt werden</b>. Sie neigen zur Dominanz der Mehrheitsklasse. Entscheidungsbäume haben es damit leichter."))
-    st.html(slide_smallpoint("Entscheidungsbäume und kNN können die nichtlineare Situation besser abbilden, zeigen aber infolge des Label Noise keine guten Ergebnisse."))
-    st.html(slide_smallpoint("Gerade für kNN ist Label Noise problematisch. Entscheidungsbäume neigen hingegen zu Overfitting und einem sprunghaften Wechsel zwischen den Klassen (Auswendiglernen des Trainingssets), ohne hohe Genauigkeiten im Testset zu liefern."))
-    #st.html(slide_smallpoint("Ensemble-Methoden, wie RandomForest und HistGradientBoosting können das Label Noise etwas glätten und sind immun gegen Multikolinearität."))
-    st.html(slide_smallpoint("<b>Die besten</b>, wenn auch recht schwachen, <b>Ergebnisse zeigen Random Forest und HistGradientBoosting</b>. Diese sind zudem weniger anfällig bzgl. Korrelationen und benötigen keine Skalierung der Features."))
-    st.html(slide_smallpoint("Eine Reduzierung der Klassen verbessert die Werte der Metriken primär scheinbar, da dadurch auch die Wahrscheinlichkeiten für jede Klasse steigen. Das Problem des Label Noise bleibt."))
-    st.html(slide_smallpoint("An angesrebter Zielwert des <b>macro F1-Score von ungefähr 0.7 wird nicht erreicht</b>. Das Modell ist nur bedingt praxistauglich."))
-    st.html(slide_smallpoint("Für bessere Ergebnisse wären wahrscheinlich weitere subjektive Informationen der befragten Personen wichtig."))
-    st.html(slide_smallpoint("In der ASHRAE-Norm heißt es, dass eine Klimatisierung dann als erfolgreich und normgerecht gilt, wenn mindestens 80% der Raumnutzer zufrieden sind."))
+    # st.html(slide_smallpoint("Es liegt anscheinend ein <b>nichtlineares Problem</b> vor (z.B. U-förmiger Einfluss der Temperatur auf das Befinden), dass sich mit den linearen Algorithmen nicht gut abbilden lässt."))
+    # st.html(slide_smallpoint("Auch die <b>Klassenungleichheit kann durch lineare Modelle schlechter berücksichtigt werden</b>. Sie neigen zur Dominanz der Mehrheitsklasse. Entscheidungsbäume haben es damit leichter."))
+    # st.html(slide_smallpoint("Entscheidungsbäume und kNN können die nichtlineare Situation besser abbilden, zeigen aber infolge des Label Noise keine guten Ergebnisse."))
+    # st.html(slide_smallpoint("Gerade für kNN ist Label Noise problematisch. Entscheidungsbäume neigen hingegen zu Overfitting und einem sprunghaften Wechsel zwischen den Klassen (Auswendiglernen des Trainingssets), ohne hohe Genauigkeiten im Testset zu liefern."))
+    # #st.html(slide_smallpoint("Ensemblemethoden, wie RandomForest und HistGradientBoosting können das Label Noise etwas glätten und sind immun gegen Multikolinearität."))
+    # st.html(slide_smallpoint("<b>Die besten</b>, wenn auch recht schwachen, <b>Ergebnisse zeigen Random Forest und HistGradientBoosting</b>. Diese sind zudem weniger anfällig bzgl. Korrelationen und benötigen keine Skalierung der Features."))
+    # st.html(slide_smallpoint("Eine Reduzierung der Klassen verbessert die Werte der Metriken primär scheinbar, da dadurch auch die Wahrscheinlichkeiten für jede Klasse steigen. Das Problem des Label Noise bleibt."))
+    # st.html(slide_smallpoint("An angesrebter Zielwert des <b>macro F1-Score von ungefähr 0.7 wird nicht erreicht</b>. Das Modell ist nur bedingt praxistauglich."))
+    # st.html(slide_smallpoint("Für bessere Ergebnisse wären wahrscheinlich weitere subjektive Informationen der befragten Personen wichtig."))
+    # st.html(slide_smallpoint("In der ASHRAE-Norm heißt es, dass eine Klimatisierung dann als erfolgreich und normgerecht gilt, wenn mindestens 80% der Raumnutzer zufrieden sind."))
 
 
     st.html("<div style='height: 140px;'></div>")    
 
     links, rechts = st.columns([1,1])
     with links:
-        st.image("ML/images/VergleichModelle_thermal_comfort_F1.png", caption="Vergleich der Ergebnisse - Thermal comfort")    
+        st.image("ML/images/VergleichModelle_thermal_comfort_F1.png", caption="Beispielvergleich der Ergebnisse unterschiedlicher Algorithmen- Thermal comfort")    
 
     with rechts:
-        st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Vergleich der Ergebnisse - Thermal Preference")    
+        st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Beispielvergleich der Ergebnisse unterschiedlicher Algorithmen- Thermal Preference")    
 
 
 with tab3: # modelle Komfort
@@ -303,7 +314,7 @@ with tab3: # modelle Komfort
     # =====================================================================
 
     # Ein schöner, ausklappbarer Bereich im Hauptfenster, der standardmäßig offen ist
-    with st.expander("⚙️ Modell-Konfiguration & Hyperparameter", expanded=True):
+    with st.expander("⚙️ Modellkonfiguration & Hyperparameter", expanded=True):
 
         # Erste Reihe: 2 Spalten für den neuen Kühlungsfilter und das Daten-Handling
         row1_col1, row1_col2 = st.columns(2)
@@ -360,7 +371,7 @@ with tab3: # modelle Komfort
                     selected_climates.append(climate)
 
         with row2_col4:
-            st.subheader("🏢 Gebäudetyp\n\n (Building Type)")
+            st.subheader("🏢 Gebäudetypfilter\n\n (Building Type)")
             available_buildings = sorted(list(df['building_type'].dropna().unique()))
             selected_buildings = []
             for building in available_buildings:
@@ -544,9 +555,9 @@ with tab3: # modelle Komfort
             value=f"unvollst. Zeilen: {rows_with_missing_values:,} \n\nfehlende Werte: {total_missing_cells:,}"
         )
         if impute_strategy == "Zeilen mit Fehlwerten löschen (dropna)":
-            st.caption("🔴 Status: Die betroffenen Zeilen wurden aus dem Modell entfernt.")
+            st.caption("🔴 Die betroffenen Zeilen wurden aus dem Modell entfernt.")
         else:
-            st.caption("🟢 Status: Lücken werden im Trainingsverlauf durch den Median ersetzt.")
+            st.caption("🟢 Lücken werden im Trainingsverlauf durch den Median ersetzt.")
 
     st.write("---")
 
@@ -638,8 +649,8 @@ with tab3: # modelle Komfort
         rf_model = best_pipeline.named_steps['classifier']
         
         shap_sample = transformed_df.sample(min(100, len(transformed_df)), random_state=42)
-        explainer = shap.TreeExplainer(rf_model)
-        shap_values = explainer.shap_values(shap_sample)
+        explainerTH = shap.TreeExplainer(rf_model)
+        shap_valuesTH = explainerTH.shap_values(shap_sample)
         actual_class_names = list(rf_model.classes_)
         
         # 4. Das KOMPLETTE EXPERIMENT-PAKET als Dictionary schnüren
@@ -650,7 +661,7 @@ with tab3: # modelle Komfort
             'y_pred': y_pred,
             'unique_labels': unique_labels,
             'classification_report': class_report_str, # Der gespeicherte Report
-            'shap_values': shap_values,
+            'shap_values': shap_valuesTH,
             'shap_sample': shap_sample,
             'shap_class_names': actual_class_names
         }
@@ -664,6 +675,12 @@ with tab3: # modelle Komfort
         
         #st.success("Training und Artefakt-Generierung erfolgreich abgeschlossen!")
         st.info(f"💾 Das Gesamtpaket wurde als **'{local_filename}'** im Projektordner gespeichert.")
+
+    if st.button("🧹 Cache leeren"):
+    
+        st.cache_data.clear()
+
+        st.cache_resource.clear()
 
     # 6. Ergebnisse anzeigen
     if 'model_thermal' in st.session_state:
@@ -745,15 +762,15 @@ with tab3: # modelle Komfort
             with st.spinner("Generiere SHAP-Analyse... Bitte warten..."):
                 # Stichprobe ziehen, um Abstürze bei großen Testsets zu verhindern
                 shap_sample = transformed_df.sample(min(400, len(transformed_df)), random_state=42) # nur 400 samples!
-                explainer = shap.TreeExplainer(rf_model)
-                shap_values = explainer.shap_values(shap_sample)
+                explainerTH = shap.TreeExplainer(rf_model)
+                shap_valuesTH = explainerTH.shap_values(shap_sample)
                 
                 # SHAP Summary Plot erzeugen
                 fig, ax = plt.subplots()
                 
                 # FIX: Übergabe von class_names sorgt für die korrekten Namen in der Legende!
                 shap.summary_plot(
-                    shap_values, 
+                    shap_valuesTH, 
                     shap_sample, 
                     plot_type="bar", 
                     class_names=actual_class_names, # <-- Hier werden die Namen gemappt!
@@ -847,7 +864,7 @@ with tab4: # classification cooling type
                 
                 # Metrik anzeigen
                 #st.metric(label="Vorhergesagter Kühlungstyp (Cooling Type)", value=str(text_prediction))
-                st.metric(label="🎯 Vorhergesagter Kühlungstyp (Cooling Type)", value=str(text_prediction))
+                st.metric(label="🎯 Vorhergesagte Kühlungsstrategie (Cooling Type)", value=str(text_prediction))
 
                 # DataFrame absolut sicher aufbauen
                 st.markdown("**Klassenwahrscheinlichkeiten:** (ohne Verwendung von CalibratedClassifierCV)")
@@ -920,7 +937,7 @@ with tab4: # classification cooling type
 
                     # 3. Die Selectbox greift nun stabil auf den manipulierten Session State zu
                     selected_class_local = st.selectbox(
-                        "Kühlungstyp für die LOKALE Erklärung (Waterfall):",
+                        "Kühlungsstrategie für die Erklärung der Einzelvorhersage (Waterfall):",
                         options=target_names,
                         key="sb_local_shap"  # Über diesen Key ist sie mit dem State verknüpft
                     )
@@ -981,7 +998,7 @@ with tab4: # classification cooling type
     with tab2:
         st.subheader("📈 Modellperformance & -metriken")
 
-        st.write("**Modell Random Forest**")
+        st.write("**Modell: Random Forest**")
         
         col_metric1, col_metric2 = st.columns(2)
         with col_metric1:
@@ -1060,7 +1077,7 @@ with tab4: # classification cooling type
             st.pyplot(fig)
 
 
-        st.subheader("Globale Feature-Wichtigkeit (SHAP)")
+        st.subheader("Globale Featurewichtigkeit (SHAP)")
         st.markdown("Nutzt den in der Modelldatei hinterlegten Explainer zur Analyse.")
         
         st.write("\n\n")
@@ -1069,7 +1086,7 @@ with tab4: # classification cooling type
         with shap_alle_mitte:
         
             try:
-                st.markdown("**Globale Feature-Wichtigkeit (Gesamter Datensatz):**")
+                st.markdown("**Globale Featurewichtigkeit (Gesamter Datensatz):**")
                 fig_global, ax_global = plt.subplots(figsize=(8, 4))
                 shap.summary_plot(shap_values, show=False, class_names=target_names, plot_size=(8, 4))
                 plt.tight_layout()
@@ -1084,7 +1101,7 @@ with tab4: # classification cooling type
 
         # Eigener Filter für den globalen Plot mit eindeutigem Key
         selected_class_global = st.selectbox(
-            "Kühlungstyp:",
+            "Kühlungsstrategie:",
             options=target_names,
             key="sb_global_shap"  # Eindeutiger Key für Streamlit
         )
@@ -1097,7 +1114,7 @@ with tab4: # classification cooling type
             # ==========================================
             # DIAGRAMM 1: GLOBALER PLOT (EINFLUSSRICHTUNG)
             # ==========================================
-            st.markdown("### 📊 Globale Einflussrichtung")
+            st.markdown("### 📊 Globale Einflussrichtung (Summary Plot)")
             
 
             
@@ -1170,8 +1187,8 @@ with tab4: # classification cooling type
 
             st.caption(
                 "**Interpretation:** Es wird automatisch der Wert mit der größten Korrelation mit dem Wert der X-Achse" \
-                "dargestellt als weitere farbliche Dimension. Auf der Y-Achse ist der Einfluss der Größe der X-Achse dargestellt." \
-                "Ebenso ist die Verteilung in grau dargestellt."
+                " dargestellt als weitere farbliche Dimension. Auf der Y-Achse ist der Einfluss der Größe der X-Achse dargestellt." \
+                " Ebenso ist die Verteilung in grau hinterlegt."
             )
 
 
@@ -1180,28 +1197,29 @@ with tab4: # classification cooling type
         st.subheader("⚙️ Modellaufbau")
 
         st.markdown("""
-            * Unterschiedliche Kombinationen aus Featuren untersucht
+            * Eingangsgrößen des Modell nach unterschiedlichen Kombinationen von Featuren festgelegt
+            * Import des Modells erfolgt über eine **Joblib-Datei**
             * ca. 47.500 Datensätze, aufgeteilt in:
                 * 80% Train
                 * 20% Test
-            * Features: alle kontinuierlich => **kein Encoding erforderlich**
-            * Target: 3 Klassen als Strings => **Label encoding erforderlich**
-            * Aufbau einer Pipeline:
+             * Aufbau der Pipeline:
+                * Features: alle kontinuierlich => **kein Encoding erforderlich**
+                * Target: 3 Klassen als Strings => **Label encoding erforderlich**
                 * **PowerTransformer für schiefe Features** und **StandardScaler für die restlichen Features** für Regressionsmodelle und kNN (Abstände der Werte bleiben erhalten)
-                * Vergleich von unterschieldichen Algorithmen zur Klassifizierung:
+                * unterschiedlichen Algorithmen zur Klassifizierung getestet:
                     * logistische lineare und polinomiale Regression 2. Grades
                     * decision tree
                     * kNN
                     * **Random Forest**
                     * **HistGradientBoosting**
             * Kontrolle auf **Overfitting über Differenz des macro F1 Scores** zwischen Train- und Testset
-            * **Auswahl fällt auf Random Forest**
+            * **Auswahl fiel auf Random Forest**
                 * hoher F1-Macro Score
-                * flexibel (kann NL-Probleme gut abbilden) und weniger Anfällig auf overfitting
+                * flexibel (kann NL-Probleme gut abbilden) und weniger anfällig auf Overfitting
                 * keine Skalierung notwendig
-                * Problem scharfe Grenzen, Wahrscheindlichkeitsermittlung nicht sehr genau ohne "calibrated_classifierCV"
+                * Problem: scharfe Grenzen, Wahrscheindlichkeitsermittlung nicht sehr genau ohne "calibrated_classifierCV"
                 * Modell zusammen mit SHAP-Analyse über joblib mit compress option exportiert zur Nutzung in Streamlit (ca. 70 mb)
-            * GridSearchCV ausgeführt, brachte aber keine Verbesserung
+            * GridSearchCV ausgeführt
                     """)
         
         links, mitte_links, mitte_rechts, rechts = st.columns([1,3,3,1], vertical_alignment='center')
@@ -1229,7 +1247,7 @@ with tab4: # classification cooling type
         st.image(svg_code, width="stretch")
 
         st.html(slide_point("Die Kühlungsstrategie konnte bereits im Basismodell recht gut ermittelt werden."))
-        st.html(slide_point("Durch das Entfernen der Schwarzkugeltemperatur (Tg - Kombination aus Luftgeschwindigkeit, Lufttemperatur und Wärmestrahlung) erhöht sich der Macroscore deutlich."))
+        st.html(slide_point("Durch das Entfernen der Schwarzkugeltemperatur (Tg - Kombination aus Luftgeschwindigkeit, Lufttemperatur und Wärmestrahlung) erhöht sich der Macroscore zusätzlich."))
         st.html(slide_point("Mit den 6 Features (Lufttemperatur, Außentemperatur, relative Luftfeuchte, Luftgeschwindigkeit, Kleidungsisolationswert und der metabolischen Rate) zeigten sich die besten untersuchten Ergebnisse."))
 
 
@@ -1532,14 +1550,14 @@ with tab5: # Regression clo
     with tab2:
         st.subheader("📈 Modellperformance & -metriken")
 
-        st.write("**HistGradientBoosting**")
+        st.write("**Modell: HistGradientBoosting**")
         
         col1, col2 = st.columns(2)
         col1.metric(label="R² Score (Test)", value=f"{metrics['r2_test']:.2f}")
         col2.metric(label="MAE (Test)", value=f"{metrics['mae_test']:.2f}")
         
         st.markdown("---")
-        st.subheader("📊 Globale Modell-Erklärbarkeit (Gesamtes Testset)")
+        st.subheader("📊 Globale Featurewichtigkeit SHAP")
         
         # Versuchen, die mitgespeicherten SHAP-Daten aus dem model_container zu laden
         historical_shap = model_container.get('shap_values')
@@ -1549,8 +1567,6 @@ with tab5: # Regression clo
             # Zwei Spalten nebeneinander für die beiden globalen Grafiken anlegen
             # Das Breitenverhältnis [1, 1] sorgt für gleiche Größe links und rechts
 
-            
-            st.markdown("**Relative Feature-Wichtigkeit (Global)**")
             global_shap_left, global_shap_middle, global_shap_right = st.columns([1, 3, 1])        
             
             with global_shap_middle:
@@ -1571,7 +1587,7 @@ with tab5: # Regression clo
             col_left, col_right = st.columns([1, 1])
 
             with col_left:
-                st.markdown("**Einflussrichtung der Features (Summary Plot)**")
+                st.markdown("### 📊 Globale Einflussrichtung (Summary Plot)")
                 try:
                     fig_dot, ax_dot = plt.subplots(figsize=(7, 5))
                     # Ohne plot_type wird die klassische rot-blaue Punktwolke gezeichnet
@@ -1583,6 +1599,7 @@ with tab5: # Regression clo
                     st.error(f"Fehler beim Erstellen des Summary-Plots: {e}")
 
             with col_right:
+                st.markdown("### 🔍 Globaler SHAP Dependence Plot")
                 fig_scatter, ax_scatter = plt.subplots(figsize=(7, 5))
 
                 plot_shap_obj = historical_shap[:, :]
@@ -1623,17 +1640,18 @@ with tab5: # Regression clo
         st.subheader("⚙️ Modellaufbau")
 
         st.markdown("""
-            * Unterschiedliche Kombinationen aus Featuren untersucht
+            * Eingangsgrößen des Modell nach unterschiedlichen Kombinationen von Featuren festgelegt
+            * Import des Modells erfolgt über eine Joblib-Datei
             * ca. 47500 Datensätze, aufgeteilt in:
                 * 80% Train
                 * 20% Test
-            * **Features: z.T. kategorisch => Encoding erforderlich**
-                * **One-Hot-Encoding für 'season', 'building_type', 'cooling_type' und 'climate_zone' (14 zusätliche Spalten, insgesamt 22)**
-                * (Target-Encoding vor Reduzierung der Klimazonen)
             * rechtsschiefe Verteilung des clo-Targets (=> testweise log. auf Target getestet, jedoch ohne Einfluss)
-            * **Aufbau einer Pipeline (wichtig für spätere Vorhersagen)**:
+            * **Aufbau der Pipeline (Transformation wichtig für spätere Vorhersagen)**:
+                * **Features: z.T. kategorisch => Encoding erforderlich**
+                    * **One-Hot-Encoding für 'season', 'building_type', 'cooling_type' und 'climate_zone' (14 zusätliche Spalten, insgesamt 22)**
+                    * (erste Modelle mit Hilfe Target-Encoding vor Reduzierung der Klimazonen von über 30 auf 4)
                 * **PowerTransformer für schiefe Features** und **StandardScaler für die restlichen Features**
-                * Vergleich von unterschiedlichen Algorithmen zur Klassifizierung:
+                * unterschiedlichen Algorithmen zur Klassifizierung getestet:
                     * lineare und polinomiale Regression 2.Grades
                     * Ridge Regression
                     * Support Vector Regression
@@ -1643,10 +1661,10 @@ with tab5: # Regression clo
             * **MAE als maßgebende Metrik** verwendet (für rechtsschiefe Metrik besser geeignet)
             * Auswahl fällt auf **HistGradientBoosting**
                 * niedriger MAE-Wert (durchschnittliche Abweichung vom Wert des Targets)
-                * flexibel (kann NL-Probleme gut abbilden) und weniger Anfällig auf overfitting
+                * flexibel (kann NL-Probleme gut abbilden) und weniger Anfällig auf Overfitting
                 * keine Skalierung notwendig
                 * Modell zusammen mit SHAP-Analyse über joblib exportiert zur Nutzung in Streamlit (ca. 12 mb)
-                * deutlich bessere Performance bei der SHAP-Analyse (RandomForest infolge der zahlreichen Bäume eher problematisch)
+                * deutlich bessere Performance bei der SHAP-Analyse als RandomForest, der infolge der zahlreichen Bäume eher problematisch ist
                 * deutlich kleinere Datei durch die bessere SHAP-Analyse
             * Über GridSearch Hyperparameter optimiert
             """)
@@ -1671,22 +1689,22 @@ with tab5: # Regression clo
 
 
         st.html(slide_point("Das Basismodell zeigt bereits recht solide Ergebnisse mit einem MAE-Wert von 0.13."))
-        st.html(slide_point("Durch das hinzufügen weitere Features konnte das Ergebnis nur leicht verbessert werden"))
-        #st.html(slide_point("Durch das hinzufügen weitere Features konnte das Ergebnis nur leicht verbessert werden"))
-        st.html(slide_point("Eine starke Filterung auf eine bestimmtes Klima, eine bestimmte Jahreszeit und Belüftungsart reduziert den Datensatz stark, führt aber zu homegeneren und besseren Ergebnissen auf Kosten von möglicher Verallgemeinerung. (Modell 7)"))
+        st.html(slide_point("Durch das Hinzufügen weitere Features konnte das Ergebnis nur leicht verbessert werden"))
+        st.html(slide_point("Eine starke Filterung auf eine bestimmtes Klima, eine bestimmte Jahreszeit und Belüftungsart reduziert den Datensatz stark, führt aber zu homegeneren und besseren Ergebnissen auf Kosten von möglicher Verallgemeinerung (Modell 7)."))
 
 
 with tab6: # Anomalie
     st.subheader("Anomaliebetrachtungen")
 
-    reg_links, reg_rechts = st.columns([1.25,1])
+    reg_links, mitte, reg_rechts = st.columns([1.25,0.1,0.9])
 
     with reg_links:
 
-        st.html(slide_point("Regression - Vergleich Vorhersagen und Zielwerte"))
-        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es wird die Differenz zwischen Wert der Datenbank und vorhergesagtem Wert gebildet.")
-        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Als Annahme wird das obere 1% der absoluten Abweichungen als Anomalie betrachtet. (das entspricht delta > 0,56)")
-        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Daraus ergeben sich 100 potentielle Werte die als Anomalie gelten könnten.")
+        st.html(slide_point("Regression - Anomalieerkennung durch Vergleich Vorhersagen und Zielwerte"))
+        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Differenz zwischen Werten der Datenbank und vorhergesagten Werte ermittelt")
+        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Abweichungen liegen bei bis zu 1.82 clo (entspr. Datenbankwerte z.T. unstimmig)")
+        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Annahme: 1% der absoluten Abweichungen Anomalie definiert. (ca. delta > 0,56)")
+        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - 100 potentielle Anomaliewerte")
 
     with reg_rechts:
         st.markdown("""<small>
@@ -1710,20 +1728,20 @@ with tab6: # Anomalie
 
     st.html("<div style='margin-bottom: 50px;'></div>")
 
-    st.html(slide_point("DBSCAN - Mit Daten der Regression zum Vergleich"))
+    st.html(slide_point("DBSCAN - Vergleich gefundener Anomalien aus DBSCAN und Regression"))
     #dbscan_left, dbscan_middle, dbscan_right = st.columns([1,3,1])
-    dbscan_left, dbscan_right = st.columns([1,2], vertical_alignment="center")
+    dbscan_left, dbscan_right = st.columns([1.1,1.9], vertical_alignment="center")
     with dbscan_left:
         st.image("ML/images/k-Abstand_dbscan.png", caption="k-Abstand")
         
         st.markdown("""
-                    * DBSCAN nur sinnvoll mit kontinuierlichen Werten.
-                    * Erster Test mit Datenset für Regression der Kleidungsisolationswerte (alle Werte kontinuierlich)
-                    * schiefe Features wurden mit einem PowerTransformer skaliert, sonstige Werte mit einem StandardScaler
-                    * Anomalien werden durch Abstände der Punkte im mehrdiemensionalen Raum gesucht.
-                    * Die Graphik der K-Abstände zeigt eine ausgeprägten Anstieg ab einem eps-Wert von 1.5.
-                    * Es wurden 74 Anomalien erkannt von 47584 Werten (0.16%).
-                    * Von den 74 DBSCAN Anomalien gibt es nur 3 Übereinstimmungen zu den 100 der Regression.
+                    * DBSCAN algorithmusbedingt nur sinnvoll mit kontinuierlichen Werten
+                    * Anomalien werden durch Abstände der Punkte im mehrdiemensionalen Raum gesucht
+                    * Erster Untersuchung mit Datenset der Regression der Kleidungsisolationswerte (alle Features kontinuierlich)
+                    * schiefe Features mit einem PowerTransformer skaliert, sonstige Werte mit StandardScaler
+                    * Graphik der K-Abstände zeigt ausgeprägten Anstieg ab eps-Wert von 1.5.
+                    * 74 Anomalien erkannt von 47584 Werten (0.16%)
+                    * nur 3 Übereinstimmungen zwischen den 74 DBSCAN-Anomalien und den 100 Werten der Regression 
                     """)
 
         # st.html(slide_point("DBSCAN nur sinnvoll mit kontinuierlichen Werten."))
@@ -1741,26 +1759,26 @@ with tab6: # Anomalie
 
     st.html("<div style='margin-bottom: 50px;'></div>")
 
-    st.html(slide_point("Isolation Forest - Filter von Anomalien aus Basismodell clo-Regression"))
+    st.html(slide_point("Isolation Forest - Verwendet als Filter von Anomalien aus Basismodell der clo-Regression"))
     #forest_left, forest_middle, forest_right = st.columns([1,3,1])
-    forest_left, forest_right = st.columns([1,2], vertical_alignment="center")
+    forest_left, forest_right = st.columns([1.1,1.9], vertical_alignment="center")
     with forest_left:
         st.image("ML/images/anomalie_score_isolation_forest.png", caption="Anomaliescore")
         st.markdown("""
-            * Isolation Forest ist sowohl für kontinuierliche, wie auch für kategorische Werte, geeignet.
-            * Das Trainset wird auf Anomalien geprüft.
-            * 342 Anomalien gefunden im Trainset (0,79%).
-            * Mit den um die 342 Werte reduzierten Trainset zeigen sich leichte Verbesserungen im Basismodell. Der MAE-Wert sinkt um 0,01.
+            * Isolation Forest sowohl für kontinuierliche, wie auch für kategorische Werte, geeignet
+            * Trainset auf Anomalien geprüft
+            * 342 Anomalien im Trainset gefunden (0,79%)
+            * Entfernen der 342 Werte aus Trainset verbessert Vorhersagen leicht (MAE-Wert sinkt um 0,01)
             """)
     with forest_right:
-        st.image("ML/images/isolation_forest.png", caption="Anomalieuntersuchung über DBSCAB")
+        st.image("ML/images/isolation_forest.png", caption="Anomalieuntersuchung über Isolation Forest")
 
     st.html("<div style='margin-bottom: 50px;'></div>")
 
     st.html(slide_point("Nächste mögliche Schritte"))
     #st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Sind Schnittmengen der Anomalien bei gleichen Sets und den unterschiedlichen Methoden vorhanden?")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - SHAP-Analyse der Datenpunkte zur Analyse und Erklärung der Anomalien")
-    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einfluss auf ML-Modelle (erste Ergebnisse zeigten leicheten Einfluss mit rausgefilterten Anomaliewerten.)")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - SHAP-Analyse der Datenpunkte zur Überprüfung der Anomalien")
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einfluss auf ML-Modelle testen (erste Ergebnisse zeigten leichten Einfluss mit rausgefilterten Anomaliewerten)")
 
     svg_path = "ML/images/tabelle_regression_clo_anomalie.svg"
 
@@ -1771,26 +1789,27 @@ with tab6: # Anomalie
     # Nativ in Streamlit anzeigen (wichtig: width="stretch" für die volle Breite)
     st.image(svg_code, width="stretch")
 
+    st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - gelbe und grüne Linien zeigen erste Unterschiede zwischen anomalieungefilterten und -gefilterten Rechnungen")
 
 with tab7: # Fazit
 
-    st.subheader("Fazit")
+    st.subheader("🏁Fazit")
 
     links, rechts = st.columns([3,1])
     with links:
-        st.html(slide_point("Subjektive Werte sind im Gegensatz zu physikalischen Werten oft nur schwer über Machine Learning zu bestimmen."))
+        st.html(slide_point("<b>Subjektive Werte</b> sind im Gegensatz zu physikalischen Werten <b>oft nur schwer über Machine Learning zu bestimmen</b>."))
 
     links, rechts = st.columns([3,1])
     with links:
-        st.html(slide_point("Eine Vorhersage der Werte für das thermische Empfinden ist stark geprägt von Label Noise und liefert deshalb keine ausreichend genaue Vorhersagen."))
+        st.html(slide_point("Eine Vorhersage der Werte für das thermische Empfinden ist stark geprägt von <b>Label Noise</b> und liefert <b>deshalb keine ausreichend genaue Vorhersagen</b>."))
 
     links, rechts = st.columns([3,1])
     with links:
-        st.html(slide_point("Der Kühlsungstyp konnte recht gut aus den physichen Daten vorhergesagt werden."))
+        st.html(slide_point("Die <b>Kühlsungsstrategie konnte recht gut</b> aus den physichen Daten <b>vorhergesagt werden</b>."))
 
     links, rechts = st.columns([3,1])
     with links:
-        st.html(slide_point("Eine durchgeführte Regression zur Bestimmung des Kleidungsisolationswerte zeigte Ergebnisse mit einer durchschnittlichen Genauigkeit von etwa 0.12, was in etwas einer Strickjacke oder einem dünnen Shirt entspricht."))
+        st.html(slide_point("Eine durchgeführte Regression zur <b>Bestimmung des Kleidungsisolationswerte</b> zeigte Ergebnisse mit einer <b>durchschnittlichen Genauigkeit von etwa 0.12 clo</b>, was in etwas einer Strickjacke oder einem dünnen Shirt entspricht."))
 
     links, rechts = st.columns([3,1])
     with links:
