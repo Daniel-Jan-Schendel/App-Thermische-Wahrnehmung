@@ -504,18 +504,23 @@ with tab2:
             font-size:16px;
             line-height:1.55;
         ">
-        <h4>🔥 Physikalische Einflussgrößen</h3>
+        <h4>🔥 Physikalische Einflussgrößen (Innenräumen) </h3>
 
         Diese Variablen beeinflussen direkt die Wärmeabgabe und ‑aufnahme des Körpers 
         und bilden die Grundlage für die physikalische Bewertung des thermischen Komforts.
 
         <ul>
-            <li>🔥 <b>Metabolische Aktivität</b></li> 
-            <li>👕 <b>Bekleidungsisolation</b></li>
-            <li>🌡️ <b>Lufttemperatur</b></li>
-            <li>💨 <b>Luftgeschwindigkeit</b></li>
-            <li>☀️ <b>Strahlungstemperatur</b></li>
-            <li>💧 <b>Relative Luftfeuchtigkeit</b></li>
+            <li><b>Metabolische Aktivität</b> (wie aktiv eine Person ist) </li> 
+             </br>       
+            <li><b>Bekleidungsisolation</b> (Art und Dicke der Kleidung)</li>
+            </br>
+            <li><b>Lufttemperatur</b> (Wärme der Raumluft)</li>
+            </br>
+            <li><b>Luftgeschwindigkeit</b> (spürbare Luftbewegung oder Luftzug) </li>
+            </br>
+            <li> <b>Strahlungstemperatur</b> (Wärmeabstrahlung von Wänden, Fenstern und Oberflächen) </li>
+            </br>
+            <li><b>Relative Luftfeuchtigkeit</b> (Feuchtegehalt der Luft)</li>
         </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -533,240 +538,52 @@ with tab2:
 
         Diese Variablen beschreiben die individuelle Wahrnehmung und Bewertung der Umgebung 
         und zeigen, wie Menschen die physikalischen Bedingungen tatsächlich erleben.
+         ##### 1. Thermische Empfindung (TS) 
+        **Kalt  ◄────── Neutral ──────►  Heiß**  
+        `-3    -2    -1    0    +1    +2    +3 `
 
-        <ul>
-            <li>🙂 <b>Thermisches Empfinden: </b> Kalt ◄── Neutral ──► Heiß</li>
-            <li>✔️ <b>Thermische Akzeptanz: </b> Nicht akzeptabel / Akzeptabel</li>
-            <li>🔄 <b>Thermische Präferenz: </b> Kühler ◄── Keine Änderung ──► Wärmer</li>
-            <li>😌 <b>Thermischer Komfort: </b> Sehr unkomfortabel ◄──► Sehr komfortabel </li>
+        ##### 2. Thermische Akzeptanz (TA)
+        ○ Nicht akzeptabel  
+        ○ Akzeptabel  
+
+        ##### 3. Thermische Präferenz (TP)  
+        **Kühler ◄──────── Keine Änderung ────────► Wärmer**  
+        `  -1                         0                         +1     `
+
+        ##### 4. Thermischer Komfort (TC, ASHRAE‑Skala 1–6)  
+        **Sehr unkomfortabel ◄──────────────────────► Sehr komfortabel**  
+               `  1             2            3           4           5            6   `
+
         </ul>
         </div>
         """, unsafe_allow_html=True)
 
 
-    # # ============================================================
-    # # 1. Physikalische Variablen auswählen
-    # # ============================================================
-
-    # cols_phys = [
-    #     "metabolic_rate",
-    #     "clothing_ensemble_insulation",
-    #     "air_temperature",
-    #     "air_speed",
-    #     "radiant_temperature",
-    #     "relative_humidity"
-    # ]
-
-    # # Deutsche Labels für die Darstellung
-    # german_phys_labels = {
-    #     "metabolic_rate": "Metabolische Aktivität",
-    #     "clothing_ensemble_insulation": "Bekleidungsisolation",
-    #     "air_temperature": "Lufttemperatur",
-    #     "air_speed": "Luftgeschwindigkeit",
-    #     "radiant_temperature": "Strahlungstemperatur",
-    #     "relative_humidity": "Relative Luftfeuchtigkeit"
-    # }
-
-    # # Zwei Spalten erstellen
-    # col01, col02 = st.columns([1.8, 1])
+    st.subheader("🌡️ Wie stark hängen diese physikalischen Umweltvariablen tatsächlich mit den vier subjektiven Komfortparametern zusammen?")
 
 
-    # # ============================================================
-    # # 2. Heatmap links
-    # # ============================================================
-    # with col01:
+    st.markdown("""
+    <div style="display: flex; flex-direction: column; gap: 14px;">
 
-    #     df_phys = df[cols_phys].copy()
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 18px; height: 18px; background-color: #e63946; border-radius: 50%;"></div>
+        <b>Positive Korrelation</b> – beide Variablen bewegen sich in die gleiche Richtung.
+    </div>
 
-    #     # Numerische Umwandlung (NICHT verändert)
-    #     for c in cols_phys:
-    #         df_phys[c] = pd.to_numeric(df_phys[c], errors="coerce")
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 18px; height: 18px; background-color: #457b9d; border-radius: 50%;"></div>
+        <b>Negative Korrelation</b> – die Variablen entwickeln sich gegensätzlich.
+    </div>
 
-    #     df_phys = df_phys.dropna()
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 18px; height: 18px; background-color: #adb5bd; border-radius: 50%;"></div>
+        <b>Nahe 0</b> – kein relevanter Zusammenhang erkennbar.
+    </div>
 
-    #     # Korrelation berechnen (NICHT verändert)
-    #     corr_matrix = df_phys.corr(method="spearman")
+    </div>
+    """, unsafe_allow_html=True)
 
-    #     # Deutsche Labels anwenden
-    #     corr_matrix = corr_matrix.rename(index=german_phys_labels, columns=german_phys_labels)
-
-    #     # Heatmap
-    #     fig, ax = plt.subplots(figsize=(8, 5))
-    #     ax.set_title("Korrelationsmatrix der physikalischen Komfortvariablen")
-
-    #     sns.heatmap(
-    #         corr_matrix,
-    #         annot=True,
-    #         cmap="coolwarm",
-    #         vmin=-1,
-    #         vmax=1,
-    #         linewidths=0.5,
-    #         ax=ax
-    #     )
-    #     st.pyplot(fig)
-
-
-    # # ============================================================
-    # # 3. Interpretationspanel rechts
-    # # ============================================================
-    # with col02:
-
-    #     st.markdown("#### 🔥 Wichtigste physikalische Zusammenhänge")
-
-    #     # Werte extrahieren (jetzt mit deutschen Labels)
-    #     r_ta_tr  = corr_matrix.loc["Lufttemperatur", "Strahlungstemperatur"]
-    #     r_clo_tr = corr_matrix.loc["Bekleidungsisolation", "Strahlungstemperatur"]
-
-    #     # Farbskala passend zur Heatmap
-    #     def color_for_r(r):
-    #         if r >= 0.75:
-    #             return "#C0392B"   # starke positive
-    #         elif r >= 0.40:
-    #             return "#E67E22"   # mittlere positive
-    #         elif r >= 0.15:
-    #             return "#F1C40F"   # leichte positive
-    #         elif r <= -0.75:
-    #             return "#005BBB"   # starke negative
-    #         elif r <= -0.40:
-    #             return "#5F9FE9"   # mittlere negative
-    #         elif r <= -0.15:
-    #             return "#A9CCE3"   # leichte negative
-    #         else:
-    #             return "#D5D8DC"   # neutral
-
-    #     c_ta_tr  = color_for_r(r_ta_tr)
-    #     c_clo_tr = color_for_r(r_clo_tr)
-
-    #     # Panel
-    #     st.markdown(f"""
-    #     <div style="font-size:16px; line-height:1.55; padding-left:6px;">
-
-    #     <h5 style="margin-bottom:4px;">🌡️ Lufttemperatur ↔ Strahlungstemperatur  
-    #     <span style="color:{c_ta_tr}; font-weight:bold;">(r = {r_ta_tr:.2f})</span></h5>
-    #     • Sehr starke positive Korrelation  
-    #     • Beide Temperaturen steigen und fallen gemeinsam  
-    #     • Deshalb beeinflussen sie die operative Temperatur nahezu identisch  
-    #     <br><br>
-
-    #     <h5 style="margin-bottom:4px;">👕 Bekleidungsisolation ↔ Strahlungstemperatur  
-    #     <span style="color:{c_clo_tr}; font-weight:bold;">(r = {r_clo_tr:.2f})</span></h5>
-    #     • Mittlere negative Korrelation  
-    #     • Sinkt die Strahlungstemperatur, wird häufig mehr Kleidung getragen  
-    #     • Menschen kompensieren kühlere Oberflächen durch höhere Isolation 
-        
-         
-
-    #     </div>
-    #     """, unsafe_allow_html=True)
-
-
-    # # ============================================================
-    # # 4. Expander – Erklärung
-    # # ============================================================
-    # with st.expander("📘 Erklärung der wichtigsten Zusammenhänge"):
-
-    #     st.markdown("### 🔥 Wissenschaftliche Interpretation der physikalischen Zusammenhänge")
-
-    #     # Farbskala passend zur Heatmap
-    #     def color_for_r(r):
-    #         if r >= 0.75:
-    #             return "#C0392B"   # starke positive
-    #         elif r >= 0.40:
-    #             return "#E67E22"   # mittlere positive
-    #         elif r >= 0.15:
-    #             return "#F1C40F"   # leichte positive
-    #         elif r <= -0.75:
-    #             return "#005BBB"   # starke negative
-    #         elif r <= -0.40:
-    #             return "#5F9FE9"   # mittlere negative
-    #         elif r <= -0.15:
-    #             return "#A9CCE3"   # leichte negative
-    #         else:
-    #             return "#D5D8DC"   # neutral
-
-    #     # Schwellenwerte für wissenschaftlich relevante Korrelationen
-    #     THRESHOLD_POS = 0.15     # leichte positive Korrelation
-    #     THRESHOLD_NEG = -0.15    # leichte negative Korrelation
-
-    #     # Wissenschaftliche Erklärungstexte
-    #     def explain(var1, var2, r):
-    #         color = color_for_r(r)
-
-    #         # Stärke klassifizieren
-    #         if r >= 0.75:
-    #             strength = "Sehr starke positive Korrelation"
-    #             mechanism = (
-    #                 "Die beiden Größen zeigen nahezu identische thermische Dynamiken. "
-    #                 "Dies weist auf eine direkte physikalische Kopplung oder gemeinsame "
-    #                 "Einflussfaktoren hin."
-    #             )
-    #         elif r >= 0.40:
-    #             strength = "Mittlere positive Korrelation"
-    #             mechanism = (
-    #                 "Die Variablen steigen und fallen gemeinsam, was auf einen "
-    #                 "substanziellen thermischen Zusammenhang hindeutet."
-    #             )
-    #         elif r >= 0.15:
-    #             strength = "Leichte positive Korrelation"
-    #             mechanism = (
-    #                 "Ein moderater Gleichlauf der Variablen deutet auf indirekte "
-    #                 "thermische Wechselwirkungen oder gemeinsame Randbedingungen hin."
-    #             )
-    #         elif r <= -0.75:
-    #             strength = "Sehr starke negative Korrelation"
-    #             mechanism = (
-    #                 "Die Variablen entwickeln sich stark gegensätzlich. Dies spricht "
-    #                 "für kompensatorische thermische Mechanismen oder gegenläufige "
-    #                 "physikalische Effekte."
-    #             )
-    #         elif r <= -0.40:
-    #             strength = "Mittlere negative Korrelation"
-    #             mechanism = (
-    #                 "Die Variablen zeigen gegenläufige Trends, was auf thermische "
-    #                 "Kompensation oder unterschiedliche physikalische Rollen hinweist."
-    #             )
-    #         elif r <= -0.15:
-    #             strength = "Leichte negative Korrelation"
-    #             mechanism = (
-    #                 "Ein moderater gegenläufiger Verlauf deutet auf subtile "
-    #                 "thermische Ausgleichsmechanismen hin."
-    #             )
-    #         else:
-    #             return None
-
-    #         return f"""
-    #         <div style="font-size:16px; line-height:1.55; padding-left:6px;">
-    #             <h5 style="margin-bottom:4px;">{var1} ↔ {var2}  
-    #             <span style="color:{color}; font-weight:bold;">(r = {r:.2f})</span></h5>
-    #             • {strength}<br>
-    #             • {mechanism}<br>
-    #         </div>
-    #         """
-
-    #     # Alle Paare durchgehen
-    #     vars_list = corr_matrix.columns.tolist()
-    #     explanations = []
-
-    #     for i in range(len(vars_list)):
-    #         for j in range(i + 1, len(vars_list)):
-    #             var1 = vars_list[i]
-    #             var2 = vars_list[j]
-    #             r = corr_matrix.loc[var1, var2]
-
-    #             block = explain(var1, var2, r)
-    #             if block:
-    #                 explanations.append((abs(r), block))
-
-    #     # Sortieren nach Stärke der Korrelation
-    #     explanations.sort(reverse=True, key=lambda x: x[0])
-
-    #     # Ausgabe
-    #     if explanations:
-    #         for _, block in explanations:
-    #             st.markdown(block, unsafe_allow_html=True)
-    #             st.markdown("<br>", unsafe_allow_html=True)
-    #     else:
-    #         st.markdown("Keine wissenschaftlich relevanten Zusammenhänge gefunden.")
+    st.markdown("<hr style='border: 1px solid #ccc;'>", unsafe_allow_html=True)
 
 
 
@@ -867,6 +684,8 @@ with tab2:
                 linewidths=0.5,
                 ax=ax
             )
+            plt.xticks(rotation=45, ha='right')   # 🔥 X‑Labels 45° gedreht
+            plt.yticks(rotation=0)   
             st.pyplot(fig)
 
     with col_right:
@@ -876,7 +695,7 @@ with tab2:
             line-height:1.55;
         ">
 
-        <h4 style="margin-top:0;">📌 Wichtigste Ergebnisse</h3>
+        <h4 style="margin-top:0;">📌 Wichtigste Ergebnisse</h4>
 
         <p><b>🌡️ Lufttemperatur → Strahlungstemperatur</b><br>
         <b>r = 0.89</b><br>
@@ -894,6 +713,18 @@ with tab2:
         <b>r = -0.46</b> zur Lufttemperatur<br>
         <b>r = -0.45</b> zur Strahlungstemperatur<br>
         Höhere Temperaturen → leichtere Kleidung.</p>
+
+        <hr>
+
+        <p><b>❄️ Lufttemperatur → Thermische Präferenz</b><br>
+        <b>r = -0.44</b><br>
+        Höhere Lufttemperatur führt zu einer stärkeren Präferenz für kühlere Bedingungen.</p>
+
+        <hr>
+
+        <p><b>☀️ Strahlungstemperatur → Thermische Präferenz</b><br>
+        <b>r = -0.41</b><br>
+        Warme Oberflächen erzeugen ebenfalls den Wunsch nach einer kühleren Umgebung.</p>
 
         </div>
         """, unsafe_allow_html=True)
@@ -1134,49 +965,116 @@ with tab3:
     
     st.subheader("🏠 Wichtigste Korrelationen mit Gebäude-Beispielen")
 
-
     st.markdown("""
     Diese Übersicht zeigt, wie physikalische Komfortparameter – wie Lufttemperatur,
     Strahlungstemperatur und Bekleidungsisolation – mit dem Verhalten und Empfinden
     von Personen in verschiedenen Gebäudetypen zusammenhängen.
-
     """)
 
 
-    st.image("komfort_erklarung2.png", width=1200)
 
-    # with st.expander("📌 Wichtigste Korrelationen mit Gebäude-Beispielen"):
+    st.markdown("""
+    <style>
+    .box {
+        background-color: #f7f9fc;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        border: 1px solid #e3e6eb;
+    }
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .text {
+        font-size: 18px;
+        line-height: 1.55;
+    }
+    </style>
 
-    #     data = {
-    #         "Korrelation": [
-    #             "🌡️ Lufttemperatur ↔ Strahlungstemperatur (r = 0,89)",
-    #             "😊 Thermisches Empfinden ↔ Thermische Präferenz (r = -0,67)",
-    #             "👕 Bekleidungsisolation ↔ Lufttemperatur (r = -0,46)",
-    #             "👕 Bekleidungsisolation ↔ Strahlungstemperatur (r = -0,45)",
-    #             "❄️ Lufttemperatur ↔ Thermische Präferenz (r = -0,44)",
-    #             "☀️ Strahlungstemperatur ↔ Thermische Präferenz (r = -0,41)"
-    #         ],
-    #         "Erklärung": [
-    #             "Beide Temperaturen steigen gemeinsam an.",
-    #             "Je wärmer sich Personen fühlen, desto stärker bevorzugen sie kühlere Bedingungen.",
-    #             "Mit steigender Lufttemperatur wird leichtere Kleidung getragen.",
-    #             "Höhere Strahlungswärme führt zu geringerer Bekleidungsisolation.",
-    #             "Mit steigender Temperatur wünschen sich die Nutzer kühlere Bedingungen.",
-    #             "Warme Oberflächen erhöhen den Wunsch nach einer kühleren Umgebung."
-    #         ],
-    #         "Gebäudetyp": [
-    #             "🏢 Bürogebäude mit großen Glasfassaden oder Klassenräume mit hoher Sonneneinstrahlung.",
-    #             "👴 Seniorenzentrum oder 👩‍🏫 Klassenraum, in denen viele Personen gleichzeitig den Raum nutzen.",
-    #             "🏠 Mehrfamilienhaus im Sommer oder 🏢 Bürogebäude mit natürlicher Lüftung.",
-    #             "🏢 Bürogebäude mit Glasfassade oder ☀️ Klassenraum auf der Südseite.",
-    #             "👩‍🏫 Klassenräume ohne Klimaanlage oder 👴 Seniorenzentren während warmer Sommertage.",
-    #             "🏠 Mehrfamilienhäuser mit großen Fenstern oder 🏢 Büros mit direkter Sonneneinstrahlung."
-    #         ]
-    #     }
+    <div class="box">
+        <div class="title">🏢 Bürogebäude</div>
+        <div class="text">
+            • Hohe Luft- und Strahlungstemperaturen durch Glasfassaden.<br>
+            • Nutzer bevorzugen kühlere Bedingungen.
+        </div>
+    </div>
 
-    #     df_data = pd.DataFrame(data)
+    <div class="box">
+        <div class="title">🏠 Mehrfamilienhäuser</div>
+        <div class="text">
+            • Kleidung passt sich den Innentemperaturen an.<br>
+            • Sonneneinstrahlung beeinflusst die thermische Wahrnehmung.
+        </div>
+    </div>
 
-    #     with st.expander("📌 Wichtigste Korrelationen mit Gebäude-Beispielen"):
-    #         st.table(df_data)
+    <div class="box">
+        <div class="title">👩‍🏫 Klassenräume</div>
+        <div class="text">
+            • Hohe Belegung erhöht das Wärmeempfinden.<br>
+            • Fenster werden häufiger geöffnet oder Ventilatoren genutzt.
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="title">👴 Seniorenzentren</div>
+        <div class="text">
+            • Thermisches Empfinden beeinflusst die Präferenz besonders stark.<br>
+            • Stabile und angenehme Temperaturen sind wichtig.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    
+    st.markdown("""
+    <div style="font-size:22px; line-height:1.6;">
+    <b>Die Temperatur – sowohl Luft- als auch Strahlungstemperatur – ist in allen Gebäudetypen
+        der wichtigste Einflussfaktor auf die thermische Wahrnehmung.<b>
+    </div>
+    """, unsafe_allow_html=True)
 
 
+
+    # #st.image("komfort_erklarung2.png", width=1400)
+
+    # import pandas as pd
+
+    # df_gebaeude = pd.DataFrame({
+    #     "Korrelation": [
+    #         "🌡️ Lufttemperatur ↔ Strahlungstemperatur",
+    #         "😊 Thermisches Empfinden ↔ Thermische Präferenz",
+    #         "👕 Bekleidungsisolation ↔ Lufttemperatur",
+    #         "👕 Bekleidungsisolation ↔ Strahlungstemperatur",
+    #         "❄️ Lufttemperatur ↔ Thermische Präferenz",
+    #         "☀️ Strahlungstemperatur ↔ Thermische Präferenz"
+    #     ],
+    #     "r-Wert": [0.89, -0.67, -0.46, -0.45, -0.44, -0.41],
+    #     "Erklärung": [
+    #         "Beide Temperaturen steigen gemeinsam an.",
+    #         "Je wärmer sich Personen fühlen, desto stärker bevorzugen sie kühlere Bedingungen.",
+    #         "Mit steigender Lufttemperatur wird leichtere Kleidung getragen.",
+    #         "Höhere Strahlungswärme führt zu geringerer Bekleidungsisolation.",
+    #         "Mit steigender Temperatur wünschen sich die Nutzer kühlere Bedingungen.",
+    #         "Warme Oberflächen erhöhen den Wunsch nach einer kühleren Umgebung."
+    #     ],
+    #     "Gebäudetyp": [
+    #         "🏢 Bürogebäude mit großen Glasfassaden oder Klassenräume mit hoher Sonneneinstrahlung.",
+    #         "👴 Seniorenzentrum oder 👩‍🏫 Klassenraum mit hoher Belegung.",
+    #         "🏠 Mehrfamilienhaus im Sommer oder 🏢 Bürogebäude mit natürlicher Lüftung.",
+    #         "🏢 Bürogebäude mit Glasfassade oder ☀️ Klassenraum auf der Südseite.",
+    #         "👩‍🏫 Klassenräume ohne Klimaanlage oder 👴 Seniorenzentren im Sommer.",
+    #         "🏠 Mehrfamilienhäuser mit großen Fenstern oder 🏢 Büros mit direkter Sonneneinstrahlung."
+    #     ]
+    # })
+
+    # def color_r(val):
+    #     if val > 0:
+    #         return "background-color: #d4f4dd;"   # hellgrün
+    #     else:
+    #         return "background-color: #f9d6d5;"   # hellrot
+
+    # styled_df = df_gebaeude.style.applymap(color_r, subset=["r-Wert"])
+
+    # st.subheader("🏠 Wichtigste Korrelationen nach Gebäudetyp")
+    # st.dataframe(styled_df, use_container_width=True)
