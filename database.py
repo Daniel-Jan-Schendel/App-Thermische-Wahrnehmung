@@ -13,7 +13,7 @@ import json
 
 st.set_page_config(page_title="Database", layout="wide", initial_sidebar_state="expanded")
 
-st.title("Die Datenwolke hinter Smart Building Analytics")
+st.title("Datenbank")
 
 # st.title("Neon PostgreSQL: Unsere cloudnative Datenbasis")
 # st.title("Datenbank Überblick")
@@ -38,7 +38,7 @@ tab_1, tab_2, tab_3, tab_4 = st.tabs(["📘 Neon PostgreSQL – Datenbank", "�
 # ---------------------------------------------------------
 with tab_1:
     # Title
-    st.markdown("## **Cloud-native Infrastruktur & Datenmodellierung**")
+    st.markdown("## **Cloudnative Infrastruktur & Datenmodellierung**")
    
     col_center, col_right = st.columns([5, 3])
     
@@ -59,7 +59,7 @@ with tab_1:
     with col_doc1:
         st.markdown("### 📊 **Ausgangssituation & Herausforderung**")
         st.markdown(
-            "**Datensatz:** ASHRAE v2.1-Datenbank mit über **109.033 Messungen** und **59 structured Spalten**.\n\n"
+            "**Datensatz:** ASHRAE v2.1-Datenbank mit über **109.033 Messungen** und **60 structured Spalten**.\n\n"
             "**Zielstellung:** Aufbau einer hochverfügbaren, performanten Cloud-Infrastruktur, um Echtzeit-Analysen "
             "für das gesamte Projektteam plattformunabhängig bereitzustellen."
         )
@@ -80,11 +80,11 @@ with tab_2:
     with col_doc1:
         st.markdown("### 🧱 **Datenbank-Architektur & Optimierung**")
         st.markdown(
-            "**Modellierung:** Erfolgreiche Überführung einer flachen Tabelle in eine **optimierte, relationale Datenbankstruktur**.\n\n"
+            "**Modellierung:** Erfolgreiche Überführung einer Tabelle in eine **optimierte, relationale Datenbankstruktur**.\n\n"
             "Durch diese gezielte Normalisierung wurde die Performance der Abfragen in Python signifikant optimiert."
         )
         
-        st.info("**dim_buildings:** Stammdaten-Katalog für die einzigartigen Gebäudestrukturen (9 Spalten).")
+        st.info("**dim_buildings:** Stammdaten-Katalog für die Gebäudestrukturen (9 Spalten).")
         st.info("**fact_thermal_records:** Zentrale Faktentabelle mit 50 Metrik- und Sensor-Spalten (Sensation, Comfort, Preference, Acceptability).")
         
 with tab_3:
@@ -178,22 +178,22 @@ with tab_4:
     # ------------------------------------------------------------------------------
     # ABSCHNITT 3: PYTHON PIPELINE & VERIFIKATION
     # ------------------------------------------------------------------------------
-    st.subheader("3. Automatisierte Dateninjektion & Tabellen-Verifikation")
+    st.subheader("3. Automatisierte Einfügen der Daten & Tabellen-Verifikation")
     c5, _ = st.columns([1,1])
 
     with c5:
-        safe_st_image("neon/neon_05.jpg", "Abbildung 5: Robustes Python-Skript zur massiven Cloud-Injektion (SQLAlchemy).")
+        safe_st_image("neon/neon_05.jpg", "Abbildung 5: Robustes Python-Skript.")
         st.markdown(
-            "**ETL-Pipeline (Injektion):** Automatisierter Datentransfer via Python. Das Skript bereinigt "
-            "Metadaten der Sensoren und lädt die **109.033 Zeilen** mithilfe optimierter Blockgrößen "
+            "**ETL-Pipeline:** Automatisierter Datentransfer via Python. Das Skript bereinigt"
+            "Metadaten und lädt die **109.033 Zeilen** mithilfe optimierter Blockgrößen "
             "(Chunksize = 10.000) effizient in die Cloud hoch."
         )
 
     st.markdown("---")
-
-    # ------------------------------------------------------------------------------
+ 
+    # ----------------------------------------------------------------------------
     # ABSCHNITT 4: POWER BI INTEGRATION
-    # ------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------
     st.subheader("4. Business-Intelligence-Anbindung (Power BI)")
     c6, c7 = st.columns(2)
 
@@ -213,7 +213,7 @@ with tab_4:
     
     c8, _ = st.columns([1,1])
     with c8:
-        safe_st_image("neon/neon_08.jpg", "Abbildung 8: Ausführung und Laden der Datenströme in die BI-Umgebung.")
+        safe_st_image("neon/neon_08.jpg", "Abbildung 8: Ausführung und Laden der Daten in die BI-Umgebung.")
         st.markdown(
             "**Verbindungs-Aufbau:** Datenübertragung aus Neon in das relationale Modell. Die Tabellen "
             "werden ohne Informationsverlust in den Hauptspeicher der BI-Anwendung geladen."
