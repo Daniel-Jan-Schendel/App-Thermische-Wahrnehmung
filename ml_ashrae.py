@@ -137,6 +137,8 @@ with tab1: # Übersicht
     with col1:
         #st.write("\n")
         st.html(slide_point("Untersuchungen zur Vorhersage der subjektive Komfortbewertungen (Klassifizierung)"))
+        st.html(slide_smallpoint("Dashboard zur Erstellung von Modellen"))
+        st.html(slide_smallpoint("<span style='color: #FF0000; font-weight: bold;'>Kein Dashboard zur Vorhersage von Klassen!</span>"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
@@ -145,7 +147,8 @@ with tab1: # Übersicht
     col1, col2 = st.columns([3,1], vertical_alignment="center")
     with col1:
         #st.write("\n")
-        st.html(slide_point("Untersuchungen zur Vorhersage der Kühlungsart (Cooling Type) (Klassifizierung)"))
+        st.html(slide_point("Untersuchungen zur Vorhersage der Kühlungsstrategie (Cooling Type) (Klassifizierung)"))
+        st.html(slide_smallpoint("Dashboard zur Vorhersage der Kühlungsstrategie"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
@@ -154,7 +157,8 @@ with tab1: # Übersicht
     col1, col2 = st.columns([3,1], vertical_alignment="center")
     with col1:
         #st.write("\n")
-        st.html(slide_point("Untersuchungen zur Vorhersage der der Bekleidungsisolationswertes (clothing_ensemble_insulation) (Regression)"))
+        st.html(slide_point("Untersuchungen zur Vorhersage des Bekleidungsisolationswertes (clothing_ensemble_insulation) (Regression)"))
+        st.html(slide_smallpoint("Dashboard zur Vorhersage des Bekleidungsisolationswertes"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
@@ -164,6 +168,7 @@ with tab1: # Übersicht
     with col1:
         #st.write("\n")
         st.html(slide_point("Anomaliebetrachtungen"))
+        st.html(slide_smallpoint("Erste Untersuchungen"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
