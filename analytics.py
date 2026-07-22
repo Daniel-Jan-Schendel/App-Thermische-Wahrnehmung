@@ -10,7 +10,7 @@ import os
 import pydeck as pdk
 from sklearn.preprocessing import MinMaxScaler
 
-st.set_page_config(page_title="Betrachtung der Verteilungen", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Dashboard", layout="wide", initial_sidebar_state="expanded")
 
 df = pd.read_csv("db_bereinigt_final.csv")
 
@@ -46,14 +46,14 @@ df, df_original = load_data()
 # SESSION STATE FILTERS (for other tabs)
 # ============================================================
 for key in [
-    "region_filter", "country_filter", "city_filter",
+    "thermal_filter", "region_filter", "country_filter", "city_filter",
     "season_filter", "climate_filter", "building_filter",
     "cooling_filter", "gender_filter"
 ]:
     if key not in st.session_state:
         st.session_state[key] = "Alle"
 
-st.title("Thermischer Befinden – Interaktives Analyse‑Dashboard")
+st.title("Thermisches Befinden – Interaktives Analyse‑Dashboard")
 
 # ============================================================
 # VARIABLE MAPPING
@@ -75,10 +75,23 @@ variables = {
     "Thermal Preference": "thermal_preference",
 }
 
+thermal_variables = {
+    "Thermischer Komfort": "thermal_comfort",
+    "Thermisches Empfinden": "thermal_sensation",
+    "Thermische Präferenz": "thermal_preference",
+    "Thermische Akzeptanz": "thermal_acceptability"
+}
 # ============================================================
 # SIDEBAR FILTERS
 # ============================================================
 st.sidebar.header("Filter & Achsenwahl")
+
+# thermal = st.sidebar.selectbox("Thermisches Befinden", thermal_variables)
+# if thermal == "Alle":
+#     thermal_variables = ["Alle"]
+# else:
+#     thermal_variables = df[thermal_variables]
+
 
 regions = ["Alle"] + sorted(df["region"].dropna().unique())
 region = st.sidebar.selectbox("Region", regions)
@@ -112,6 +125,7 @@ metabolic_rate = st.sidebar.slider("Metabolische Aktivität (met)", 0.8, 3.0, (1
 # ============================================================
 df_filtered = df.copy()
 
+#if thermal != "Alle": df_filtered = df_filtered[df_filtered["thermal"] == thermal_variables]
 if region != "Alle": df_filtered = df_filtered[df_filtered["region"] == region]
 if country != "Alle": df_filtered = df_filtered[df_filtered["country"] == country]
 if city != "Alle": df_filtered = df_filtered[df_filtered["city"] == city]
