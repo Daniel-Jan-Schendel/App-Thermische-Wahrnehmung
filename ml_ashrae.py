@@ -980,6 +980,8 @@ with tab4: # classification cooling type
     # --- TAB 2: MODELLPERFORMANCE ---
     with tab2:
         st.subheader("📈 Modellperformance & -metriken")
+
+        st.write("**Modell Random Forest**")
         
         col_metric1, col_metric2 = st.columns(2)
         with col_metric1:
@@ -1127,8 +1129,6 @@ with tab4: # classification cooling type
 
             st.write("### 🔍 Globaler SHAP Dependence Plot")
             
-
-
             gewaehlte_klasse = int(le.transform([selected_class_global])[0])  # Index der gewünschten Klasse (z.B. 0, 1, 2)
 
             if selected_class_global == 'air conditioned':
@@ -1531,6 +1531,8 @@ with tab5: # Regression clo
 
     with tab2:
         st.subheader("📈 Modellperformance & -metriken")
+
+        st.write("**HistGradientBoosting**")
         
         col1, col2 = st.columns(2)
         col1.metric(label="R² Score (Test)", value=f"{metrics['r2_test']:.2f}")
@@ -1682,8 +1684,8 @@ with tab6: # Anomalie
     with reg_links:
 
         st.html(slide_point("Regression - Vergleich Vorhersagen und Zielwerte"))
-        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es wird die Differenz zwischen Wert der Datenbank und vorhergesagtem gebildet.")
-        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Als Annahme wird das obere 1% der absoluten Abweichungen als Anomalie betrachtet. (delta > 0,56)")
+        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Es wird die Differenz zwischen Wert der Datenbank und vorhergesagtem Wert gebildet.")
+        st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Als Annahme wird das obere 1% der absoluten Abweichungen als Anomalie betrachtet. (das entspricht delta > 0,56)")
         st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Daraus ergeben sich 100 potentielle Werte die als Anomalie gelten könnten.")
 
     with reg_rechts:
@@ -1792,4 +1794,8 @@ with tab7: # Fazit
 
     links, rechts = st.columns([3,1])
     with links:
-        st.html(slide_point("Die durchgeführten Anomaliebetrachtungen zeigen auffällige Werte die noch genauer zu betrachten wären. Ein erster Versuch zeigt kleine Verbesserungen der Vorhersagen durch Ausfiltern der Werte."))
+        st.html(slide_point("Die durchgeführten Anomaliebetrachtungen zeigen auffällige Werte die noch genauer zu betrachten wären."))
+
+        links, rechts = st.columns([3,1])
+    with links:
+        st.html(slide_point(" Ein erster Versuch zeigt kleine Verbesserungen der Vorhersagen durch Ausfiltern der auffälligen Werte."))
