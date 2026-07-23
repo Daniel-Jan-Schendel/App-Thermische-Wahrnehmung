@@ -138,7 +138,7 @@ with tab1: # Übersicht
         #st.write("\n")
         st.html(slide_point("Untersuchungen zur Vorhersage der subjektive Komfortbewertungen (Klassifizierung)"))
         st.html(slide_smallpoint("<b>Dashboard zur Erstellung von Modellen zur Bestimmung der möglichen Genauigkeit</b>"))
-        st.html(slide_smallpoint("<span style='color: #FF0000; font-weight: bold;'>Kein Dashboard zur Vorhersage von Klassen!</span>"))
+        st.html(slide_smallpoint("<span style='color: #FF0000; font-weight: bold;'>Kein Dashboard zur Vorhersage von Klassen (unzureichende Genauigkeit der Modell)!</span>"))
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
