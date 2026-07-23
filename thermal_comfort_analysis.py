@@ -996,32 +996,32 @@ with tab3:
     <div class="box">
         <div class="title">🏢 Bürogebäude</div>
         <div class="text">
-            • Hohe Luft- und Strahlungstemperaturen durch Glasfassaden.<br>
-            • Nutzer bevorzugen kühlere Bedingungen.
+            • Große Glasflächen können die Luft- und Strahlungstemperatur erhöhen.<br>
+            • Deshalb werden häufig kühlere Raumtemperaturen bevorzugt.
         </div>
     </div>
 
     <div class="box">
         <div class="title">🏠 Mehrfamilienhäuser</div>
         <div class="text">
-            • Kleidung passt sich den Innentemperaturen an.<br>
-            • Sonneneinstrahlung beeinflusst die thermische Wahrnehmung.
+            • Die Bekleidungsisolation passt sich oft an die Innentemperatur an.<br>
+            • Sonneneinstrahlung kann die thermische Wahrnehmung beeinflussen.
         </div>
     </div>
 
     <div class="box">
         <div class="title">👩‍🏫 Klassenräume</div>
         <div class="text">
-            • Hohe Belegung erhöht das Wärmeempfinden.<br>
-            • Fenster werden häufiger geöffnet oder Ventilatoren genutzt.
+            • Eine hohe Personenanzahl erhöht die Wärmebelastung.<br>
+            • Deshalb werden häufig Fenster geöffnet oder Ventilatoren genutzt.
         </div>
     </div>
 
     <div class="box">
         <div class="title">👴 Seniorenzentren</div>
         <div class="text">
-            • Thermisches Empfinden beeinflusst die Präferenz besonders stark.<br>
-            • Stabile und angenehme Temperaturen sind wichtig.
+            • Das thermische Empfinden spielt eine wichtige Rolle für die thermische Präferenz.<br>
+            • Deshalb sind stabile und angenehme Raumtemperaturen besonders wichtig.
         </div>
     </div>
     """, unsafe_allow_html=True)
