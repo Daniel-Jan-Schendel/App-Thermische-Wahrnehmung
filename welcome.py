@@ -38,7 +38,7 @@ if image_base64:
             Abschlussprojekt in Data Science & Data Analytics</p>
 
     <h1 style="font-size: 3em; font-weight: 500; margin-bottom: 10px;">
-        Thermisches Befinden in Innenräumen:
+        Thermische Wahrnehmung in Innenräumen:
     </h1>
 
     <h1 style="font-size: 3em; font-weight: 500; margin-bottom: 10px;">

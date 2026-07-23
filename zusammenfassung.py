@@ -78,8 +78,8 @@ with tab_summary:
     - **Datenbereinigung und Harmonisierung** der ASHRAE‑Messdaten  
     - **Globale Analyse** von thermischen Komfortvariablen (Thermischen Komfort, thermisches Empfinden, thermische Präferenz und thermsiche Akzeptanz)  
     - **Untersuchung relevanter Einflussfaktoren** (Physikalische Parameter, Klima, Kühltechnik etc.)  
-    - **Visualisierung thermischer Zusammenhänge**, z. B. Korrelationen, T_neutral, MTS vs. Indoor Temperature  
-    - **Machine‑Learning‑Modelle**, die thermische Empfindung und Komfort vorhersagen
+    - **Visualisierung thermischer Zusammenhänge**, z. B. Korrelationen 
+    - **Machine‑Learning‑Modelle**
 
     ### 🎯 Ziel
     Das Projekt zeigt, wie subjektive thermische Wahrnehmung und physikalische Parameterzusammenwirken
@@ -144,9 +144,7 @@ with tab_challenges:
 
     st.markdown("""
     - Unsere Ergebnisse liefern **wichtige Erkenntnisse für die Entwicklung von Gebäudesystemen**, die den Komfort der Nutzer*innen erhöhen und gleichzeitig energieeffizient sind 
-    - Aufgrund der zeitlichen Begrenzung des Projekts war allerdings nur die Untersuchung eines kleinen Anteils der Faktoren möglich 
-                
-    ➝ **Weitere Analysen** zu anderen Einflussfaktoren auf die subjektive thermische Wahrnehmung und **konkreter Umsetzungsmöglichkeiten der Erkenntnisse** wären sinnvolle nächste Schritte
+    - **Weitere Analysen** zu anderen Einflussfaktoren auf die subjektive thermische Wahrnehmung und **konkreter Umsetzungsmöglichkeiten der Erkenntnisse** wären sinnvolle nächste Schritte
     """
     )
 

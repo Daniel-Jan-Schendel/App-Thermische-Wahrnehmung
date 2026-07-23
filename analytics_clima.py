@@ -12,7 +12,7 @@ import math
 
 
 
-st.set_page_config(page_title="Analyse Klima und thermisches Befinden", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Analyse Klima", layout="wide", initial_sidebar_state="expanded")
 
 # ---------------------------------------------------------
 # 📌 Funktionen definieren
@@ -90,387 +90,364 @@ df = pd.read_csv("db_bereinigt_final.csv")
 # ---------------------------------------------------------
 # 📌 Seitentitel
 # ---------------------------------------------------------
-st.title("🌍 Analyse Klima und thermisches Befinden")
+st.title("🌍 Analyse Klima und thermische Wahrnehmung")
 
 # ---------------------------------------------------------
 # 📌 tabs definieren
 # ---------------------------------------------------------
-tab1, tab2, tab3 = st.tabs(["Geografische Verteilung", "Untersuchung der Unterschiede zwischen klimatischen/geografischen Gruppen", "Betrachtung der Unterschiede zwischen klimatischen/geografischen Gruppen"])
+tab1, tab2 = st.tabs(["Untersuchung der Unterschiede zwischen klimatischen/geografischen Gruppen", "Betrachtung der Unterschiede zwischen klimatischen/geografischen Gruppen"])
 
 #########################################################################################################
 #########################################################################################################
 
-# ---------------------------------------------------------
-# 📌 Geografische Verteilung
-# ---------------------------------------------------------
-with tab1:
+# # ---------------------------------------------------------
+# # 📌 Geografische Verteilung
+# # ---------------------------------------------------------
+# with tab1:
 
-    # Nur Zeilen behalten, die gültige Koordinaten haben
-    df = df.dropna(subset=["latitude", "longitude"])
+#     # Nur Zeilen behalten, die gültige Koordinaten haben
+#     df = df.dropna(subset=["latitude", "longitude"])
 
-    st.subheader("Klimatypen vs. Klimazonen")
+#     st.subheader("Klimatypen vs. Klimazonen")
 
-    st.markdown("<br>", unsafe_allow_html=True)
+#     st.markdown("<br>", unsafe_allow_html=True)
 
-    # #col1, spacer, col2, spacer, col3, spacer, col4 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
+#     # ---------------------------------------------------------
+#     # 🔍 2. Filter-Widget (Kima/Klimazone)
+#     # ---------------------------------------------------------
 
-    # # ---------------------------------------------------------
-    # # KPI Cards – 5 pro Reihe
-    # # ---------------------------------------------------------
-    # col1, col2, col3, col4, col5 = st.columns(5)
-
-    # with col1:
-    #     st.metric("🗺️ Klimazonen", "4")
-
-    # with col2:
-    #      st.metric("🌡️ Klimatypen", "31")
-
-    # with col3:
-    #      st.metric("📍 Regionen", "5")
-    
-    # with col4:
-    #      st.metric("🌍 Länder", "29")
-
-    # st.markdown("---")
-
-    # st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------------------------------------------------------
-    # 🔍 2. Filter-Widget (Kima/Klimazone)
-    # ---------------------------------------------------------
-
-    # Filter für Klima/Klimazone
-    climate_filter = st.selectbox(
-        "Variable auswählen",
-        ["Klimazone", "Klimatyp"],
-        key="climate_variable"
-    )
+#     # Filter für Klima/Klimazone
+#     climate_filter = st.selectbox(
+#         "Variable auswählen",
+#         ["Klimazone", "Klimatyp"],
+#         key="climate_variable"
+#     )
 
 
-    # ---------------------------------------------------------
-    # 🔎 3. Filter anwenden
-    # ---------------------------------------------------------
+#     # ---------------------------------------------------------
+#     # 🔎 3. Filter anwenden
+#     # ---------------------------------------------------------
 
-    # Klima/Klimazone anwenden
-    if climate_filter == "Klimatyp":
-        selected_climate_column = "climate"
-    else:
-        selected_climate_column = "climate_zone"
+#     # Klima/Klimazone anwenden
+#     if climate_filter == "Klimatyp":
+#         selected_climate_column = "climate"
+#     else:
+#         selected_climate_column = "climate_zone"
 
 
-    # ---------------------------------------------------------
-    # 📌 4. Kombinationen von Ländern und Klimazonen erstellen
-    # ---------------------------------------------------------
-    # Land-Klima-Kombinationen erstellen
+#     # ---------------------------------------------------------
+#     # 📌 4. Kombinationen von Ländern und Klimazonen erstellen
+#     # ---------------------------------------------------------
+#     # Land-Klima-Kombinationen erstellen
 
-    country_climate = (
-        df[["country", "latitude", "longitude", selected_climate_column]]
-        .groupby("country")
-        .agg({
-            "latitude": "mean",
-            "longitude": "mean",
-            selected_climate_column: lambda x: list(x.dropna().unique())
-        })
-        .reset_index()
-    )
+#     country_climate = (
+#         df[["country", "latitude", "longitude", selected_climate_column]]
+#         .groupby("country")
+#         .agg({
+#             "latitude": "mean",
+#             "longitude": "mean",
+#             selected_climate_column: lambda x: list(x.dropna().unique())
+#         })
+#         .reset_index()
+#     )
 
-    # Klimanamen bereinigen
-    country_climate[selected_climate_column] = (
-        country_climate[selected_climate_column]
-        .apply(
-            lambda climates: [
-                c.strip().replace("\xa0", " ")
-                for c in climates
-                if isinstance(c, str)
-            ]
-        )
-    )
+#     # Klimanamen bereinigen
+#     country_climate[selected_climate_column] = (
+#         country_climate[selected_climate_column]
+#         .apply(
+#             lambda climates: [
+#                 c.strip().replace("\xa0", " ")
+#                 for c in climates
+#                 if isinstance(c, str)
+#             ]
+#         )
+#     )
 
-    # Land-Klimazonen-Kombinationen erstellen
-    country_climate_zone = (
-        df[["country", "latitude", "longitude", selected_climate_column]]
-        .groupby("country")
-        .agg({
-            "latitude": "mean",
-            "longitude": "mean",
-            selected_climate_column: lambda x: list(x.dropna().unique())
-        })
-        .reset_index()
-    )
+#     # Land-Klimazonen-Kombinationen erstellen
+#     country_climate_zone = (
+#         df[["country", "latitude", "longitude", selected_climate_column]]
+#         .groupby("country")
+#         .agg({
+#             "latitude": "mean",
+#             "longitude": "mean",
+#             selected_climate_column: lambda x: list(x.dropna().unique())
+#         })
+#         .reset_index()
+#     )
 
-    # Klimanamen bereinigen
-    country_climate_zone[selected_climate_column] = (
-        country_climate_zone[selected_climate_column]
-        .apply(
-            lambda climates: [
-                c.strip().replace("\xa0", " ")
-                for c in climates
-                if isinstance(c, str)
-            ]
-        )
-    )
+#     # Klimanamen bereinigen
+#     country_climate_zone[selected_climate_column] = (
+#         country_climate_zone[selected_climate_column]
+#         .apply(
+#             lambda climates: [
+#                 c.strip().replace("\xa0", " ")
+#                 for c in climates
+#                 if isinstance(c, str)
+#             ]
+#         )
+#     )
 
-    # Farben für Klimazonen vergeben
-    if selected_climate_column == "climate":
+#     # Farben für Klimazonen vergeben
+#     if selected_climate_column == "climate":
 
-        climate_colors = {
-        # Tropische Klimate
-        "wet equatorial": [220, 80, 120, 180],
-        "tropical rainforest": [200, 60, 120, 180],
-        "tropical monsoon": [230, 100, 140, 180],
-        "tropical savanna": [240, 130, 150, 180],
-        "tropical wet savanna": [230, 110, 160, 180],
-        "tropical dry savanna": [210, 90, 140, 180],
-        "tropical": [220, 120, 160, 180],
+#         climate_colors = {
+#         # Tropische Klimate
+#         "wet equatorial": [220, 80, 120, 180],
+#         "tropical rainforest": [200, 60, 120, 180],
+#         "tropical monsoon": [230, 100, 140, 180],
+#         "tropical savanna": [240, 130, 150, 180],
+#         "tropical wet savanna": [230, 110, 160, 180],
+#         "tropical dry savanna": [210, 90, 140, 180],
+#         "tropical": [220, 120, 160, 180],
 
-        # Aride / trockene Klimate
-        "hot arid": [245, 210, 80, 180],
-        "desert (hot arid)": [240, 190, 60, 180],
-        "hot desert": [230, 170, 40, 180],
-        "semi arid midlatitude": [220, 180, 70, 180],
-        "semi arid high altitude": [200, 170, 90, 180],
-        "hot semi-arid": [235, 200, 90, 180],
-        "cold semi-arid": [190, 170, 100, 180],
-        "subtropical hot and dry": [250, 180, 50, 180],
+#         # Aride / trockene Klimate
+#         "hot arid": [245, 210, 80, 180],
+#         "desert (hot arid)": [240, 190, 60, 180],
+#         "hot desert": [230, 170, 40, 180],
+#         "semi arid midlatitude": [220, 180, 70, 180],
+#         "semi arid high altitude": [200, 170, 90, 180],
+#         "hot semi-arid": [235, 200, 90, 180],
+#         "cold semi-arid": [190, 170, 100, 180],
+#         "subtropical hot and dry": [250, 180, 50, 180],
 
-        # Mediterrane Klimate
-        "mediterranean": [180, 160, 70, 180],
-        "hot-summer mediterranean": [200, 150, 60, 180],
-        "warm-summer mediterranean": [170, 150, 80, 180],
-        "cool-summer mediterranean": [140, 160, 100, 180],
+#         # Mediterrane Klimate
+#         "mediterranean": [180, 160, 70, 180],
+#         "hot-summer mediterranean": [200, 150, 60, 180],
+#         "warm-summer mediterranean": [170, 150, 80, 180],
+#         "cool-summer mediterranean": [140, 160, 100, 180],
 
-        # Gemäßigte Klimate
-        "temperate": [80, 180, 90, 180],
-        "humid subtropical": [60, 170, 100, 180],
-        "temperature marine": [60, 150, 120, 180],
-        "temperate oceanic": [40, 140, 170, 180],
-        "west coast marine": [50, 130, 190, 180],
-        "subtropical highland": [100, 190, 100, 180],
+#         # Gemäßigte Klimate
+#         "temperate": [80, 180, 90, 180],
+#         "humid subtropical": [60, 170, 100, 180],
+#         "temperature marine": [60, 150, 120, 180],
+#         "temperate oceanic": [40, 140, 170, 180],
+#         "west coast marine": [50, 130, 190, 180],
+#         "subtropical highland": [100, 190, 100, 180],
 
-        # Kontinentale Klimate
-        "humid midlatitude": [120, 100, 200, 180],
-        "warm-summer humid continental": [140, 100, 210, 180],
-        "monsoon-influenced humid subtropical": [160, 120, 220, 180],
-        "monsoon-influenced temperate oceanic": [130, 150, 220, 180],
-        "monsoon-influenced hot-summer humid continental": [150, 90, 190, 180],
+#         # Kontinentale Klimate
+#         "humid midlatitude": [120, 100, 200, 180],
+#         "warm-summer humid continental": [140, 100, 210, 180],
+#         "monsoon-influenced humid subtropical": [160, 120, 220, 180],
+#         "monsoon-influenced temperate oceanic": [130, 150, 220, 180],
+#         "monsoon-influenced hot-summer humid continental": [150, 90, 190, 180],
 
-        # Subarktisches Klima
-        "continental subarctic": [80, 90, 150, 180]
-    }
+#         # Subarktisches Klima
+#         "continental subarctic": [80, 90, 150, 180]
+#     }
 
-    else:
+#     else:
 
-        climate_colors = {
-            "Tropical": [220, 120, 120, 180],
-            "Dry": [245, 210, 80, 180],
-            "Temperate": [0, 180, 0, 180],
-            "Continental": [150, 0, 150, 180]
-        }
+#         climate_colors = {
+#             "Tropical": [220, 120, 120, 180],
+#             "Dry": [245, 210, 80, 180],
+#             "Temperate": [0, 180, 0, 180],
+#             "Continental": [150, 0, 150, 180]
+#         }
 
     
 
-    if selected_climate_column == "climate":
+#     if selected_climate_column == "climate":
 
-        # Mehrfarbige Kreise für einzelne Klimata
-        pie_data_climate = create_pie_segments(
-            country_climate,
-            selected_climate_column
-        )
+#         # Mehrfarbige Kreise für einzelne Klimata
+#         pie_data_climate = create_pie_segments(
+#             country_climate,
+#             selected_climate_column
+#         )
 
-        layer_climate = pdk.Layer(
-            "PolygonLayer",
-            data=pie_data_climate,
-            get_polygon="polygon",
-            get_fill_color="color",
-            pickable=True,
-            stroked=False
-        )
+#         layer_climate = pdk.Layer(
+#             "PolygonLayer",
+#             data=pie_data_climate,
+#             get_polygon="polygon",
+#             get_fill_color="color",
+#             pickable=True,
+#             stroked=False
+#         )
 
 
-    else:
-        # Mehrfarbige Kreise für Klimazonen
-        pie_data_climate_zone = create_pie_segments(
-            country_climate_zone,
-            selected_climate_column
-        )
+#     else:
+#         # Mehrfarbige Kreise für Klimazonen
+#         pie_data_climate_zone = create_pie_segments(
+#             country_climate_zone,
+#             selected_climate_column
+#         )
 
-        layer_climate_zone = pdk.Layer(
-            "PolygonLayer",
-            data=pie_data_climate_zone,
-            get_polygon="polygon",
-            get_fill_color="color",
-            pickable=True,
-            stroked=False
-        )
+#         layer_climate_zone = pdk.Layer(
+#             "PolygonLayer",
+#             data=pie_data_climate_zone,
+#             get_polygon="polygon",
+#             get_fill_color="color",
+#             pickable=True,
+#             stroked=False
+#         )
 
    
 
-    # ---------------------------------------------------------
-    # 🌐 6. Kartenansicht definieren
-    # ---------------------------------------------------------
-    # Tooltip-Design
-    if climate_filter == "Klimatyp":
-        view_state_climate = pdk.ViewState(
-            latitude=country_climate["latitude"].mean() if len(country_climate) else 0,
-            longitude=country_climate["longitude"].mean() if len(country_climate) else 0,
-            zoom=1
-        )
+#     # ---------------------------------------------------------
+#     # 🌐 6. Kartenansicht definieren
+#     # ---------------------------------------------------------
+#     # Tooltip-Design
+#     if climate_filter == "Klimatyp":
+#         view_state_climate = pdk.ViewState(
+#             latitude=country_climate["latitude"].mean() if len(country_climate) else 0,
+#             longitude=country_climate["longitude"].mean() if len(country_climate) else 0,
+#             zoom=1
+#         )
 
     
-        tooltip_climate = {
-            "html": """
-            <b>{country}</b><br/>
-            Klimatyp: {climate}
-            """,
-            "style": {
-                "color": "white"
-            }
-        }
+#         tooltip_climate = {
+#             "html": """
+#             <b>{country}</b><br/>
+#             Klimatyp: {climate}
+#             """,
+#             "style": {
+#                 "color": "white"
+#             }
+#         }
 
-    else:
-        view_state_climate_zone = pdk.ViewState(
-            latitude=country_climate_zone["latitude"].mean() if len(country_climate_zone) else 0,
-            longitude=country_climate_zone["longitude"].mean() if len(country_climate_zone) else 0,
-            zoom=1
-        )
+#     else:
+#         view_state_climate_zone = pdk.ViewState(
+#             latitude=country_climate_zone["latitude"].mean() if len(country_climate_zone) else 0,
+#             longitude=country_climate_zone["longitude"].mean() if len(country_climate_zone) else 0,
+#             zoom=1
+#         )
 
-        tooltip_climate_zone = {
-            "html": """
-            <b>{country}</b><br/>
-            Klimazone: {climate_zone}
-            """,
-            "style": {
-                "color": "white"
-            }
-        }
+#         tooltip_climate_zone = {
+#             "html": """
+#             <b>{country}</b><br/>
+#             Klimazone: {climate_zone}
+#             """,
+#             "style": {
+#                 "color": "white"
+#             }
+#         }
 
-    # Legende hinzufügen
-    st.markdown("""
-    **Klimazonen:**
+#     # Legende hinzufügen
+#     st.markdown("""
+#     **Klimazonen:**
 
-    🔴 Tropical  
-    🟡 Dry  
-    🟢 Temperate  
-    🟣 Continental
-    """)
+#     🔴 Tropical  
+#     🟡 Dry  
+#     🟢 Temperate  
+#     🟣 Continental
+#     """)
 
 
-    # ---------------------------------------------------------
-    # 🧭 7. Karte rendern (ohne Mapbox-Key!)
-    # ---------------------------------------------------------
-    if climate_filter == "Klimatyp":
-        st.pydeck_chart(
-            pdk.Deck(
-                layers=[layer_climate],
-                initial_view_state=view_state_climate,
-                tooltip=tooltip_climate,
-                map_style=None
-            )
-        )
+#     # ---------------------------------------------------------
+#     # 🧭 7. Karte rendern (ohne Mapbox-Key!)
+#     # ---------------------------------------------------------
+#     if climate_filter == "Klimatyp":
+#         st.pydeck_chart(
+#             pdk.Deck(
+#                 layers=[layer_climate],
+#                 initial_view_state=view_state_climate,
+#                 tooltip=tooltip_climate,
+#                 map_style=None
+#             )
+#         )
     
-    else:
-        st.pydeck_chart(
-            pdk.Deck(
-                layers=[layer_climate_zone],
-                initial_view_state=view_state_climate_zone,
-                tooltip=tooltip_climate_zone,
-                map_style=None 
-            )
-        )
+#     else:
+#         st.pydeck_chart(
+#             pdk.Deck(
+#                 layers=[layer_climate_zone],
+#                 initial_view_state=view_state_climate_zone,
+#                 tooltip=tooltip_climate_zone,
+#                 map_style=None 
+#             )
+#         )
 
-    # ---------------------------------------------------------
-    # 🧭 8. Zuordnung Klimata zu Klimazonen
-    # ---------------------------------------------------------
+#     # ---------------------------------------------------------
+#     # 🧭 8. Zuordnung Klimata zu Klimazonen
+#     # ---------------------------------------------------------
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
+#     st.markdown("<br><br>", unsafe_allow_html=True)
 
-    st.markdown("### Zuordnung von Klimatypen, Regionen und Ländern zu den Hauptklimazonen")
+#     st.markdown("### Zuordnung von Klimatypen, Regionen und Ländern zu den Hauptklimazonen")
 
-    for zone in sorted(df["climate_zone"].dropna().unique()):
-        if zone == "Continental":
-            with st.expander(f"🟣 {zone}"):
+#     for zone in sorted(df["climate_zone"].dropna().unique()):
+#         if zone == "Continental":
+#             with st.expander(f"🟣 {zone}"):
 
-                zone_df = (
-                    df[df["climate_zone"] == zone]
-                    [["climate", "region", "country"]]
-                    .drop_duplicates()
-                    .sort_values(
-                        by=["climate", "region", "country"]
-                    )
-                )
+#                 zone_df = (
+#                     df[df["climate_zone"] == zone]
+#                     [["climate", "region", "country"]]
+#                     .drop_duplicates()
+#                     .sort_values(
+#                         by=["climate", "region", "country"]
+#                     )
+#                 )
 
-                st.dataframe(
-                    zone_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-        elif zone == "Dry":
-            with st.expander(f"🟡 {zone}"):
+#                 st.dataframe(
+#                     zone_df,
+#                     use_container_width=True,
+#                     hide_index=True
+#                 )
+#         elif zone == "Dry":
+#             with st.expander(f"🟡 {zone}"):
 
-                zone_df = (
-                    df[df["climate_zone"] == zone]
-                    [["climate", "region", "country"]]
-                    .drop_duplicates()
-                    .sort_values(
-                        by=["climate", "region", "country"]
-                    )
-                )
+#                 zone_df = (
+#                     df[df["climate_zone"] == zone]
+#                     [["climate", "region", "country"]]
+#                     .drop_duplicates()
+#                     .sort_values(
+#                         by=["climate", "region", "country"]
+#                     )
+#                 )
 
-                st.dataframe(
-                    zone_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-        elif zone == "Temperate":
-            with st.expander(f"🟢 {zone}"):
+#                 st.dataframe(
+#                     zone_df,
+#                     use_container_width=True,
+#                     hide_index=True
+#                 )
+#         elif zone == "Temperate":
+#             with st.expander(f"🟢 {zone}"):
 
-                zone_df = (
-                    df[df["climate_zone"] == zone]
-                    [["climate", "region", "country"]]
-                    .drop_duplicates()
-                    .sort_values(
-                        by=["climate", "region", "country"]
-                    )
-                )
+#                 zone_df = (
+#                     df[df["climate_zone"] == zone]
+#                     [["climate", "region", "country"]]
+#                     .drop_duplicates()
+#                     .sort_values(
+#                         by=["climate", "region", "country"]
+#                     )
+#                 )
 
-                st.dataframe(
-                    zone_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-        else:
-             with st.expander(f"🔴 {zone}"):
+#                 st.dataframe(
+#                     zone_df,
+#                     use_container_width=True,
+#                     hide_index=True
+#                 )
+#         else:
+#              with st.expander(f"🔴 {zone}"):
 
-                zone_df = (
-                    df[df["climate_zone"] == zone]
-                    [["climate", "region", "country"]]
-                    .drop_duplicates()
-                    .sort_values(
-                        by=["climate", "region", "country"]
-                    )
-                )
+#                 zone_df = (
+#                     df[df["climate_zone"] == zone]
+#                     [["climate", "region", "country"]]
+#                     .drop_duplicates()
+#                     .sort_values(
+#                         by=["climate", "region", "country"]
+#                     )
+#                 )
 
-                st.dataframe(
-                    zone_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
+#                 st.dataframe(
+#                     zone_df,
+#                     use_container_width=True,
+#                     hide_index=True
+#                 )
 
-    # Hinweis zu Klimazonen-Zuweisung
-    with st.expander("Weitere Informationen zu Klimatypen und Klimazonen"):
-        st.markdown("""  
-        - Hinweise:
-            - Die **5. Hauptklimazone Polar** ist hier nicht mit aufgeführt, da es für diese Klimazone in diesem Datensatz keine Daten gibt
-            - Es wurde **keine offizielle Zuordnung der Klimatypen zu den Klimazonen** gefunden, daher kann sich die hier gewählte Zuordnung von anderen unterscheiden
-        """)
+#     # Hinweis zu Klimazonen-Zuweisung
+#     with st.expander("Weitere Informationen zu Klimatypen und Klimazonen"):
+#         st.markdown("""  
+#         - Hinweise:
+#             - Die **5. Hauptklimazone Polar** ist hier nicht mit aufgeführt, da es für diese Klimazone in diesem Datensatz keine Daten gibt
+#             - Es wurde **keine offizielle Zuordnung der Klimatypen zu den Klimazonen** gefunden, daher kann sich die hier gewählte Zuordnung von anderen unterscheiden
+#         """)
 
-        st.markdown(""" 
-        - **Beschreibungen zu Klimazonen:**
-            - **Tropical**: Ganzjährig hohe Temperaturen, geringe jahreszeitliche Schwankungen 
-            - **Dry**: Geringe Niederschläge, aride und semiaride Gebiete
-            - **Temperate**: Moderate Temperaturen, ausgeprägte Jahreszeiten
-            - **Continental**: Große Temperaturunterschiede zwischen Sommer und Winter
-        """)
+#         st.markdown(""" 
+#         - **Beschreibungen zu Klimazonen:**
+#             - **Tropical**: Ganzjährig hohe Temperaturen, geringe jahreszeitliche Schwankungen 
+#             - **Dry**: Geringe Niederschläge, aride und semiaride Gebiete
+#             - **Temperate**: Moderate Temperaturen, ausgeprägte Jahreszeiten
+#             - **Continental**: Große Temperaturunterschiede zwischen Sommer und Winter
+#         """)
 
 
 
@@ -480,7 +457,7 @@ with tab1:
 # ---------------------------------------------------------
 # 📌 Zusammenhang Klima und thermische Bewertung
 # ---------------------------------------------------------
-with tab2:
+with tab1:
 
     st.subheader("📊 Gibt es Unterschiede zwischen klimatischen/geografischen Gruppen hinsichtlich thermischer Wahrnehmung?")
 
@@ -613,7 +590,7 @@ with tab2:
 
         for variable in environment_mapping.keys():
 
-            with st.expander(f"**📈 Zusammenhang {variable} ↔ thermisches Befinden**"):
+            with st.expander(f"**📈 Zusammenhang {variable} ↔ Thermische Wahrnehmung**"):
                 st.dataframe(
                     chi2_results_df[chi2_results_df["Umweltvariable"] == variable],
                     hide_index=True,
@@ -676,8 +653,8 @@ with tab2:
 # 📌 Betrachtung Klima und thermische Bewertung
 # ---------------------------------------------------------
 
-with tab3:
-    st.subheader("Wie sehen die Unterschiede zwischen klimatischen/geografischen Gruppen hinsichtlich thermischem Befinden aus?")
+with tab2:
+    st.subheader("Wie sehen die Unterschiede zwischen klimatischen/geografischen Gruppen hinsichtlich thermischer Wahrnehmung aus?")
     st.markdown("<br>", unsafe_allow_html=True)
   
     # st.markdown("""
