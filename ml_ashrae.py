@@ -94,7 +94,7 @@ st.title(":material/smart_toy: Machine Learning")
 
 # Create two tabs
 # ---------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🌡️Thermische Wahrnehmung", "🌡️ Modelle thermische Wahrnehmung", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🧘Thermische Wahrnehmung", "🧘 Modelle thermische Wahrnehmung", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
 
 
 FONT_SIZE_TEXT = "24px"
@@ -177,12 +177,12 @@ with tab1: # Übersicht
 
 with tab2: # subjektive Komfortbewertungen
 
-    st.subheader("Vorhersage thermische Wahrnehmung")
+    st.subheader("🧘 Vorhersage thermische Wahrnehmung")
 
-    st.html(slide_point("Idee: Vorhersage der subjektiven thermischen Wahrnehmung<br> (<b>thermal comfort, thermal sensation, thermal preference</b>) mit Hilfe von Featuren wie,"))
+    st.html(slide_point("Idee: Vorhersage der subjektiven thermischen Wahrnehmung<br> (<b>Thermischer Komfort, Thermisches Empfinden, Thermische Präferenz</b>) mit Hilfe von Featuren wie,"))
     links, mitte, rechts = st.columns(3)
     with links:
-        st.html(slide_smallpoint("Lufttemperatur"))
+        st.html(slide_smallpoint("Innentemperatur"))
         st.html(slide_smallpoint("Außentemperatur"))
         st.html(slide_smallpoint("relative Luftfeuchtigkeit"))
     with mitte:
@@ -288,7 +288,7 @@ with tab2: # subjektive Komfortbewertungen
 
 with tab3: # modelle Komfort
 
-    st.subheader("🧘 ASHRAE Thermische Präferenz Vorhersage - Random Forest Classifier")
+    st.subheader("🧘 Vorhersage thermische Wahrnehmung (Modellbildung)- Random Forest Classifier")
 
     # 2. Daten laden (Ge-cached, damit es nur einmal passiert)
     @st.cache_data
@@ -823,12 +823,12 @@ with tab4: # classification cooling type
         with col_sidebar:
             st.header("🎛️ Featureeingabe")
             
-            air_temp = st.slider("Innentemperatur (air_temperature) [°C]", 10.0, 40.0, 23.0, step=0.1, format="%0.1f")
-            out_temp = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, 20.0, step=0.1, format="%0.1f")
-            rel_hum = st.slider("Relative Luftfeuchtigkeit (relative_humidity) [%]", 0.0, 100.0, 50.0, step=0.1, format="%0.1f")
+            air_temp = st.slider("Innentemperatur (air_temperature) [°C]", 10.0, 40.0, 22.0, step=0.1, format="%0.1f")
+            out_temp = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, 10.0, step=0.1, format="%0.1f")
+            rel_hum = st.slider("Relative Luftfeuchtigkeit (relative_humidity) [%]", 0.0, 100.0, 30.0, step=0.1, format="%0.1f")
             air_speed = st.slider("Luftgeschwindigkeit (air_speed) [m/s]", 0.0, 4.0, 0.1, step=0.01, format="%0.2f")
-            clo = st.slider("Bekleidungsisolierung (clothing_ensemble_insulation) [clo]", 0.0, 3.0, 0.6, step=0.01, format="%0.2f")
-            met = st.slider("Metabolische Rate (metabolic_rate) [met]", 0.5, 4.0, 1.2, step=0.1, format="%0.1f")
+            clo = st.slider("Bekleidungsisolierung (clothing_ensemble_insulation) [clo]", 0.0, 3.0, 1.0, step=0.01, format="%0.2f")
+            met = st.slider("Metabolische Rate (metabolic_rate) [met]", 0.5, 4.0, 1.0, step=0.1, format="%0.1f")
 
             input_data = pd.DataFrame([{
                 'air_temperature': air_temp,
@@ -839,6 +839,31 @@ with tab4: # classification cooling type
                 'metabolic_rate': met
             }])
             input_data = input_data[feature_names]
+
+            st.markdown("""<small><strong>CLO-Werte</strong>:
+                <ul>
+                <li><strong>0.1:</strong> Kurze Hose, T-Shirt / ärmelloses Oberteil (Sehr leichte Sommerkleidung)"</li>
+                <li><strong>0.3:</strong> Leichte Shorts und kurzärmeliges Hemd"</li>
+                <li><strong>0.5:</strong> Kniegellange Schürze/Rock, leichtes Hemd (Typische leichte Sommerbekleidung)"</li>
+                <li><strong>0.7:</strong> Leichte Hose, langärmeliges Hemd"</li>
+                <li><strong>1.0:</strong> Anzug (Hose, Hemd, Sakko) oder Pullover mit Hose (Typische Bürokleidung im Winter)"</li>
+                <li><strong>1.2:</strong> Anzug mit Weste / zusätzlichem leichten Unterhemd"</li>
+                <li><strong>1.5:</strong> Schwere Winterkleidung (Hose, Hemd, dicker Pullover, schwere Jacke/Mantel)"</li>
+                <li><strong>2.0:</strong> Arktische Spezialkleidung / Extremkleidung"</li>
+                </ul>
+                </small>
+                 """, unsafe_allow_html=True)
+
+            st.markdown("""<small><strong>met-Werte</strong>:
+                <ul>
+                  <li><strong>0.7 met:</strong> Schlafen / Liegen</li>
+                  <li><strong>1.0 met:</strong> Sitzende Tätigkeit (z. B. Büroarbeit)</li>
+                  <li><strong>1.2 met:</strong> Stehende, leichte Aktivität (z. B. im Labor oder Verkauf)</li>
+                  <li><strong>2.0 met:</strong> Gehen (ca. 3 km/h)</li>
+                  <li><strong>3.0 met bis 4.0 met:</strong> Schwere körperliche Arbeit oder Sport</li>
+                </ul>
+                </small>
+                 """, unsafe_allow_html=True)
 
         # 3. Hauptbereich für Vorhersagen und Analysen
         with col_main:
@@ -919,7 +944,7 @@ with tab4: # classification cooling type
                     # ==========================================
                     # DIAGRAMM 2: LOKALER WATERFALL-PLOT (Fehlerfreie Prozent-Kalibrierung)
                     # ==========================================
-                    st.markdown("### 📍 Lokale Erklärung für die aktuelle Slider-Auswahl")
+                    st.markdown("### 🔍 Live-SHAP-Wasserfalldiagramm")
                     
                     # 1. Ermittle den numerischen Index der echten Live-Vorhersage (0, 1 oder 2)
                     predicted_class_idx = int(num_prediction) if hasattr(num_prediction, "__len__") else int(num_prediction)
@@ -998,7 +1023,7 @@ with tab4: # classification cooling type
     with tab2:
         st.subheader("📈 Modellperformance & -metriken")
 
-        st.write("**Modell: Random Forest**")
+        st.write("**Modell: Random Forest - eingelesen aus JOBLIB-Datei**")
         
         col_metric1, col_metric2 = st.columns(2)
         with col_metric1:
@@ -1351,8 +1376,8 @@ with tab5: # Regression clo
 
             # Numerische Slider (Standardwerte gekoppelt an Session-State Keys)
             air_temperature = st.slider("Innentemperatur (air_temperature) [°C]", 10.0, 40.0, get_val('val_air_temp', 22.0), 0.1, key='val_air_temp', format="%0.1f")
-            outdoor_air_temperature = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, get_val('val_out_temp', 15.0), 0.1, key='val_out_temp', format="%0.1f")
-            relative_humidity = st.slider("Relative Luftfeuchtigkeit (relative_humidity) [%]", 0.0, 100.0, get_val('val_hum', 50.0), 0.1, key='val_hum', format="%0.1f")
+            outdoor_air_temperature = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, get_val('val_out_temp', 10.0), 0.1, key='val_out_temp', format="%0.1f")
+            relative_humidity = st.slider("Relative Luftfeuchtigkeit (relative_humidity) [%]", 0.0, 100.0, get_val('val_hum', 40.0), 0.1, key='val_hum', format="%0.1f")
             air_speed = st.slider("Luftgeschwindigkeit (air_speed) [m/s]", 0.00, 4.00, get_val('val_speed', 0.15), 0.01, key='val_speed', format="%0.2f")
             metabolic_rate = st.slider("Metabolic Rate (metabolic_rate) [met]", 0.5, 4.0, get_val('val_met', 1.1), 0.1, key='val_met', format="%0.1f")
 
@@ -1384,6 +1409,17 @@ with tab5: # Regression clo
                 'climate_zone': [climate_zone],
                 'cooling_type': [cooling_type]
             })
+
+            st.markdown("""<br><small><strong>met-Werte</strong>:
+                <ul>
+                  <li><strong>0.7 met:</strong> Schlafen / Liegen</li>
+                  <li><strong>1.0 met:</strong> Sitzende Tätigkeit (z. B. Büroarbeit)</li>
+                  <li><strong>1.2 met:</strong> Stehende, leichte Aktivität (z. B. im Labor oder Verkauf)</li>
+                  <li><strong>2.0 met:</strong> Gehen (ca. 3 km/h)</li>
+                  <li><strong>3.0 met bis 4.0 met:</strong> Schwere körperliche Arbeit oder Sport</li>
+                </ul>
+                </small>
+                 """, unsafe_allow_html=True)
 
 
             # ==========================================
@@ -1550,7 +1586,7 @@ with tab5: # Regression clo
     with tab2:
         st.subheader("📈 Modellperformance & -metriken")
 
-        st.write("**Modell: HistGradientBoosting**")
+        st.write("**Modell: HistGradientBoosting - eingelesen aus JOBLIB-Datei**")
         
         col1, col2 = st.columns(2)
         col1.metric(label="R² Score (Test)", value=f"{metrics['r2_test']:.2f}")
@@ -1790,6 +1826,7 @@ with tab6: # Anomalie
     st.image(svg_code, width="stretch")
 
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - gelbe und grüne Linien zeigen erste Unterschiede zwischen anomalieungefilterten und -gefilterten Rechnungen")
+
 
 with tab7: # Fazit
 
