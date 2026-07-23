@@ -396,20 +396,20 @@ with tab2:
         with r1_col1:
             plot_comfort_variable(df_t1_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "Thermal Comfort Verteilung")
             st.info(
-                "**Analyse-Leitfaden (Comfort)**: Natürlich belüftete Gebäude weisen oft breitere Verteilungen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
+                "**Analyse-Leitfaden**: Natürlich belüftete Gebäude weisen oft breitere Verteilungen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
         with r1_col2:
             plot_comfort_variable(df_t1_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "Thermal Sensation Verteilung")
-            st.info("**Analyse-Leitfaden (Sensation)**: Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die physikalischen Parameter massiv verschiebt.")
+            st.info("**Analyse-Leitfaden**: Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die physikalischen Parameter massiv verschiebt.")
     elif row1_has_data1:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
             plot_comfort_variable(df_t1_filtered["thermal_comfort_cat"], tc_labels, tc_colors, "Thermal Comfort Verteilung")
-            st.info("**Analyse-Leitfaden (Comfort)**: Natürlich belüftete Gebäude weisen oft breitere Verteilungen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
+            st.info("**Analyse-Leitfaden**: Natürlich belüftete Gebäude weisen oft breitere Verteilungen auf, da Nutzer adaptive Anpassungsmechanismen wie das Öffnen von Fenstern nutzen.")
     elif row1_has_data2:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
             plot_comfort_variable(df_t1_filtered["thermal_sensation_cat"], tsv_labels, tsv_colors, "Thermal Sensation Verteilung")
-            st.info("**Analyse-Leitfaden (Sensation)**: Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die physikalischen Parameter massiv verschiebt.")
+            st.info("**Analyse-Leitfaden**: Die Belüftungsart steuer direkt die Luftgeschwindigkeit und die operative Temperatur, was die physikalischen Parameter massiv verschiebt.")
 
     st.markdown("---")
 
@@ -420,15 +420,15 @@ with tab2:
         r2_col1, r2_col2 = st.columns(2)
         with r2_col1:
             plot_comfort_variable(df_t1_filtered["thermal_preference_cat"], tp_labels, tp_colors, "Thermal Preference Verteilung")
-            st.info("**Analyse-Leitfaden (Preference)**: In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
+            st.info("**Analyse-Leitfaden**: In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
         with r2_col2:
             plot_comfort_variable(df_t1_filtered["thermal_acceptability_cat"], ta_labels, ta_colors, "Thermal Acceptability Verteilung")
-            st.info("**Analyse-Leitfaden (Acceptability)**: Die thermische Akzeptanz sinkt in klimatisierten Räumen drastisch, wenn die relative Luftfeuchtigkeit außerhalb des optimalen Bereichs liegt.")
+            st.info("**Analyse-Leitfaden**: Die thermische Akzeptanz sinkt in klimatisierten Räumen drastisch, wenn die relative Luftfeuchtigkeit außerhalb des optimalen Bereichs liegt.")
     elif row2_has_data3:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
             plot_comfort_variable(df_t1_filtered["thermal_preference_cat"], tp_labels, tp_colors, "Thermal Preference Verteilung")
-            st.info("**Analyse-Leitfaden (Preference)**: In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
+            st.info("**Analyse-Leitfaden**: In natürlich belüfteten Gebäuden tolerieren die Befragten höhere Innentemperaturen. Nutzer in mechanisch gekühlten Räumen fordern permanent kühlere Zustände.")
     elif row2_has_data4:
         _, center_col, _ = st.columns([0.25, 1.5, 0.25])
         with center_col:
