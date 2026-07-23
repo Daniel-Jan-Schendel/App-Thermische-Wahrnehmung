@@ -302,12 +302,12 @@ with tab1:
 #     st.info(
 #         """
 #         **Ergebnisse:** \n
-#         Thermal Comfort: Zeigt die Verteilung des thermischen Komfortindex spezifisch für die Raumkonfiguration. \n
-#         Thermal Sensation: Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum. \n
-#         Thermal Preference: Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wieder. \n
-#         Thermal Acceptability: Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten. \n
-#         Die Globale Übersicht liefert uns universelle Benchmarks für strategische Richtlinien.\n
-#         Die demografische Analyse ermöglicht uns schließlich ein präzises Nutzer-Targeting, um den Energieverbrauch exakt an das biologische Profil der  Menschen anzupassen.
+#         - Thermal Comfort: Zeigt die Verteilung des thermischen Komfortindex spezifisch für die Raumkonfiguration. \n
+#         - Thermal Sensation: Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum. \n
+#         - Thermal Preference: Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wieder. \n
+#         - Thermal Acceptability: Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten. \n
+#         - Die Globale Übersicht liefert uns universelle Benchmarks für strategische Richtlinien.\n
+#         - Die demografische Analyse ermöglicht uns schließlich ein präzises Nutzer-Targeting, um den Energieverbrauch exakt an das biologische Profil der  Menschen anzupassen.
 
 #         """
 #     )
