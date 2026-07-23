@@ -208,12 +208,12 @@ with tab1:
         st.info(
             """
             **Ergebnisse:** \n
-            Thermal Comfort: Zeigt die Verteilung des thermischen Komfortindex spezifisch für die Raumkonfiguration. \n
-            Thermal Sensation: Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum. \n
-            Thermal Preference: Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wieder. \n
-            Thermal Acceptability: Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten. \n
-            Die Globale Übersicht liefert uns universelle Benchmarks für strategische Richtlinien.\n
-            Die demografische Analyse ermöglicht uns schließlich ein präzises Nutzer-Targeting, um den Energieverbrauch exakt an das biologische Profil der  Menschen anzupassen.
+            - Thermal Comfort: Zeigt die Verteilung des thermischen Komfortindex spezifisch für die Raumkonfiguration. \n
+            - Thermal Sensation: Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum. \n
+            - Thermal Preference: Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wieder. \n
+            - Thermal Acceptability: Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten. \n
+            - Die Globale Übersicht liefert uns universelle Benchmarks für strategische Richtlinien.\n
+            - Die demografische Analyse ermöglicht uns schließlich ein präzises Nutzer-Targeting, um den Energieverbrauch exakt an das biologische Profil der  Menschen anzupassen.
 
             """
         )
@@ -244,13 +244,24 @@ with tab1:
             male_votes = gender_counts.get('male', 0)
             undefined_votes = gender_counts.get('undefined', 0)
             unknown_votes = gender_counts.get('unknown', 0)  
+
+            total_str = f"{total_voten:,}".replace(",", ".")
+            female_str = f"{female_votes:,}".replace(",", ".")
+            male_str = f"{male_votes:,}".replace(",", ".")
+            undefined_str = f"{undefined_votes:,}".replace(",", ".")
+            unknown_str = f"{unknown_votes:,}".replace(",", ".")
+            
+            # Formatierung des Durchschnittsalters mit Komma für die deutsche Dezimalstelle (z.B. 21,2)
+            avg_age_str = f"{avg_age_seg:.1f}".replace(".", ",")
             
             # Schöne Formatierung für die Anzeige der Belüftungsart im Titel
             belueftung_title = belueftung.replace('-', ' ').title()
             st.markdown(f"### ⚡ Belüftungsart: {belueftung_title}")
             st.markdown(
-                f"**Statistik:** Gesamtstimmen: `{total_voten:,}` | ø-Alter: `{avg_age_seg:.1f} Jahre` | "
-                f"Demografie: 👩 Frauen: `{female_votes:,}` | 👨 Männer: `{male_votes:,}` | 👤 Undefined: `{undefined_votes:,}` | 👥 Unbekannt: `{unknown_votes:,}`"
+                # f"**Statistik:** Gesamtstimmen: `{total_voten:,}` | ø-Alter: `{avg_age_seg:.1f} Jahre` | "
+                # f"Demografie: 👩 Frauen: `{female_votes:,}` | 👨 Männer: `{male_votes:,}` | 👤 Undefined: `{undefined_votes:,}` | 👥 Unbekannt: `{unknown_votes:,}`"
+                f"**Statistik:** Gesamtstimmen: `{total_str}` | ø-Alter: `{avg_age_str} Jahre` | "
+                f"Demografie: 👩 Frauen: `{female_str}` | 👨 Männer: `{male_str}` | 👤 Undefined: `{undefined_str}` | 👥 Unbekannt: `{unknown_str}`"                
             )
             
             # Evaluierung der Zeilenmenge vor dem Zeichnen der Matrix
@@ -291,27 +302,7 @@ with tab1:
             
             st.markdown("---") # Trennlinie zwischen den verschiedenen Belüftungsarten
         st.markdown("<br><br>", unsafe_allow_html=True) # Deutlicher Abstand zum nächsten Gebäudety
-#  # ---------------------------------------------------------
-#  # 📊 Zusammenfassung 
-#  # --------------------------------------------------------- 
-  
-# with st.expander(
-#     #st.subheader("ℹ️ Zusammenfassung")
-#     f"**ℹ️ Zusammenfassung**"
-# ):
-#     st.info(
-#         """
-#         **Ergebnisse:** \n
-#         Thermal Comfort: Zeigt die Verteilung des thermischen Komfortindex spezifisch für die Raumkonfiguration. \n
-#         Thermal Sensation: Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum. \n
-#         Thermal Preference: Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wieder. \n
-#         Thermal Acceptability: Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten. \n
-#         Die Globale Übersicht liefert uns universelle Benchmarks für strategische Richtlinien.\n
-#         Die demografische Analyse ermöglicht uns schließlich ein präzises Nutzer-Targeting, um den Energieverbrauch exakt an das biologische Profil der  Menschen anzupassen.
-
-#         """
-#     )
-      
+     
 # ==============================================================================
 # 📊 TAB 2: GEOGRAFISCHE KOMFORTANALYSE (DINAMISCHES 2x2 NEBENEINANDER LAYOUT)
 # ==============================================================================
