@@ -572,7 +572,7 @@ with tab1:
         st.markdown("""
         #### 📌 Wichtige Ergebnisse:
 
-        ➡️ Beide klimatischen Gruppen **unterscheiden sich statistisch signifikant** hinsichtlich der thermischen Wahrnehmung ✅:
+        ➡️ Bei beiden klimatischen Variablen **unterscheiden sich die Gruppen statistisch signifikant** hinsichtlich der thermischen Wahrnehmung ✅:
         """
             )
 
@@ -708,6 +708,41 @@ with tab2:
             key="selectbox_thermal"
         )
         st.markdown("<br>", unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+
+        if selected_variable_thermal == "Thermischer Komfort":
+            st.markdown("""
+                ##### Thermischer Komfort 
+            **Sehr unkomfortabel ◄────────────────► Sehr komfortabel**  
+                    `  1             2            3           4           5            6   `
+            """)
+            st.markdown("<br>", unsafe_allow_html=True)
+
+        elif selected_variable_thermal == "Thermisches Empfinden":
+            st.markdown("""
+            ##### Thermisches Empfinden
+            **Kalt  ◄────── Neutral ──────►  Heiß**  
+            `-3    -2    -1    0    +1    +2    +3 `
+            """)
+            st.markdown("<br>", unsafe_allow_html=True)
+
+        elif selected_variable_thermal == "Thermische Präferenz":
+            st.markdown("""
+            ##### Thermische Präferenz 
+            **Kühler ◄──────── Keine Änderung ────────► Wärmer**  
+            `  -1                         0                         +1     `
+            """)
+            st.markdown("<br><br>", unsafe_allow_html=True)
+
+        elif selected_variable_thermal == "Thermische Akzeptanz":
+            st.markdown("""
+            ##### Thermische Akzeptanz
+            ○ Nicht akzeptabel  
+            ○ Akzeptabel  
+            """)
+            st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
     # 🔍 3. Mapping anwenden
@@ -1325,7 +1360,7 @@ with tab2:
 
     st.info("""
     - Ergebnisse zeigen, dass es **Unterschiede in der thermischen Wahrnehmung zwischen klimatischen Gruppen** gibt ➝ erklären jedoch nur einen Teil der Variation der thermischen Wahrnehmung
-    - Unterschiede in thermischer Wahrnehmung zeigen sich **deutlicher bei feinerer klimatischer Klassifikation** als bei übergeordneten Klimazonen
     - **Relevanz für Ziel des Projekts:** Um ideale Bedingungen für Gebäude zu schaffen, sollten die klimatischen und geografischen Gegebenheiten berücksichtigt werden
+    - Mögliche nächste Untersuchungsschritte: Was bewirkt die Unterschiede in der thermischen Wahrnehmung zwischen den klimatischen Gruppen?
     """
     )
