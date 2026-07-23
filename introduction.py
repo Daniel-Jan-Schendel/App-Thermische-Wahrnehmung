@@ -6,7 +6,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.title("🏢 Thermisches Befinden in Innenräumen")
+st.title("🏢 Thermische Wahrnehmung in Innenräumen")
 
 # -------------------------
 #       TABS
@@ -156,7 +156,7 @@ with tab1:
 
     st.markdown(
     """
-    #### ℹ️ **Thermisches Befinden in Innenräumen ist ein wichtiges Thema** ➝ Es verbindet:
+    #### ℹ️ **Thermische Wahrnehmung in Innenräumen ist ein wichtiges Thema** ➝ Es verbindet:
     """
     )
     st.markdown("<br>", unsafe_allow_html=True)
@@ -179,7 +179,7 @@ with tab1:
     st.markdown("<br><br>", unsafe_allow_html=True)
 
     st.markdown("""
-        #### 🎯 Wichtige Variablen für Untersuchung des thermischen Befindens
+        #### 🎯 Wichtige Variablen für Untersuchung der thermischen Wahrnehmung
     """
     )
     st.markdown("<br>", unsafe_allow_html=True)
