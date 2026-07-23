@@ -21,14 +21,14 @@ def load_data():
 df = load_data()
 
 
-st.title(" 📊 Analyse der Termischen Wahrnehmnung und Einflussgrößen")
+st.title(" 📊 Analyse der thermischen Wahrnehmnung und Einflussgrößen")
 
 # ---------------------------------------------------------
 # Tabs definieren
 # ---------------------------------------------------------
 tab2,tab3 = st.tabs([
-    " 📊 Physikalischen und subjektiven Korrelationsanalyse",
-    "🏢 Wichtigste Korrelationen & Gebäude-Beispiele"
+    " 📊 Physikalische und subjektive Korrelationsanalyse",
+    "🏢 Wichtigste Korrelationen & Gebäudebeispiele"
     ])
 
 
@@ -485,10 +485,10 @@ with tab2:
     # Diese kombinierte Analyse ermöglicht ein tiefes Verständnis darüber, **welche physikalischen Faktoren die subjektive Wahrnehmung dominieren** und wie beide Bereiche zusammenwirken, um den thermischen Komfort zu bestimmen.
     # """)
 
-    st.subheader("📊 Physikalische und subjektive Einflussgrößen des thermischen Befinden")
+    st.subheader("📊 Physikalische und subjektive Einflussgrößen der thermischen Wahrnehmung")
 
     st.markdown("""
-    Diese Analyse kombiniert **physikalische Messgrößen** und **subjektive Wahrnehmungen**, um ein vollständiges Bild darüber zu erhalten, wie Menschen thermische Bedingungen erleben und welche Faktoren den Komfort am stärksten beeinflussen.
+    Diese Analyse kombiniert **physikalische Messgrößen** und **subjektive Wahrnehmungen**, um ein vollständiges Bild darüber zu erhalten, wie Menschen thermische Bedingungen empfinden und welche Faktoren den Komfort am stärksten beeinflussen.
  
     """, unsafe_allow_html=True)
 
@@ -504,13 +504,13 @@ with tab2:
             font-size:16px;
             line-height:1.55;
         ">
-        <h4>🔥 Physikalische Einflussgrößen (Innenräumen) </h3>
+        <h4>🔥 Physikalische Einflussgrößen (Innenräume) </h3>
 
         Diese Variablen beeinflussen direkt die Wärmeabgabe und ‑aufnahme des Körpers 
         und bilden die Grundlage für die physikalische Bewertung des thermischen Komforts.
 
         <ul>
-            <li><b>Metabolische Aktivität</b> (wie aktiv eine Person ist) </li> 
+            <li><b>Metabolische Aktivität</b> (wie aktiv ist eine Person) </li> 
              </br>       
             <li><b>Bekleidungsisolation</b> (Art und Dicke der Kleidung)</li>
             </br>
@@ -537,14 +537,14 @@ with tab2:
         <h4>🙂 Subjektive Einflussgrößen</h3>
 
         Diese Variablen beschreiben die individuelle Wahrnehmung und Bewertung der Umgebung 
-        und zeigen, wie Menschen die physikalischen Bedingungen tatsächlich erleben.
+        und zeigen, wie Menschen die physikalischen Bedingungen tatsächlich empfinden.
          ##### 1. Thermische Empfindung (TS) 
         **Kalt  ◄────── Neutral ──────►  Heiß**  
         `-3    -2    -1    0    +1    +2    +3 `
 
         ##### 2. Thermische Akzeptanz (TA)
-        ○ Nicht akzeptabel  
-        ○ Akzeptabel  
+        ○ nicht akzeptabel  
+        ○ akzeptabel  
 
         ##### 3. Thermische Präferenz (TP)  
         **Kühler ◄──────── Keine Änderung ────────► Wärmer**  
@@ -559,7 +559,7 @@ with tab2:
         """, unsafe_allow_html=True)
 
 
-    st.subheader("🌡️ Wie stark hängen diese physikalischen Umweltvariablen tatsächlich mit den vier subjektiven Komfortparametern zusammen?")
+    st.subheader("🌡️ Wie stark hängen die physikalischen Umweltvariablen tatsächlich mit den vier subjektiven Wahrnehmungsparametern zusammen?")
 
 
     st.markdown("""
@@ -567,17 +567,17 @@ with tab2:
 
     <div style="display: flex; align-items: center; gap: 10px;">
         <div style="width: 18px; height: 18px; background-color: #e63946; border-radius: 50%;"></div>
-        <b>Positive Korrelation</b> – beide Variablen bewegen sich in die gleiche Richtung.
+        <b>Positive Korrelation</b> – Beide Variablen bewegen sich in die gleiche Richtung.
     </div>
 
     <div style="display: flex; align-items: center; gap: 10px;">
         <div style="width: 18px; height: 18px; background-color: #457b9d; border-radius: 50%;"></div>
-        <b>Negative Korrelation</b> – die Variablen entwickeln sich gegensätzlich.
+        <b>Negative Korrelation</b> – Die Variablen entwickeln sich gegensätzlich.
     </div>
 
     <div style="display: flex; align-items: center; gap: 10px;">
         <div style="width: 18px; height: 18px; background-color: #adb5bd; border-radius: 50%;"></div>
-        <b>Nahe 0</b> – kein relevanter Zusammenhang erkennbar.
+        <b>Nahe 0</b> – Kein relevanter Zusammenhang erkennbar.
     </div>
 
     </div>
@@ -699,7 +699,7 @@ with tab2:
 
         <p><b>🌡️ Lufttemperatur → Strahlungstemperatur</b><br>
         <b>r = 0.89</b><br>
-        Sehr starke positive Beziehung – beide steigen gemeinsam.</p>
+        Sehr starke positive Beziehung – Beide steigen gemeinsam.</p>
 
         <hr>
 
@@ -712,7 +712,7 @@ with tab2:
         <p><b>👕 Bekleidungsisolation</b><br>
         <b>r = -0.46</b> zur Lufttemperatur<br>
         <b>r = -0.45</b> zur Strahlungstemperatur<br>
-        Höhere Temperaturen → leichtere Kleidung.</p>
+        Höhere Temperaturen → Leichtere Kleidung.</p>
 
         <hr>
 
@@ -963,11 +963,11 @@ with tab2:
 
 with tab3:
     
-    st.subheader("🏠 Wichtigste Korrelationen mit Gebäude-Beispielen")
+    st.subheader("🏠 Wichtigste Korrelationen mit Gebäudebeispielen")
 
     st.markdown("""
-    Diese Übersicht zeigt, wie physikalische Komfortparameter – wie Lufttemperatur,
-    Strahlungstemperatur und Bekleidungsisolation – mit dem Verhalten und Empfinden
+    Diese Übersicht zeigt, wie physikalische Komfortparameter (z.B. Lufttemperatur,
+    Strahlungstemperatur und Bekleidungsisolation) mit dem Verhalten und Empfinden
     von Personen in verschiedenen Gebäudetypen zusammenhängen.
     """)
 
@@ -1029,7 +1029,7 @@ with tab3:
     
     st.markdown("""
     <div style="font-size:22px; line-height:1.6;">
-    <b>Die Temperatur – sowohl Luft- als auch Strahlungstemperatur – ist in allen Gebäudetypen
+    <b>Die Temperatur, sowohl Luft- als auch Strahlungstemperatur, ist in allen Gebäudetypen
         der wichtigste Einflussfaktor auf die thermische Wahrnehmung.<b>
     </div>
     """, unsafe_allow_html=True)
