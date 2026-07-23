@@ -3,30 +3,9 @@ import streamlit as st
 st.set_page_config(page_title="Projektzusammenfassung",layout="wide",initial_sidebar_state="expanded")
 
 # Tabs erstellen
-tab_summary, tab_challenges = st.tabs(["📘 Summary", "⚠️ Herausforderungen & Learnings"])
+tab_summary, tab_challenges = st.tabs(["📘 Summary", "⚠️ Herausforderungen, Learnings & Fazit"])
 
-# -------------------------
-# TAB 1: SUMMARY
-# -------------------------
-# with tab_summary:
-#     st.markdown("""
-#     ### Zusammenfassung des Abschlussprojekts
 
-#     Dieses Projekt wurde im Rahmen einer beruflichen Weiterbildung entwickelt und beschäftigt sich
-#     mit der Analyse der *ASHRAE Global Thermal Comfort Database II*. Ziel war es, weltweit gesammelte 
-#     Komfortdaten zu verarbeiten, zu visualisieren und zu analysieren..
-
-#     Die Anwendung umfasst:
-#     - **Datenbereinigung und Harmonisierung** der ASHRAE‑Messdaten  
-#     - **Globale Analyse** zentraler Komfortvariablen wie operative Temperatur, TSV, TP, TC und TA  
-#     - **Untersuchung von Einflussfaktoren** wie Alter, Gebäudetyp, Klimazone und Kühltechnik  
-#     - **Visualisierung thermischer Zusammenhänge**, z. B. Korrelationen, T_neutral, MTS vs. Indoor Temperature  
-#     - **Machine‑Learning‑Modelle**, die thermische Empfindung und Komfort vorhersagen
-
-#     Das Projekt zeigt, wie subjektive Wahrnehmung und physikalische Parameter zusammenwirken und
-#     welche Muster sich in globalen Datensätzen erkennen lassen. Die Streamlit‑App dient als
-#     interaktive Plattform, um diese Erkenntnisse verständlich und zugänglich darzustellen.
-#     """)
 
 # # -------------------------
 # # TAB 2: HERAUSFORDERUNGEN
@@ -87,28 +66,28 @@ with tab_summary:
     Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH entwickelt und von einem
     interdisziplinären Team durchgeführt:
 
-    ** Sabrina | Data Analyst**  
-    ** Dianela | Data Analyst**  
-    ** Mirtha  | Data Scientist**  
-    ** Daniel  | Data Scientist**
+    - Sabrina | Data Analyst
+    - Dianela | Data Analyst  
+    - Mirtha  | Data Scientist  
+    - Daniel  | Data Scientist
 
-    Gemeinsam analysierten wir die *ASHRAE Global Thermal Comfort Database II*, eine der
+    Gemeinsam haben wir die *ASHRAE Global Thermal Comfort Database II* analysiert, eine der
     umfangreichsten internationalen Datenquellen zum thermischen Komfort. 
     
     ### 🔍 Inhalt des Projekts
     - **Datenbereinigung und Harmonisierung** der ASHRAE‑Messdaten  
-    - **Globale Analyse** von Komfortvariablen wie operative Temperatur, TSV, TP, TC und TA  
-    - **Untersuchung relevanter Einflussfaktoren** (Alter, Gebäudetyp, Klimazone, Kühltechnik)  
+    - **Globale Analyse** von thermischen Komfortvariablen (Thermischen Komfort, thermisches Empfinden, thermische Präferenz und thermsiche Akzeptanz)  
+    - **Untersuchung relevanter Einflussfaktoren** (Physikalische Parameter, Klima, Kühltechnik etc.)  
     - **Visualisierung thermischer Zusammenhänge**, z. B. Korrelationen, T_neutral, MTS vs. Indoor Temperature  
     - **Machine‑Learning‑Modelle**, die thermische Empfindung und Komfort vorhersagen
 
     ### 🎯 Ziel
-    Das Projekt zeigt, wie subjektive Wahrnehmung und physikalische Parameter zusammenwirken
+    Das Projekt zeigt, wie subjektive thermische Wahrnehmung und physikalische Parameterzusammenwirken
     und welche globalen Muster sich in großen Datensätzen erkennen lassen. Die Streamlit‑App
     dient als interaktive Plattform, um diese Erkenntnisse verständlich und zugänglich zu machen.
     """)
 
-    st.write("Gebäudekonzepte müssen an lokale Klimabedingungen und kulturelle Gewohnheiten angepasst werden.")
+    #st.write("Gebäudekonzepte müssen an lokale Klimabedingungen und kulturelle Gewohnheiten angepasst werden.")
 
     # Ziel des Projekts war es, 
     # weltweit erhobene Daten zum thermischen Komfort wissenschaftlich aufzubereiten, zu visualisieren, 
@@ -120,6 +99,10 @@ with tab_summary:
 # TAB 2: HERAUSFORDERUNGEN
 # -------------------------
 with tab_challenges:
+
+    # -------------------------
+    # Herausforderungen und Learnings
+    # -------------------------
     st.markdown("""
     ## ⚠️ Herausforderungen & Learnings
                 
@@ -127,32 +110,83 @@ with tab_challenges:
     Während der Entwicklung des Projekts traten verschiedene fachliche und technische
     Herausforderungen auf, die unser Team geprägt und weiterentwickelt haben.
                 
-    ### 1️⃣ Große Datenmengen
-    Mit über 100.000 Datensätzen war eine effiziente Datenverarbeitung entscheidend.
-    Caching, Filterlogik und performante Diagramme waren zentrale technische Aufgaben.
+    1️⃣ **Große Datenmengen**
+                
+    - Effiziente Datenverarbeitung war wichtig ➝ Caching, Filterlogik und performante Diagramme waren zentrale technische Aufgaben
+    - Gute Einarbeitung in die Daten und Fokussierung auf Fragestellungen waren wichtig
+                
+    2️⃣ **Heterogene Datenqualität**
+    
+    - ASHRAE‑Daten stammen aus vielen Ländern und Studien ➝ Unterschiedliche Messmethoden, fehlende Werte und uneinheitliche Skalen
+    - Gemeinsame Entscheidungsfindung im Umgang hiermit war wichtig
+                
+    3️⃣ **Machine‑Learning‑Modellierung**
+                
+    - Thermischer Komfort ist ein subjektives, multifaktorielles Phänomen
+    - Auswahl und Validierung geeigneter Modelle war anspruchsvoll, da Komfort nicht rein physikalisch vorhersagbar ist       
+    """
+    )
 
-    ### 2️⃣ Heterogene Datenqualität
-    Die ASHRAE‑Daten stammen aus vielen Ländern und Studien. Unterschiedliche Messmethoden,
-    fehlende Werte und uneinheitliche Skalen machten eine gründliche Bereinigung notwendig.
+    st.markdown("<br><br>", unsafe_allow_html=True)
 
-    ### 3️⃣ Unterschiedliche Skalen der Komfortvariablen
-    TSV, TP, TC und TA besitzen jeweils eigene ASHRAE‑Skalen. Dies erschwerte die
-    Interpretation von Zusammenhängen und die Erstellung konsistenter Visualisierungen.
-
-    ### 4️⃣ Machine‑Learning‑Modellierung
-    Thermischer Komfort ist ein subjektives, multifaktorielles Phänomen. Die Auswahl und
-    Validierung geeigneter Modelle war anspruchsvoll, da Komfort nicht rein physikalisch
-    vorhersagbar ist.
-
-    ### 5️⃣ Teamarbeit in einem interdisziplinären Umfeld
-    Die Zusammenarbeit zwischen Psychologie, Informatik, Physik und Bauingenieurwesen
-    brachte unterschiedliche Perspektiven zusammen – eine Stärke, aber auch eine
-    kommunikative Herausforderung.
-
-    ### 🎓 Fazit
-    Das Projekt vermittelte wertvolle praktische Erfahrungen in Datenanalyse,
-    wissenschaftlicher Interpretation und der Entwicklung datengetriebener Webanwendungen.
-    Die interdisziplinäre Zusammenarbeit stärkte sowohl analytische als auch technische
-    Kompetenzen und führte zu einem umfassenden Verständnis thermischen Komforts.
+    # -------------------------
+    # Fazit
+    # -------------------------
+    st.markdown("""
+    ## 🎓 Fazit
     """)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Inhaltliches Fazit
+    st.markdown("""
+    ##### 🎯 Inhaltlich:
+    """)
+
+    st.markdown("""
+    - Unsere Ergebnisse liefern **wichtige Erkenntnisse für die Entwicklung von Gebäudesystemen**, die den Komfort der Nutzer*innen erhöhen und gleichzeitig energieeffizient sind 
+    - Aufgrund der zeitlichen Begrenzung des Projekts war allerdings nur die Untersuchung eines kleinen Anteils der Faktoren möglich 
+                
+    ➝ **Weitere Analysen** zu anderen Einflussfaktoren auf die subjektive thermische Wahrnehmung und **konkreter Umsetzungsmöglichkeiten der Erkenntnisse** wären sinnvolle nächste Schritte
+    """
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Allgemeines Fazit
+    st.markdown("""
+    ##### 💡 Projektfazit:
+    """)
+
+    st.markdown("""     
+    - Das Projekt vermittelte **wertvolle praktische Erfahrung** in Datenanalyse, wissenschaftlicher Interpretation und der Entwicklung datengetriebener Webanwendungen
+    - Die **interdisziplinäre Zusammenarbeit** stärkte sowohl analytische als auch technische Kompetenzen
+    """
+    )
+    # Mit über 100.000 Einträgen im Datensatz war eine effiziente Datenverarbeitung entscheidend.
+    # Caching, Filterlogik und performante Diagramme waren zentrale technische Aufgaben.
+
+    # ### 2️⃣ Heterogene Datenqualität
+    # Die ASHRAE‑Daten stammen aus vielen Ländern und Studien. Unterschiedliche Messmethoden,
+    # fehlende Werte und uneinheitliche Skalen machten eine gründliche Bereinigung notwendig.
+
+    # ### 3️⃣ Unterschiedliche Skalen der Komfortvariablen
+    # TSV, TP, TC und TA besitzen jeweils eigene ASHRAE‑Skalen. Dies erschwerte die
+    # Interpretation von Zusammenhängen und die Erstellung konsistenter Visualisierungen.
+
+    # ### 4️⃣ Machine‑Learning‑Modellierung
+    # Thermischer Komfort ist ein subjektives, multifaktorielles Phänomen. Die Auswahl und
+    # Validierung geeigneter Modelle war anspruchsvoll, da Komfort nicht rein physikalisch
+    # vorhersagbar ist.
+
+    # ### 5️⃣ Teamarbeit in einem interdisziplinären Umfeld
+    # Die Zusammenarbeit zwischen Psychologie, Informatik, Physik und Bauingenieurwesen
+    # brachte unterschiedliche Perspektiven zusammen – eine Stärke, aber auch eine
+    # kommunikative Herausforderung.
+
+    # ### 🎓 Fazit
+    # Das Projekt vermittelte wertvolle praktische Erfahrungen in Datenanalyse,
+    # wissenschaftlicher Interpretation und der Entwicklung datengetriebener Webanwendungen.
+    # Die interdisziplinäre Zusammenarbeit stärkte sowohl analytische als auch technische
+    # Kompetenzen und führte zu einem umfassenden Verständnis thermischen Komforts.
+    # """)
 

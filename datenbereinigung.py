@@ -384,16 +384,7 @@ with tab3:
     # Tabelle Datensatz nach Bereinigung
     st.subheader("🧾 Datensatz nach der Bereinigung")
 
-    # tab1, tab2 = st.tabs([
-    #     "Übersicht Datensatz",
-    #     "Übersicht fehlende Werte"
-    # ])
-
     #with tab1:
     st.dataframe(df_bereinigt)
-
-    #with tab2:
-        # Dataframe fehlende Werte erstellen
-        #st.dataframe(df_nans)
 
 
