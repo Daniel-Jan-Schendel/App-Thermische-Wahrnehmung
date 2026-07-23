@@ -25,106 +25,106 @@ with tab1:
 
     st.subheader("Ein datengetriebener Ansatz für Komfort & Energieeffizienz")
 
-    st.image("bild_intro.png", width=True)
+    st.image("bild_intro.png", width=1300)
 
-    # ---------------------------------------------------------
-    # THREE COLUMNS
-    # ---------------------------------------------------------
+    # # ---------------------------------------------------------
+    # # THREE COLUMNS
+    # # ---------------------------------------------------------
 
-    col1, col2, col3 = st.columns(3)
+    # col1, col2, col3 = st.columns(3)
 
-    # ---------------------------------------------------------
-    # CARD STYLE (Streamlit-safe)
-    # ---------------------------------------------------------
+    # # ---------------------------------------------------------
+    # # CARD STYLE (Streamlit-safe)
+    # # ---------------------------------------------------------
 
-    card_style_blue = """
-        <div style="
-            background-color:#E3F2FD;
-            padding:20px;
-            border-radius:12px;
-            text-align:center;
-            border:1px solid #90CAF9;">
-    """
-    card_style_end = "</div>"
+    # card_style_blue = """
+    #     <div style="
+    #         background-color:#E3F2FD;
+    #         padding:20px;
+    #         border-radius:12px;
+    #         text-align:center;
+    #         border:1px solid #90CAF9;">
+    # """
+    # card_style_end = "</div>"
 
-    card_style_green = """
-        <div style="
-            background-color:#E8F5E9;
-            padding:20px;
-            border-radius:12px;
-            text-align:center;
-            border:1px solid #A5D6A7;">
-    """
-    card_style_end = "</div>"
+    # card_style_green = """
+    #     <div style="
+    #         background-color:#E8F5E9;
+    #         padding:20px;
+    #         border-radius:12px;
+    #         text-align:center;
+    #         border:1px solid #A5D6A7;">
+    # """
+    # card_style_end = "</div>"
 
-    card_style_orange = """
-        <div style="
-            background-color:#FFF3E0;
-            padding:20px;
-            border-radius:12px;
-            text-align:center;
-            border:1px solid #FFCC80;">
-    """
-    card_style_end = "</div>"
+    # card_style_orange = """
+    #     <div style="
+    #         background-color:#FFF3E0;
+    #         padding:20px;
+    #         border-radius:12px;
+    #         text-align:center;
+    #         border:1px solid #FFCC80;">
+    # """
+    # card_style_end = "</div>"
 
-    # ---------------------------------------------------------
-    # COLUMN 1 – Unser Auftrag
-    # ---------------------------------------------------------
-    with col1:
-        st.markdown(
-        card_style_blue
-        + """
-        <h3>🏢 Unser Auftrag</h3>
-        <p>
-            Ein fiktives führendes Unternehmen möchte prüfen,<br>
-            ob auf Basis von Daten ein intelligentes Gebäudesystem entwickelt werden kann,<br>
-            das den Komfort der Nutzer erhöht und<br>
-            gleichzeitig energieeffizient ist.
-        </p>
-        """
-        + card_style_end,
-        unsafe_allow_html=True)
+    # # ---------------------------------------------------------
+    # # COLUMN 1 – Unser Auftrag
+    # # ---------------------------------------------------------
+    # with col1:
+    #     st.markdown(
+    #     card_style_blue
+    #     + """
+    #     <h3>🏢 Unser Auftrag</h3>
+    #     <p>
+    #         Ein fiktives führendes Unternehmen möchte prüfen,<br>
+    #         ob auf Basis von Daten ein intelligentes Gebäudesystem entwickelt werden kann,<br>
+    #         das den Komfort der Nutzer erhöht und<br>
+    #         gleichzeitig energieeffizient ist.
+    #     </p>
+    #     """
+    #     + card_style_end,
+    #     unsafe_allow_html=True)
 
-    # ---------------------------------------------------------
-    # COLUMN 2 – Unser Ansatz
-    # ---------------------------------------------------------
-    with col2:
-        st.markdown(
-        card_style_green
-        + """
-        <h3>🔍 Unser Ansatz </h3>
-        <p>
-        Wir analysieren die <strong>ASHRAE Global  
-        Thermal Comfort Database II</strong>, eine der  
-        weltweit größten Datenquellen zu  
-        thermischem Befinden in Innenräumen in 
-        verschiedenen Umgebungen.
-        </p>
-        """
-        + card_style_end,
-        unsafe_allow_html=True)
+    # # ---------------------------------------------------------
+    # # COLUMN 2 – Unser Ansatz
+    # # ---------------------------------------------------------
+    # with col2:
+    #     st.markdown(
+    #     card_style_green
+    #     + """
+    #     <h3>🔍 Unser Ansatz </h3>
+    #     <p>
+    #     Wir analysieren die <strong>ASHRAE Global  
+    #     Thermal Comfort Database II</strong>, eine der  
+    #     weltweit größten Datenquellen zu  
+    #     thermischem Befinden in Innenräumen in 
+    #     verschiedenen Umgebungen.
+    #     </p>
+    #     """
+    #     + card_style_end,
+    #     unsafe_allow_html=True)
 
 
-    # ---------------------------------------------------------
-    # COLUMN 3 – Unser Ziel
-    # ---------------------------------------------------------
-    with col3:
-        st.markdown(
-        card_style_orange
-        + """
-        <h3>🎯 Unser Ziel  </h3>
-        <p>
-        Datenbasierte Erkenntnisse liefern, die  
-        als Grundlage für die Entwicklung eines  
-        <strong>intelligenten, adaptiven und nachhaltigen  
-        Gebäudesystems</strong> dienen können.
-        </p>
-        """
-        + card_style_end,
-        unsafe_allow_html=True)
+    # # ---------------------------------------------------------
+    # # COLUMN 3 – Unser Ziel
+    # # ---------------------------------------------------------
+    # with col3:
+    #     st.markdown(
+    #     card_style_orange
+    #     + """
+    #     <h3>🎯 Unser Ziel  </h3>
+    #     <p>
+    #     Datenbasierte Erkenntnisse liefern, die  
+    #     als Grundlage für die Entwicklung eines  
+    #     <strong>intelligenten, adaptiven und nachhaltigen  
+    #     Gebäudesystems</strong> dienen können.
+    #     </p>
+    #     """
+    #     + card_style_end,
+    #     unsafe_allow_html=True)
         
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    # st.markdown("<br><br>", unsafe_allow_html=True)
 
     st.subheader("🧾 Datenquelle: ASHRAE Global Thermal Comfort Database v2.1")
 
@@ -160,7 +160,8 @@ with tab1:
     """
     )
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("""                
+    st.markdown("""      
+                  
         🧍 Menschen (Produktivität, Gesundheit)
                 
 
@@ -244,8 +245,8 @@ with tab2:
             text-align: center;
             box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
             transition: 0.3s;
-            font-size: 1.5em;
-            font-weight: 500;
+            font-size: 1.7em;
+            font-weight: 700;
         }
         .team-card:hover {
             transform: translateY(-5px);
@@ -431,8 +432,8 @@ with tab3:
     .tech-card {
         background-color: #f7f7f7;
         padding: 10px;
-        font-size: 1em;
-        font-weight: 700;
+        font-size: 1.5em;
+        font-weight: 800;
         border-radius: 16px;
         text-align: center;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.12);
