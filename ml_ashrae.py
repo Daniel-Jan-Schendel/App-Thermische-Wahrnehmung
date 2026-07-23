@@ -94,7 +94,7 @@ st.title(":material/smart_toy: Machine Learning")
 
 # Create two tabs
 # ---------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🌡️Subjektive Komfortbewertungen", "🌡️ Modelle Subjektive Komfortbewertungen", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🌡️Thermische Wahrnehmung", "🌡️ Modelle thermische Wahrnehmung", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
 
 
 FONT_SIZE_TEXT = "24px"
@@ -136,7 +136,7 @@ with tab1: # Übersicht
     col1, col2 = st.columns([3,1], vertical_alignment="center")
     with col1:
         #st.write("\n")
-        st.html(slide_point("Untersuchungen zur Vorhersage der subjektive Komfortbewertungen (Klassifizierung)"))
+        st.html(slide_point("Untersuchungen zur Vorhersage der thermischen Wahrnehmung (Klassifizierung)"))
         st.html(slide_smallpoint("<b>Dashboard zur Erstellung von Modellen zur Bestimmung der möglichen Genauigkeit</b>"))
         st.html(slide_smallpoint("<span style='color: #FF0000; font-weight: bold;'>Kein Dashboard zur Vorhersage von Klassen (unzureichende Genauigkeit der Modell)!</span>"))
     with col2:
@@ -177,7 +177,7 @@ with tab1: # Übersicht
 
 with tab2: # subjektive Komfortbewertungen
 
-    st.subheader("Subjektive thermische Wahrnehmung")
+    st.subheader("Vorhersage thermische Wahrnehmung")
 
     st.html(slide_point("Idee: Vorhersage der subjektiven thermischen Wahrnehmung<br> (<b>thermal comfort, thermal sensation, thermal preference</b>) mit Hilfe von Featuren wie,"))
     links, mitte, rechts = st.columns(3)
