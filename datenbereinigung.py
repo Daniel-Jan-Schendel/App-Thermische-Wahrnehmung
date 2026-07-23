@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Datenbereinigung - ASHRAE", layout="wide",initial_sidebar_state="expanded")
 
-st.title("🔍 Inspektion und Bereinigung des Datensatzes")
+st.title("🔍 Bereinigung des Datensatzes")
 
 # Datensätze laden
 metadata = pd.read_csv("db_metadata.csv")
