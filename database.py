@@ -179,7 +179,7 @@ with tab_4:
     # ------------------------------------------------------------------------------
     # ABSCHNITT 3: PYTHON PIPELINE & VERIFIKATION
     # ------------------------------------------------------------------------------
-    st.subheader("3. Automatisierte Einfügen der Daten & Tabellen-Verifikation")
+    st.subheader("3. Automatisiertes Einfügen der Daten & Tabellen-Verifikation")
     c5, _ = st.columns([1,1])
 
     with c5:
