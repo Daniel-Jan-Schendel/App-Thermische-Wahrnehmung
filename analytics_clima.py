@@ -95,7 +95,7 @@ st.title("🌍 Analyse Klima und thermische Wahrnehmung")
 # ---------------------------------------------------------
 # 📌 tabs definieren
 # ---------------------------------------------------------
-tab1, tab2 = st.tabs(["Untersuchung der Unterschiede zwischen klimatischen/geografischen Gruppen", "Betrachtung der Unterschiede zwischen klimatischen/geografischen Gruppen"])
+tab1, tab2 = st.tabs(["Untersuchung der Unterschiede zwischen klimatischen Gruppen", "Betrachtung der Unterschiede zwischen klimatischen Gruppen"])
 
 #########################################################################################################
 #########################################################################################################
@@ -459,7 +459,7 @@ tab1, tab2 = st.tabs(["Untersuchung der Unterschiede zwischen klimatischen/geogr
 # ---------------------------------------------------------
 with tab1:
 
-    st.subheader("📊 Gibt es Unterschiede zwischen klimatischen/geografischen Gruppen hinsichtlich thermischer Wahrnehmung?")
+    st.subheader("📊 Gibt es Unterschiede zwischen klimatischen Gruppen hinsichtlich thermischer Wahrnehmung?")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -473,10 +473,10 @@ with tab1:
     # Mapping-Dictionary Klima
     environment_mapping = {
         "Klimatyp": "climate",
-        "Klimazone": "climate_zone",
-        "Region": "region",
-        "Land": "country"            
+        "Klimazone": "climate_zone"     
     }
+    # "Region": "region",
+    # "Land": "country"   
 
     # Mapping-Dictionary thermische Variablen
     thermal_mapping = {
@@ -519,7 +519,7 @@ with tab1:
             results.append({
                 "Umweltvariable": environment_label,
                 "Thermische Variable": thermal_label,
-                "p-Wert": f"{p:.4f}",
+                "p-Wert": "p < 0.0001" if p < 0.0001 else f"{p:.4f}",
                 "Signifikant": "✅" if p < 0.05 else "✗",
                 "Effektgröße": round(cramers_v, 3),
                 "Interpretation des Zusammenhangs": interpret_effect(cramers_v)                 
@@ -550,6 +550,11 @@ with tab1:
             }
         )
 
+        fig.update_traces(
+            hovertemplate=None,
+            hoverinfo="skip"
+        )
+
         fig.update_layout(
             height=600
         )
@@ -559,7 +564,7 @@ with tab1:
             use_container_width=True
         )
 
-        st.markdown("<br>", unsafe_allow_html=True)
+
 
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -567,16 +572,20 @@ with tab1:
         st.markdown("""
         #### 📌 Wichtige Ergebnisse:
 
-        ➡️ Alle klimatischen/geografischen Gruppen **unterscheiden sich signifikant** hinsichtlich der thermischen Wahrnehmung ✅          
-            
-        ➡️ **Stärkste Unterschiede bei Klimatyp** ➝ mittlere bis schwach ausgeprägte Unterschiede
-                    
-        ➡️ **Geringste Unterschiede bei Klimazone und Region** ➝ schwach bis sehr schwach ausgeprägte Unterschiede 
-        
-        ➡️ **Stärkste Unterschiede bei thermischem Komfort und thermischer Akzeptanz** 
-                    
-        ➡️ Unterschiede in thermischer Wahrnehmung zeigen sich deutlicher bei **feinerer klimatischer Klassifikation** als bei übergeordneten Klimazonen oder Länder-/Regionszugehörigkeit
+        ➡️ Beide klimatischen Gruppen **unterscheiden sich statistisch signifikant** hinsichtlich der thermischen Wahrnehmung ✅:
+        """
+            )
 
+        st.markdown("""
+         
+
+        - **Stärkste Unterschiede bei thermischem Komfort und thermischer Akzeptanz**          
+            
+        - **Stärkere Unterschiede bei Klimatyp** (mittlere bis schwach ausgeprägte Unterschiede)
+                    
+        - **Geringere Unterschiede bei Klimazone** (schwach bis sehr schwach ausgeprägte Unterschiede) 
+                    
+        ➡️ Thermische Wahrnehmung unterscheidet sich zwischen den Klimatypen stärker als zwischen den übergeordneten Hauptklimazonen
     """
     )
 
@@ -585,12 +594,12 @@ with tab1:
     # --------------------------------------------------------- 
 
     with col3:
-        st.subheader("ℹ️ Details zu statistischem Zusammenhang")
+        st.subheader("ℹ️ Details zu statistischen Tests")
 
 
         for variable in environment_mapping.keys():
 
-            with st.expander(f"**📈 Zusammenhang {variable} ↔ Thermische Wahrnehmung**"):
+            with st.expander(f"**📈 {variable} ↔ Thermische Wahrnehmung**"):
                 st.dataframe(
                     chi2_results_df[chi2_results_df["Umweltvariable"] == variable],
                     hide_index=True,
@@ -601,7 +610,7 @@ with tab1:
         st.markdown("<br>", unsafe_allow_html=True)
 
 
-        with st.expander("Informationen zum Lesen des Zusammenhangs"):
+        with st.expander("Informationen zum Lesen der Unterschiede"):
             st.markdown("""                  
             - **Erklärung der Werte:**
                 - **p-Wert**: gibt an, ob ein Zusammenhang statistisch signifikant ist 
@@ -654,7 +663,7 @@ with tab1:
 # ---------------------------------------------------------
 
 with tab2:
-    st.subheader("Wie sehen die Unterschiede zwischen klimatischen/geografischen Gruppen hinsichtlich thermischer Wahrnehmung aus?")
+    st.subheader("Wie sehen die Unterschiede zwischen klimatischen Gruppen hinsichtlich thermischer Wahrnehmung aus?")
     st.markdown("<br>", unsafe_allow_html=True)
   
     # st.markdown("""
@@ -686,19 +695,27 @@ with tab2:
         # ---------------------------------------------------------
         # Filter-Widget (Klima/Klimazone)
         selected_variable_environment = st.selectbox(
-            "Klimatische/geografische Variable auswählen",
+            "Klimatische Variable auswählen",
             list(environment_mapping.keys()),
             key="selectbox_environment"
         )
         st.markdown("<br>", unsafe_allow_html=True)
 
-        
+        # Filter-Widget (Klima/Klimazone)
+        selected_variable_thermal = st.selectbox(
+            "Thermische Variable auswählen",
+            list(thermal_mapping.keys()),
+            key="selectbox_thermal"
+        )
+        st.markdown("<br>", unsafe_allow_html=True)
+
     # ---------------------------------------------------------
     # 🔍 3. Mapping anwenden
     # ---------------------------------------------------------
     # Mapping für Klima anwenden
-    selected_environment_column = environment_mapping[selected_variable_environment]    
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    selected_environment_column = environment_mapping[selected_variable_environment]  
+    selected_thermal_column = thermal_mapping[selected_variable_thermal]      
+    
 
 
     # ---------------------------------------------------------
@@ -706,122 +723,377 @@ with tab2:
     # ---------------------------------------------------------
     # Diagramm Thermischer Komfort
     with col4:
-        # Titel für Diagramm Thermischer Komfort
-        st.subheader(f"Thermischer Komfort und {selected_variable_environment}")
+        if selected_variable_thermal == "Thermischer Komfort":
+            # Titel für Diagramm Thermischer Komfort
+            st.subheader(f"Thermischer Komfort und {selected_variable_environment}")
 
-        plot_df = df.copy()
+            plot_df = df.copy()
 
-        # Berechnungen für Diagramm und Ergebnistabelle
-        thermal_comfort_stats = (
-            plot_df
-            .groupby(selected_environment_column)["thermal_comfort"]
-            .agg(
-                Mittelwert="mean",
-                Median="median",
-                Anzahl="count"
+            # Berechnungen für Diagramm und Ergebnistabelle
+            thermal_comfort_stats = (
+                plot_df
+                .groupby(selected_environment_column)[selected_thermal_column]
+                .agg(
+                    Mittelwert="mean",
+                    Median="median",
+                    Anzahl="count"
+                )
+                .reset_index()
             )
-            .reset_index()
-        )
 
-        thermal_comfort_stats["Mittelwert"] = thermal_comfort_stats["Mittelwert"].round(2)
-        thermal_comfort_stats["Median"] = thermal_comfort_stats["Median"].round(2)
+            thermal_comfort_stats["Mittelwert"] = thermal_comfort_stats["Mittelwert"].round(2)
+            thermal_comfort_stats["Median"] = thermal_comfort_stats["Median"].round(2)
 
-        thermal_comfort_stats = thermal_comfort_stats.sort_values(by="Mittelwert", ascending=False)
+            thermal_comfort_stats = thermal_comfort_stats.sort_values(by="Mittelwert", ascending=False)
 
-        # Grafik erstellen
-        # Balken: Mittelwert
-        bars_comfort = (
-            alt.Chart(thermal_comfort_stats)
-            .mark_bar(color="steelblue")
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    sort="-y",
-                    title=selected_variable_environment,
-                    axis=alt.Axis(labelAngle=-45)
-                ),
-                y=alt.Y(
-                    "Mittelwert:Q",
-                    title="Mittelwert Thermal Comfort",
-                    scale=alt.Scale(domain=[0, 6]),
-                    axis=alt.Axis(tickMinStep=1)
-                ),
-                tooltip=[
-                    alt.Tooltip(
+            # Grafik erstellen
+            # Balken: Mittelwert
+            bars_comfort = (
+                alt.Chart(thermal_comfort_stats)
+                .mark_bar(color="steelblue")
+                .encode(
+                    x=alt.X(
                         f"{selected_environment_column}:N",
-                        title=selected_variable_environment
+                        sort="-y",
+                        title=selected_variable_environment,
+                        axis=alt.Axis(labelAngle=-45)
                     ),
-                    alt.Tooltip(
+                    y=alt.Y(
                         "Mittelwert:Q",
-                        format=".2f"
+                        title=f"Mittelwert {selected_variable_thermal}",
+                        scale=alt.Scale(domain=[0, 6]),
+                        axis=alt.Axis(tickMinStep=1)
                     ),
-                    alt.Tooltip(
-                        "Median:Q",
-                        format=".0f"
+                    tooltip=[
+                        alt.Tooltip(
+                            f"{selected_environment_column}:N",
+                            title=selected_variable_environment
+                        ),
+                        alt.Tooltip(
+                            "Mittelwert:Q",
+                            format=".2f"
+                        ),
+                        alt.Tooltip(
+                            "Median:Q",
+                            format=".0f"
+                        ),
+                        alt.Tooltip(
+                            "Anzahl:Q"
+                        )
+                    ]
+                )
+            )
+
+            # Median: Punkte
+            median_points = (
+                alt.Chart(thermal_comfort_stats)
+                .mark_point(
+                    color="red",
+                    filled=True,
+                    size=80
+                )
+                .encode(
+                    x=alt.X(
+                        f"{selected_environment_column}:N",
+                        sort="-y"
                     ),
-                    alt.Tooltip(
-                        "Anzahl:Q"
+                    y=alt.Y("Median:Q")
+                )
+            )
+
+            chart = (
+                bars_comfort + median_points
+            ).properties(
+                height=500
+            )
+
+            st.altair_chart(
+                chart,
+                use_container_width=True
+            )
+
+            with col6:
+                if selected_variable_environment == "Klimatyp":
+                    st.info("""  
+                    - **Thermischer Komfort**: wird tendenziell positiv bewertet
+                    - Bewertung des thermischen Komforts **unterscheidet sich zwischen den Klimatypen stärker als zwischen den Hauptklimazonen**        
+
+                        - Subtropcial highland bewertet Komfort tendenziell am besten
+                        -  Monsoon-influenced hot-summer humid continental bewertet Komfort tendenziell am schlechtesten
+                    """
                     )
-                ]
+
+            with col6:
+            # Ergebnistabelle und Bedeutung der Ergebnisse
+                with st.expander(
+                        f"**📈 Details zu Ergebnissen Thermischer Komfort und {selected_variable_environment}**"
+                        ):
+                        st.dataframe(thermal_comfort_stats, use_container_width=True)
+                        if selected_variable_environment == "Klimazone":
+                            st.markdown("""
+                                ℹ️**Interpretation**
+                                        
+                                
+                                - Thermische Komfortbewertung **unterscheidet sich zwischen den Klimazonen**
+                                        
+                                    - **Dry, Temperate und Tropical**: bewerten thermischen Komfort **tendenziell positiv** (Median = 5)
+                                    - **Continental**: bewertet thermischen Komfort **tendenziell niedriger** (Median = 3)
+                            """
+                            )
+                        elif selected_variable_environment == "Klimatyp":
+                            st.markdown("""
+                                ℹ️**Interpretation**
+                                        
+                                
+                                - Bewertung des thermischen Komforts **unterscheidet sich zwischen den Klimatypen stärker** als zwischen den Hauptklimazonen 
+                            """
+                            )
+            st.markdown("<br>", unsafe_allow_html=True)
+    
+        elif selected_variable_thermal == "Thermisches Empfinden":
+            # Titel für Diagramm Thermisches Empfinden
+            st.subheader(f"Thermisches Empfinden und {selected_variable_environment}")
+    
+            plot_df = df.copy()
+    
+            plot_df = plot_df.dropna(
+                subset=[selected_environment_column]
             )
-        )
-
-        # Median: Punkte
-        median_points = (
-            alt.Chart(thermal_comfort_stats)
-            .mark_point(
-                color="red",
-                filled=True,
-                size=80
+    
+            # Berechnungen für Diagramm und Ergebnistabelle
+            thermal_sensation_stats = (
+                plot_df
+                .groupby(selected_environment_column)["thermal_sensation"]
+                .agg(
+                    Mittelwert="mean",
+                    Median="median",
+                    Anzahl="count"
+                )
+                .reset_index()
             )
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    sort="-y"
-                ),
-                y=alt.Y("Median:Q")
+    
+            thermal_sensation_stats["Mittelwert"] = thermal_sensation_stats["Mittelwert"].round(2)
+            thermal_sensation_stats["Median"] = thermal_sensation_stats["Median"].round(2)
+    
+            thermal_sensation_stats = thermal_sensation_stats.sort_values(
+                by="Mittelwert",
+                ascending=False
             )
-        )
+    
+            # Grafik erstellen
+            # Balken: Mittelwert
+            bars_sensation = (
+                alt.Chart(thermal_sensation_stats)
+                .mark_bar(color="steelblue")
+                .encode(
+                    x=alt.X(
+                        f"{selected_environment_column}:N",
+                        sort="-y",
+                        title=selected_variable_environment,
+                        axis=alt.Axis(labelAngle=-45)
+                    ),
+                    y=alt.Y(
+                        "Mittelwert:Q",
+                        title="Mittelwert Thermal Sensation",
+                        scale=alt.Scale(domain=[-3, 3]),
+                        axis=alt.Axis(tickMinStep=1)
+                    ),
+                    tooltip=[
+                        alt.Tooltip(
+                            f"{selected_environment_column}:N",
+                            title=selected_variable_environment
+                        ),
+                        alt.Tooltip(
+                            "Mittelwert:Q",
+                            format=".2f"
+                        ),
+                        alt.Tooltip(
+                            "Median:Q",
+                            format=".0f"
+                        ),
+                        alt.Tooltip(
+                            "Anzahl:Q"
+                        )
+                    ]
+                )
+            )
+    
+            # Median: Punkte
+            median_points = (
+                alt.Chart(thermal_sensation_stats)
+                .mark_point(
+                    color="red",
+                    filled=True,
+                    size=80
+                )
+                .encode(
+                    x=alt.X(
+                        f"{selected_environment_column}:N",
+                        sort="-y"
+                    ),
+                    y=alt.Y(
+                        "Median:Q"
+                    )
+                )
+            )
+    
+            chart = (
+                bars_sensation + median_points
+            ).properties(
+                height=500
+            )
+    
+            st.altair_chart(
+                chart,
+                use_container_width=True
+            )
+    
+            
+            # Ergebnistabelle und Bedeutung der Ergebnisse
+            with st.expander(f"**📈 Ergebnisse Thermisches Empfinden und {selected_variable_environment}**"):
+                st.dataframe(thermal_sensation_stats, use_container_width=True)
+                if selected_variable_environment == "Klimazone":
+                    st.markdown("""
+                        ℹ️**Interpretation**
+                                
+                        - In allen vier Klimazonen wird das thermische Empfinden **tendenziell** als **neutral** bewertet  (Median = 0)
+                        - Mittelwerte weisen auf eine geringe Tendenz zu einer wärmeren Wahrnehmung hin (Mittelwerte zwischen 0.07 und 0.24)
+                    """
+                    )
+                elif selected_variable_environment == "Klimatyp":
+                    st.markdown("""
+                        ℹ️**Interpretation**
+                                
+                        
+                        - Thermisches Empfinden wird auch bei Klimatypen **tendenziell** eher als **neutral** bewertet (meiste Medianwerte bei 0)
+                                
+                            ➝ mit leichter Tendenz zu wärmerer Bewertung (meiste Mittelwerte zwischen -0.2 und + 0.6) 
+                        - Aber es gibt **mehr Variation** als bei den Hauptklimazonen (Medianwerte zwischen -1 und 1)                   
+                    """
+                    )
 
-        chart = (
-            bars_comfort + median_points
-        ).properties(
-            height=500
-        )
+        elif selected_variable_thermal == "Thermische Präferenz":
+            # Diagramm Thermische Präferenz
+            # Titel für Diagramm Thermische Präferenz
+            st.subheader(f"Thermische Präferenz und {selected_variable_environment}")
 
-        st.altair_chart(
-            chart,
-            use_container_width=True
-        )
+            plot_df = df.copy()
 
-    with col6:
-        if selected_variable_environment == "Klimatyp":
-            st.info("""  
-            **Thermischer Komfort**: wird tendenziell positiv bewertet
-                    
+            # Unknown entfernen
+            plot_df = plot_df[plot_df["thermal_preference"] != "Unknown"]
 
-            ➡️ Subtropcial highland bewertet Komfort tendenziell am besten
-                    
+            mapping = {
+                "cooler": -1,
+                "no change": 0,
+                "warmer": 1
+            }
 
-            ➡️ Monsoon-influenced hot-summer humid continental bewertet Komfort tendenziell am schlechtesten
-            """
+            plot_df["thermal_preference_num"] = (
+                plot_df["thermal_preference"]
+                .map(mapping)
+            )
+        
+
+            # Berechnungen für Diagramm und Ergebnistabelle
+            thermal_preference_stats = (
+                plot_df
+                .groupby(selected_environment_column)["thermal_preference_num"]
+                .agg(
+                    Mittelwert="mean",
+                    Median="median",
+                    Anzahl="count"
+                )
+                .reset_index()
             )
 
-        with col6:
-        # Ergebnistabelle und Bedeutung der Ergebnisse
+            thermal_preference_stats["Mittelwert"] = thermal_preference_stats["Mittelwert"].round(2)
+            thermal_preference_stats["Median"] = thermal_preference_stats["Median"].round(2)
+
+            thermal_preference_stats = thermal_preference_stats.sort_values(
+                by="Mittelwert",
+                ascending=False
+            )
+
+            # Grafik erstellen
+            bars_preference = (
+                alt.Chart(thermal_preference_stats)
+                .mark_bar(color="steelblue")
+                .encode(
+                    x=alt.X(
+                        f"{selected_environment_column}:N",
+                        sort="-y",
+                        title=selected_variable_environment,
+                        axis=alt.Axis(labelAngle=-45)
+                    ),
+                    y=alt.Y(
+                        "Mittelwert:Q",
+                        title=f"Mittelwert Thermal Preference",
+                        scale=alt.Scale(domain=[-1, 1]),
+                        axis=alt.Axis(values=[-1, 0, 1])
+                    ),
+                    tooltip=[
+                        alt.Tooltip(
+                            f"{selected_environment_column}:N",
+                            title=selected_variable_environment
+                        ),
+                        alt.Tooltip(
+                            "Mittelwert:Q",
+                            format=".2f"
+                        ),
+                        alt.Tooltip(
+                            "Anzahl:Q"
+                        )
+                    ]
+                )
+                .properties(
+                    height=500
+                )
+            )
+
+            median_points = (
+                alt.Chart(thermal_preference_stats)
+                .mark_point(
+                    color="red",
+                    filled=True,
+                    size=80
+                )
+                .encode(
+                    x=alt.X(
+                        f"{selected_environment_column}:N",
+                        sort="-y"
+                    ),
+                    y=alt.Y(
+                        "Median:Q"
+                    )
+                )
+            )
+
+            chart = (
+                bars_preference + median_points
+            ).properties(
+                height=500
+            )
+
+            st.altair_chart(
+                chart,
+                use_container_width=True
+            )
+
+
+            # Ergebnistabelle und Bedeutung der Ergebnisse
             with st.expander(
-                    f"**📈 Ergebnisse Thermischer Komfort und {selected_variable_environment}**"
+                    f"**📈 Ergebnisse Thermische Präferenz und {selected_variable_environment}**"
                     ):
-                    st.dataframe(thermal_comfort_stats, use_container_width=True)
+                    st.dataframe(thermal_preference_stats, use_container_width=True)
                     if selected_variable_environment == "Klimazone":
                         st.markdown("""
                             ℹ️**Interpretation**
                                     
-                            
-                            - Thermische Komfortbewertung **unterscheidet sich zwischen den Klimazonen**
-                                    
-                                - **Dry, Temperate und Tropical**: bewerten thermischen Komfort **tendenziell positiv** (Median = 5)
-                                - **Continental**: bewertet thermischen Komfort **tendenziell niedriger** (Median = 3)
+                            - In allen vier Klimazonen wird die thermische Präferenz **tendenziell** mit **"keine Veränderung"** bewertet (Median = 0)
+                            - Geringe Unterschiede:
+                                
+                                - Continental zeigt minimale Präferenz für wärmere Bedingungen
+                                - Temperate, Dry und Tropical zeigen leichte Präferenz für kühlere Bedingungen
                         """
                         )
                     elif selected_variable_environment == "Klimatyp":
@@ -829,7 +1101,144 @@ with tab2:
                             ℹ️**Interpretation**
                                     
                             
-                            - Bewertung des thermischen Komforts **unterscheidet sich zwischen den Klimatypen stärker** als zwischen den Hauptklimazonen 
+                            - Thermische Präferenz wird auch bei Klimatypen **tendenziell** als **neutral** bewertet (Median fast überall = 0)
+                            - Aber es gibt **mehr Variation** als bei den Hauptklimazonen (Mittelwerte zwischen -0.5 und +0.35)                
+                        """
+                        )
+
+        elif selected_variable_thermal == "Thermische Akzeptanz":
+            # Diagramm Thermische Akzeptanz
+            # Titel für Diagramm Thermische Akzeptanz
+            st.subheader(f"Thermische Akzeptanz und {selected_variable_environment}")
+
+            # Dataframe nur mit gültigen Antworten
+            valid_df = df[
+                df["thermal_acceptability"].isin(
+                    ["acceptable", "unacceptable"]
+                )
+            ]
+
+            # Berechnungen für Diagramm und Ergebnistabelle
+            acceptability_pct = (
+                pd.crosstab(
+                    valid_df[selected_environment_column],
+                    valid_df["thermal_acceptability"],
+                    normalize="index"
+                ) * 100
+            ).reset_index()
+
+            # Dataframe mit Unknown erstellen
+            unknown_pct = (
+                pd.crosstab(
+                    df[selected_environment_column],
+                    df["thermal_acceptability"],
+                    normalize="index"
+                ) * 100
+            ).reset_index()[[selected_environment_column, "Unknown"]]
+
+            acceptability_pct = acceptability_pct.merge(
+                unknown_pct,
+                on=selected_environment_column,
+                how="left"
+            )
+
+            # Nach Anteil akzeptabler Werte absteigend sortieren
+            acceptability_pct = (
+                acceptability_pct
+                .sort_values(
+                    by="acceptable",
+                    ascending=False
+                )
+            )
+            order = acceptability_pct[selected_environment_column].tolist()
+
+            # Spaltenreihenfolge ändern: Unknown nach hinten
+            cols = [
+                selected_environment_column,
+                "acceptable",
+                "unacceptable",
+                "Unknown"
+            ]
+
+            acceptability_pct = acceptability_pct[cols]
+
+            # Diagramm vorbereiten
+            acceptability_long = acceptability_pct.drop(
+                columns=["Unknown"]
+            ).melt(
+                id_vars=[selected_environment_column],
+                var_name="Akzeptanz",
+                value_name="Prozent"
+            )
+
+            # Grafik
+            chart = (
+                alt.Chart(acceptability_long)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        f"{selected_environment_column}:N",
+                        title=selected_variable_environment,
+                        axis=alt.Axis(labelAngle=-45),
+                        sort=order,
+                    ),
+                    y=alt.Y(
+                        "Prozent:Q",
+                        title="Anteil (%)",
+                        scale=alt.Scale(domain=[0, 100])
+                    ),
+                    color=alt.Color(
+                        "Akzeptanz:N",
+                        title="Thermal Acceptability"
+                    ),
+                    tooltip=[
+                        selected_environment_column,
+                        "Akzeptanz",
+                        alt.Tooltip("Prozent:Q", format=".1f")
+                    ]
+                )
+                .properties(
+                    height=500
+                )
+            )
+
+            st.altair_chart(chart, use_container_width=True)
+
+            if selected_variable_environment == "Klimatyp":
+                st.info("""  
+                **Thermische Akzeptanz**: tendenziell überwiegt akzeptabel gegenüber unakzeptabel
+                        
+
+                ➡️ Monsoon-influenced temperate oceanic: höchster Anteil Bewertungen mit "acceptable"
+                        
+                ➡️ Tropical savanna: höchster Anteil Bewertungen mit "unacceptable"
+                """
+                )
+            
+            # Ergebnistabelle und Bedeutung der Ergebnisse
+            with st.expander(
+                    f"**📈 Ergebnisse Thermische Akzeptanz und {selected_variable_environment} in %**"
+                    ):
+                    st.dataframe(acceptability_pct, use_container_width=True)
+                    if selected_variable_environment == "Klimazone":
+                        st.markdown("""
+                            ℹ️**Interpretation**
+                                    
+                            - In allen vier Klimazonen ist die thermische Akzeptanz **bei den gültigen Antworten überwiegend hoch** (Anteil acceptable > Anteil unacceptable)
+                            - Unterschiede:
+                            
+                                - **Continental**: höchster Anteil von Bewertungen mit "acceptable" bei gültigen Antworten (82.18%)
+                                - **Tropical**: höchster Anteil von Bewertungen mit "unacceptable" bei gültigen Antworten (38.38%)
+                            - Ergebnisse für Klimazonen sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
+                        """
+                        )
+                    elif selected_variable_environment == "Klimatyp":
+                        st.markdown("""
+                            ℹ️**Interpretation**
+                                    
+                            
+                            - Thermische Akzeptanz **unterscheidet sich bei den gültigen Antworten zwischen den Klimatypen stärker** als zwischen den Hauptklimazonen 
+                            - Ergebnisse für Klimatypen sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
                         """
                         )
                     elif selected_variable_environment == "Region":
@@ -837,28 +1246,32 @@ with tab2:
                             ℹ️**Interpretation**
                                     
                             
-                            - Thermischer Komfort wird **in allen Regionen ähnlich** bewertet 
+                            - Thermische Akzeptanz **unterscheidet sich bei den gültigen Antworten leicht zwischen den Regionen**
                                     
-                                ➝ Mittelwerte unterscheiden sich nur gering 
-                            - Leicht niedrigere Bewertung des thermischen Komforts in Europa (Median = 4) im Vergleich zu anderen Kontinenten (Median = 5)
+                                - Americas, Asia und Europe: akzeptable Bewertungen überwiegen gegenüber unakzeptablen 
+                                - Oceania: Anteil unakzeptabler Bewertungen geringfügig höher als Anteil akzeptabler Bewertungen (51,58 % vs. 48,42 %)
+                                    
+                            - Americas: höchster Anteil von Bewertungen mit "acceptable" bei gültigen Antworten (84.49%)                    
+                            - Ergebnisse für Regionen sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
                         """
                         )
                     else:
                         st.markdown("""
                             ℹ️**Interpretation**
                                     
-                            
-                            - Bewertungen liegen **in allen Ländern bei einem mittleren bis höheren Komfort** (Medianwerte zwischen 3 und 5)
+                                
+                            - Thermische Akzeptanz **unterscheidet sich bei den gültigen Antworten zwischen den Ländern stärker** als zwischen den Regionen 
+                            - Unterschiede:
                                     
-                                ➝ insgesamt positive Komfortbewertung
-                            - **Unterschiede zwischen Ländern** mit gleichem Klimatyp ➝ zeigen, dass es regionale Unterschiede in der Wahrnehmung des thermischen Komforts gibt
-                        """
-                        )
-
-        st.markdown("<br>", unsafe_allow_html=True)
-    
-
-    
+                                - **Slovakia**: höchster Anteil von Bewertungen mit "acceptable" bei gültigen Antworten (92.73%)
+                                - **South Korea**: 
+                                        
+                                    - höchster Anteil von Bewertungen mit "unacceptable" bei gültigen Antworten 
+                                    - Anteil unakzeptabler Bewertungen höher als Anteil akzeptabler Bewertungen (66.12 % vs. 33.87 %)
+                                - Alle anderen Länder: Anteil akzeptabler Bewertungen höher als der Anteil unakzeptabler Bewertungen
+                            - Ergebnisse für Länder sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
+                    """
+                    )   
    
 
     # ---------------------------------------------------------
@@ -875,483 +1288,17 @@ with tab2:
     # ---------------------------------------------------------
     # 📊 7. Expander mit Hinweisen
     # ---------------------------------------------------------
-    with st.expander("Diagramme für thermisches Empfinden, thermische Präferenz und thermische Akzeptanz"):
+    #with st.expander("Diagramme für thermisches Empfinden, thermische Präferenz und thermische Akzeptanz"):
         # Diagramm Thermisches Empfinden
         
-        # Titel für Diagramm Thermisches Empfinden
-        st.subheader(f"Thermisches Empfinden und {selected_variable_environment}")
-
-        plot_df = df.copy()
-
-        plot_df = plot_df.dropna(
-            subset=[selected_environment_column]
-        )
-
-        # Berechnungen für Diagramm und Ergebnistabelle
-        thermal_sensation_stats = (
-            plot_df
-            .groupby(selected_environment_column)["thermal_sensation"]
-            .agg(
-                Mittelwert="mean",
-                Median="median",
-                Anzahl="count"
-            )
-            .reset_index()
-        )
-
-        thermal_sensation_stats["Mittelwert"] = thermal_sensation_stats["Mittelwert"].round(2)
-        thermal_sensation_stats["Median"] = thermal_sensation_stats["Median"].round(2)
-
-        thermal_sensation_stats = thermal_sensation_stats.sort_values(
-            by="Mittelwert",
-            ascending=False
-        )
-
-        # Grafik erstellen
-        # Balken: Mittelwert
-        bars_sensation = (
-            alt.Chart(thermal_sensation_stats)
-            .mark_bar(color="steelblue")
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    sort="-y",
-                    title=selected_variable_environment,
-                    axis=alt.Axis(labelAngle=-45)
-                ),
-                y=alt.Y(
-                    "Mittelwert:Q",
-                    title="Mittelwert Thermal Sensation",
-                    scale=alt.Scale(domain=[-3, 3]),
-                    axis=alt.Axis(tickMinStep=1)
-                ),
-                tooltip=[
-                    alt.Tooltip(
-                        f"{selected_environment_column}:N",
-                        title=selected_variable_environment
-                    ),
-                    alt.Tooltip(
-                        "Mittelwert:Q",
-                        format=".2f"
-                    ),
-                    alt.Tooltip(
-                        "Median:Q",
-                        format=".0f"
-                    ),
-                    alt.Tooltip(
-                        "Anzahl:Q"
-                    )
-                ]
-            )
-        )
-
-        # Median: Punkte
-        median_points = (
-            alt.Chart(thermal_sensation_stats)
-            .mark_point(
-                color="red",
-                filled=True,
-                size=80
-            )
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    sort="-y"
-                ),
-                y=alt.Y(
-                    "Median:Q"
-                )
-            )
-        )
-
-        chart = (
-            bars_sensation + median_points
-        ).properties(
-            height=500
-        )
-
-        st.altair_chart(
-            chart,
-            use_container_width=True
-        )
+        
 
         
-        # Ergebnistabelle und Bedeutung der Ergebnisse
-        with st.expander(f"**📈 Ergebnisse Thermisches Empfinden und {selected_variable_environment}**"):
-            st.dataframe(thermal_sensation_stats, use_container_width=True)
-            if selected_variable_environment == "Klimazone":
-                st.markdown("""
-                    ℹ️**Interpretation**
-                            
-                    - In allen vier Klimazonen wird das thermische Empfinden **tendenziell** als **neutral** bewertet  (Median = 0)
-                    - Mittelwerte weisen auf eine geringe Tendenz zu einer wärmeren Wahrnehmung hin (Mittelwerte zwischen 0.07 und 0.24)
-                """
-                )
-            elif selected_variable_environment == "Klimatyp":
-                st.markdown("""
-                    ℹ️**Interpretation**
-                            
-                    
-                    - Thermisches Empfinden wird auch bei Klimatypen **tendenziell** eher als **neutral** bewertet (meiste Medianwerte bei 0)
-                            
-                        ➝ mit leichter Tendenz zu wärmerer Bewertung (meiste Mittelwerte zwischen -0.2 und + 0.6) 
-                    - Aber es gibt **mehr Variation** als bei den Hauptklimazonen (Medianwerte zwischen -1 und 1)                   
-                """
-                )
-            elif selected_variable_environment == "Region":
-                st.markdown("""
-                    ℹ️**Interpretation**
-                            
-                    
-                    - Thermisches Empfinden wird **in allen Regionen** im Median als **neutral** bewertet (Median = 0)
-            
-                        ➝ leichte Tendenz zu wärmerer Bewertung (positive Mittelwerte)
-                    - **Africa**: stärkste Tendenz zu **wärmerer Bewertung** (Mittelwert = 0.69)
-                """
-                )
-            else:
-                st.markdown("""
-                    ℹ️**Interpretation**
-                            
-                    
-                    - Thermisches Empfinden wird **in meisten Ländern** im Median als **neutral** bewertet
-                    - Bewertungen zeigen aber **größere Variation** als bei Regionen (Medianwerte zwischen -1 und 2, Mittelwerte zwischen -1,04 und +2,14)
-                    - Abweichungen: 
-                            
 
-                        - Nigeria: stärkere Tendenz zu wärmerer Wahrnehmung (Median = 2)
-                        - Cyprus und Philippines: dagegen kühlere Wahrnehmung (Median = -1)
-                """
-                )
+    col1, col2 = st.columns([2, 0.2])
 
-        # Diagramm Thermische Präferenz
-        # Titel für Diagramm Thermische Präferenz
-        st.subheader(f"Thermische Präferenz und {selected_variable_environment}")
-
-        plot_df = df.copy()
-
-        # Unknown entfernen
-        plot_df = plot_df[plot_df["thermal_preference"] != "Unknown"]
-
-        mapping = {
-            "cooler": -1,
-            "no change": 0,
-            "warmer": 1
-        }
-
-        plot_df["thermal_preference_num"] = (
-            plot_df["thermal_preference"]
-            .map(mapping)
-        )
-    
-
-        # Berechnungen für Diagramm und Ergebnistabelle
-        thermal_preference_stats = (
-            plot_df
-            .groupby(selected_environment_column)["thermal_preference_num"]
-            .agg(
-                Mittelwert="mean",
-                Median="median",
-                Anzahl="count"
-            )
-            .reset_index()
-        )
-
-        thermal_preference_stats["Mittelwert"] = thermal_preference_stats["Mittelwert"].round(2)
-        thermal_preference_stats["Median"] = thermal_preference_stats["Median"].round(2)
-
-        thermal_preference_stats = thermal_preference_stats.sort_values(
-            by="Mittelwert",
-            ascending=False
-        )
-
-        # Grafik erstellen
-        bars_preference = (
-            alt.Chart(thermal_preference_stats)
-            .mark_bar(color="steelblue")
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    sort="-y",
-                    title=selected_variable_environment,
-                    axis=alt.Axis(labelAngle=-45)
-                ),
-                y=alt.Y(
-                    "Mittelwert:Q",
-                    title=f"Mittelwert Thermal Preference",
-                    scale=alt.Scale(domain=[-1, 1]),
-                    axis=alt.Axis(values=[-1, 0, 1])
-                ),
-                tooltip=[
-                    alt.Tooltip(
-                        f"{selected_environment_column}:N",
-                        title=selected_variable_environment
-                    ),
-                    alt.Tooltip(
-                        "Mittelwert:Q",
-                        format=".2f"
-                    ),
-                    alt.Tooltip(
-                        "Anzahl:Q"
-                    )
-                ]
-            )
-            .properties(
-                height=500
-            )
-        )
-
-        median_points = (
-            alt.Chart(thermal_preference_stats)
-            .mark_point(
-                color="red",
-                filled=True,
-                size=80
-            )
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    sort="-y"
-                ),
-                y=alt.Y(
-                    "Median:Q"
-                )
-            )
-        )
-
-        chart = (
-            bars_preference + median_points
-        ).properties(
-            height=500
-        )
-
-        st.altair_chart(
-            chart,
-            use_container_width=True
-        )
-
-
-        # Ergebnistabelle und Bedeutung der Ergebnisse
-        with st.expander(
-                f"**📈 Ergebnisse Thermische Präferenz und {selected_variable_environment}**"
-                ):
-                st.dataframe(thermal_preference_stats, use_container_width=True)
-                if selected_variable_environment == "Klimazone":
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        - In allen vier Klimazonen wird die thermische Präferenz **tendenziell** mit **"keine Veränderung"** bewertet (Median = 0)
-                        - Geringe Unterschiede:
-                            
-                            - Continental zeigt minimale Präferenz für wärmere Bedingungen
-                            - Temperate, Dry und Tropical zeigen leichte Präferenz für kühlere Bedingungen
-                    """
-                    )
-                elif selected_variable_environment == "Klimatyp":
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        
-                        - Thermische Präferenz wird auch bei Klimatypen **tendenziell** als **neutral** bewertet (Median fast überall = 0)
-                        - Aber es gibt **mehr Variation** als bei den Hauptklimazonen (Mittelwerte zwischen -0.5 und +0.35)                
-                    """
-                    )
-                elif selected_variable_environment == "Region":
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        
-                        - In meisten Regionen tendenziell **keine Änderung** gewünscht (Median = 0)
-                                
-                            ➝ allgemein leichte Tendenz zu Präferenz von kühleren Bedingungen (negative Mittelwerte)
-                        - **Africa**: typische Bewertung **kühlere Bedingungen** (Median =-1)  
-                            
-                            ➝ hat aber geringere Stichprobengröße
-                    
-                            
-                    """
-                    )
-                else:
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        - In meisten Ländern tendenziell **keine Änderung** gewünscht (Median = 0)
-                                
-                            ➝ allgemein überwiegend **leichte Tendenz** zu Präferenz von **kühleren Bedingungen** (überwiegend negative Mittelwerte)
-                        - **Abweichungen:**
-                                
-                            - Thailand, Denkmark, Greece und Nigeria: tendenziell Präferenz für **kühlere Bedingungen** (Median =-1) ➝ aber teilweise geringere Stichprobengröße
-                            - Singapore, Italy, China und Canada: leichte Tendenz zu wärmeren Bedingungen (positive Mittelwerte, aber Median = 0)
-                    """
-                )
-
-        # Diagramm Thermische Akzeptanz
-        # Titel für Diagramm Thermische Akzeptanz
-        st.subheader(f"Thermische Akzeptanz und {selected_variable_environment}")
-
-        # Dataframe nur mit gültigen Antworten
-        valid_df = df[
-            df["thermal_acceptability"].isin(
-                ["acceptable", "unacceptable"]
-            )
-        ]
-
-        # Berechnungen für Diagramm und Ergebnistabelle
-        acceptability_pct = (
-            pd.crosstab(
-                valid_df[selected_environment_column],
-                valid_df["thermal_acceptability"],
-                normalize="index"
-            ) * 100
-        ).reset_index()
-
-        # Dataframe mit Unknown erstellen
-        unknown_pct = (
-            pd.crosstab(
-                df[selected_environment_column],
-                df["thermal_acceptability"],
-                normalize="index"
-            ) * 100
-        ).reset_index()[[selected_environment_column, "Unknown"]]
-
-        acceptability_pct = acceptability_pct.merge(
-            unknown_pct,
-            on=selected_environment_column,
-            how="left"
-        )
-
-        # Nach Anteil akzeptabler Werte absteigend sortieren
-        acceptability_pct = (
-            acceptability_pct
-            .sort_values(
-                by="acceptable",
-                ascending=False
-            )
-        )
-        order = acceptability_pct[selected_environment_column].tolist()
-
-        # Spaltenreihenfolge ändern: Unknown nach hinten
-        cols = [
-            selected_environment_column,
-            "acceptable",
-            "unacceptable",
-            "Unknown"
-        ]
-
-        acceptability_pct = acceptability_pct[cols]
-
-        # Diagramm vorbereiten
-        acceptability_long = acceptability_pct.drop(
-            columns=["Unknown"]
-        ).melt(
-            id_vars=[selected_environment_column],
-            var_name="Akzeptanz",
-            value_name="Prozent"
-        )
-
-        # Grafik
-        chart = (
-            alt.Chart(acceptability_long)
-            .mark_bar()
-            .encode(
-                x=alt.X(
-                    f"{selected_environment_column}:N",
-                    title=selected_variable_environment,
-                    axis=alt.Axis(labelAngle=-45),
-                    sort=order,
-                ),
-                y=alt.Y(
-                    "Prozent:Q",
-                    title="Anteil (%)",
-                    scale=alt.Scale(domain=[0, 100])
-                ),
-                color=alt.Color(
-                    "Akzeptanz:N",
-                    title="Thermal Acceptability"
-                ),
-                tooltip=[
-                    selected_environment_column,
-                    "Akzeptanz",
-                    alt.Tooltip("Prozent:Q", format=".1f")
-                ]
-            )
-            .properties(
-                height=500
-            )
-        )
-
-        st.altair_chart(chart, use_container_width=True)
-
-        if selected_variable_environment == "Klimatyp":
-            st.info("""  
-            **Thermische Akzeptanz**: tendenziell überwiegt akzeptabel gegenüber unakzeptabel
-                    
-
-            ➡️ Monsoon-influenced temperate oceanic: höchster Anteil Bewertungen mit "acceptable"
-                    
-            ➡️ Tropical savanna: höchster Anteil Bewertungen mit "unacceptable"
-            """
-            )
-        
-        # Ergebnistabelle und Bedeutung der Ergebnisse
-        with st.expander(
-                f"**📈 Ergebnisse Thermische Akzeptanz und {selected_variable_environment} in %**"
-                ):
-                st.dataframe(acceptability_pct, use_container_width=True)
-                if selected_variable_environment == "Klimazone":
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        - In allen vier Klimazonen ist die thermische Akzeptanz **bei den gültigen Antworten überwiegend hoch** (Anteil acceptable > Anteil unacceptable)
-                        - Unterschiede:
-                        
-                            - **Continental**: höchster Anteil von Bewertungen mit "acceptable" bei gültigen Antworten (82.18%)
-                            - **Tropical**: höchster Anteil von Bewertungen mit "unacceptable" bei gültigen Antworten (38.38%)
-                        - Ergebnisse für Klimazonen sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
-                    """
-                    )
-                elif selected_variable_environment == "Klimatyp":
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        
-                        - Thermische Akzeptanz **unterscheidet sich bei den gültigen Antworten zwischen den Klimatypen stärker** als zwischen den Hauptklimazonen 
-                        - Ergebnisse für Klimatypen sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
-                    """
-                    )
-                elif selected_variable_environment == "Region":
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                        
-                        - Thermische Akzeptanz **unterscheidet sich bei den gültigen Antworten leicht zwischen den Regionen**
-                                
-                            - Americas, Asia und Europe: akzeptable Bewertungen überwiegen gegenüber unakzeptablen 
-                            - Oceania: Anteil unakzeptabler Bewertungen geringfügig höher als Anteil akzeptabler Bewertungen (51,58 % vs. 48,42 %)
-                                
-                        - Americas: höchster Anteil von Bewertungen mit "acceptable" bei gültigen Antworten (84.49%)                    
-                        - Ergebnisse für Regionen sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
-                    """
-                    )
-                else:
-                    st.markdown("""
-                        ℹ️**Interpretation**
-                                
-                            
-                        - Thermische Akzeptanz **unterscheidet sich bei den gültigen Antworten zwischen den Ländern stärker** als zwischen den Regionen 
-                        - Unterschiede:
-                                
-                            - **Slovakia**: höchster Anteil von Bewertungen mit "acceptable" bei gültigen Antworten (92.73%)
-                            - **South Korea**: 
-                                    
-                                - höchster Anteil von Bewertungen mit "unacceptable" bei gültigen Antworten 
-                                - Anteil unakzeptabler Bewertungen höher als Anteil akzeptabler Bewertungen (66.12 % vs. 33.87 %)
-                            - Alle anderen Länder: Anteil akzeptabler Bewertungen höher als der Anteil unakzeptabler Bewertungen
-                        - Ergebnisse für Länder sollten unter Berücksichtigung der teilweise hohen Anteile an Unknown-Antworten interpretiert werden
-                """
-                )   
-
-    with st.expander("ℹ️ Allgemeine Hinweise zum Lesen und zur Interpretation der Diagramme"):
+    with col1:
+        with st.expander("ℹ️ Allgemeine Hinweise zum Lesen und zur Interpretation der Diagramme"):
             st.markdown("""
             - **Hinweise zum Lesen der Diagramme:**
                         
@@ -1377,10 +1324,8 @@ with tab2:
     st.subheader("ℹ️ Zusammenfassung")
 
     st.info("""
-    - Ergebnisse zeigen, dass es **Unterschiede in der thermischen Wahrnehmung zwischen klimatischen/geografischen Gruppen** gibt ➝ erklären jedoch nur einen Teil der Variation der thermischen Wahrnehmung
-            
-    - **Relevanz für Ziel des Projekts:** Um ideale Bedingungen für Bürogebäude zu schaffen, sollten die klimatischen und geografischen Gegebenheiten berücksichtigt werden
-    
-    - **Mögliche nächste Untersuchungsschritte:** Untersuchung, was die Unterschiede zwischen den klimatischen/geografischen Gruppen erzeugt
+    - Ergebnisse zeigen, dass es **Unterschiede in der thermischen Wahrnehmung zwischen klimatischen Gruppen** gibt ➝ erklären jedoch nur einen Teil der Variation der thermischen Wahrnehmung
+    - Unterschiede in thermischer Wahrnehmung zeigen sich **deutlicher bei feinerer klimatischer Klassifikation** als bei übergeordneten Klimazonen
+    - **Relevanz für Ziel des Projekts:** Um ideale Bedingungen für Gebäude zu schaffen, sollten die klimatischen und geografischen Gegebenheiten berücksichtigt werden
     """
     )

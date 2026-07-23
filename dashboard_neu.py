@@ -433,7 +433,7 @@ with col_plot2:
     # ---------------------------------------------------------
     # 4. Grafik mit Anzahl-Labels
     # ---------------------------------------------------------
-    st.subheader(f"Anzahl Einträge je {selected_variable2}")
+    st.subheader(f"Anzahl Einträge {selected_variable2}")
 
     chart = (
         alt.Chart(selection_df)

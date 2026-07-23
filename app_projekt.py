@@ -17,11 +17,11 @@ pg = st.navigation(
         st.Page("introduction.py", title="Einführung", icon=":material/info:"),
         st.Page("datenbereinigung.py", title="Datenbereinigung", icon=":material/menu_book:"),
         st.Page("database.py", title="Datenbank", icon=":material/dashboard:"),
-        st.Page("dashboard_neu.py", title="Dashboard", icon=":material/analytics:"),
         st.Page("analytics_clima.py", title="Klima-Analyse", icon=":material/analytics:"),
         st.Page("analytics_dianela.py", title="Belüftungsart-Analyse", icon=":material/analytics:"),
-        st.Page("thermal_comfort_analysis.py", title="Thermisches Befinden-Analyse", icon=":material/analytics:"),
+        st.Page("thermal_comfort_analysis.py", title="Physikalische Parameter-Analyse", icon=":material/analytics:"),
         st.Page("ml_ashrae.py", title="Machine Learning Modelling", icon=":material/smart_toy:"),
+        st.Page("dashboard_neu.py", title="Dashboard", icon=":material/analytics:"),
         st.Page("zusammenfassung.py", title="Zusammenfassung", icon=":material/menu_book:")
     ]
 )

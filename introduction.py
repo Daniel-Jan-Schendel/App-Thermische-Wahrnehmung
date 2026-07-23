@@ -11,10 +11,11 @@ st.title("🏢 Thermische Wahrnehmung in Innenräumen")
 # -------------------------
 #       TABS
 # -------------------------
-tab1, tab2, tab3 = st.tabs([
-    "1️⃣ Wahl des Themas und Datenquelle",
-    "2️⃣ Team und Fragestellungen",
-    "3️⃣ Tools"
+tab1, tab2, tab3, tab4 = st.tabs([
+    "1️⃣ Wahl des Themas",
+    "2️⃣ Datenquelle",
+    "3️⃣ Team und Fragestellungen",
+    "4️⃣ Tools"
 ])
     
 
@@ -26,6 +27,30 @@ with tab1:
     st.subheader("Ein datengetriebener Ansatz für Komfort & Energieeffizienz")
 
     st.image("bild_intro.png", width=1300)
+
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    st.markdown(
+    """
+    #### ℹ️ **Thermische Wahrnehmung in Innenräumen ist ein wichtiges Thema** ➝ Es verbindet:
+    """
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""      
+                    
+        🧍 Menschen (Produktivität, Gesundheit)
+                
+
+        🌍 Klima
+                
+        
+        💻 Technologie
+                
+
+        ⚡ Energie (Effizienz, Nachhaltigkeit)
+        """
+        )
+        
 
     # # ---------------------------------------------------------
     # # THREE COLUMNS
@@ -126,6 +151,7 @@ with tab1:
 
     # st.markdown("<br><br>", unsafe_allow_html=True)
 
+with tab2:
     st.subheader("🧾 Datenquelle: ASHRAE Global Thermal Comfort Database v2.1")
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -154,27 +180,7 @@ with tab1:
 #    - Besteht aus zwei verschiedenen Datenbanken db 1.0 und db 2.0 ➝ Update der Datenbank mit neuen Einträgen -> db 2.1
 #    - Ein finaler, zusammengeführter Datensatz mit insgesamt **109.033** Einträgen
 
-    st.markdown(
-    """
-    #### ℹ️ **Thermische Wahrnehmung in Innenräumen ist ein wichtiges Thema** ➝ Es verbindet:
-    """
-    )
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("""      
-                  
-        🧍 Menschen (Produktivität, Gesundheit)
-                
-
-        🌍 Klima
-                
-        
-        💻 Technologie
-                
-
-        ⚡ Energie (Effizienz, Nachhaltigkeit)
-        """
-        )
-    
+   
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
@@ -223,7 +229,7 @@ with tab1:
 # -------------------------
 # TAB 3 - Team und Fragestellungen
 # -------------------------
-with tab2:
+with tab3:
     st.markdown("""
         #### 👥 Team und Fragestellungen von Datenanalyse und Machine Learning
     """
@@ -415,7 +421,7 @@ with tab2:
 # -------------------------
 # TAB 5 – Tools und Prozess
 # -------------------------
-with tab3:
+with tab4:
     # Tools
     st.markdown("""
         #### 🛠️ Data Science & Analytics Tools

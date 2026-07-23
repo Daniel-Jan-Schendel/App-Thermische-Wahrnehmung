@@ -2,8 +2,10 @@ import streamlit as st
 
 st.set_page_config(page_title="Projektzusammenfassung",layout="wide",initial_sidebar_state="expanded")
 
+st.title("📘 Zusammenfassung und Fazit")
+
 # Tabs erstellen
-tab_summary, tab_challenges = st.tabs(["📘 Summary", "⚠️ Herausforderungen, Learnings & Fazit"])
+tab_summary, tab_challenges = st.tabs(["Zusammenfassung", "⚠️ Herausforderungen, Learnings & Fazit"])
 
 
 
@@ -50,7 +52,7 @@ tab_summary, tab_challenges = st.tabs(["📘 Summary", "⚠️ Herausforderungen
 # -------------------------
 with tab_summary:
     st.markdown("""
-    ## 📘 Zusammenfassung des Abschlussprojekts
+    ## Zusammenfassung des Abschlussprojekts
     """
     )
 
@@ -118,6 +120,8 @@ with tab_challenges:
     2️⃣ **Heterogene Datenqualität**
     
     - ASHRAE‑Daten stammen aus vielen Ländern und Studien ➝ Unterschiedliche Messmethoden, fehlende Werte und uneinheitliche Skalen
+
+    ➝ Durch unterschiedliche Anzahlen in den einzelnen untersuchten Gruppen und viele fehlende Werte, sollten die Ergebnisse vorsichtig interpretiert werden
     - Gemeinsame Entscheidungsfindung im Umgang hiermit war wichtig
                 
     3️⃣ **Machine‑Learning‑Modellierung**

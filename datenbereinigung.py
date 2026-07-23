@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Datenbereinigung - ASHRAE", layout="wide",initial_sidebar_state="expanded")
 
-st.header("🔍 Inspektion und Bereinigung des Datensatzes")
+st.title("🔍 Inspektion und Bereinigung des Datensatzes")
 
 # Datensätze laden
 metadata = pd.read_csv("db_metadata.csv")
@@ -116,36 +116,6 @@ with tab2:
     st.info("""
     1. **Zusammenführen** der beiden Datensätze für Analysen in Python
     """) 
-    col1, col2, col3 = st.columns([1.5, 0.2, 2])
-    
-    with col1:
-        st.markdown("⚠️ **Herausforderung**: ")
-
-        st.markdown("""
-        - Sehr großer Datensatz mit **vielen erhobenen Werten**
-        """
-        )
-    
-    with col2:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(
-            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>➡️</h1>",
-            unsafe_allow_html=True,
-        )
-
-    with col3:
-        st.markdown("🛠️ **Umgang mit Herausforderung:**")
-        st.markdown(
-            """
-            - **Überblick verschaffen**
-
-                - Welche Werte sind für uns relevant? 
-                - Welche Fragestellungen wollen wir untersuchen?
-            """
-        )
-
-
-        st.markdown("<br>", unsafe_allow_html=True)
 
     # 2. Bereinigung Datentypen
     st.info("""
@@ -155,7 +125,7 @@ with tab2:
 
     # 3. Fehlende Werte
     st.info("""
-    3. 🔍 Übersichten zur Verteilung des Datensatzes und **Untersuchung der fehlenden Werte** 
+    3. 🔍 **Untersuchung der fehlenden Werte** 
     """)  
 
     col4, col5, col6 = st.columns([1.5, 0.2, 2])
@@ -209,42 +179,12 @@ with tab2:
     4. Bearbeitung der Spalten: 
     - **Umbenennung von Spalten** für besseres Verständnis
     - **Entfernen** von nicht benötigten Spalten 
-    - Erstellen einer neuen **Spalte mit vier Hauptklimazonen** 
+    - Erstellen einer neuen **Spalte mit vier Hauptklimazonen** ➝ für generelle Betrachtung bei Analyse
     """)  
-
-    col7, col8, col9 = st.columns([1.5, 0.2, 2])
-    
-    with col7:
-        st.markdown("⚠️ **Herausforderung**: ")
-        st.markdown("""
-        - 31 verschiedene **Klimata** ➜ unübersichtlich für Analysen
-        """
-        )
-                        
-    with col8:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(
-            "<h1 style='text-align: center; margin: 0; font-size: 20px;'>➡️</h1>",
-            unsafe_allow_html=True,
-        )
-
-    with col9:
-        st.markdown("🛠️ **Umgang mit Herausforderung:**")
-        st.markdown(
-        """
-        - Neue Spalte mit **4 Hauptklimazonen**:
-        
-            - Erstellen eines Mapping, um Klimata den Hauptklimazonen zuzuweisen
-            - Hierdurch bei Analyse auch eine generellere Betrachtung möglich
-        """
-        )
-        st.markdown("<br>", unsafe_allow_html=True)
 
     # 5. Standardisierung
     st.info("""
-    5. **Standardisierung**: Runden der Werte von thermal_comfort und thermal_sensation für klare Kategorien 
-    
-    ➝ wichtig für Machine Learning 
+    5. **Standardisierung**: Runden der Werte von thermischem Komfort und thermischem Empfinden für klare Kategorien 
     """)  
 
     col10, col11, col12 = st.columns([1.5, 0.2, 2])
