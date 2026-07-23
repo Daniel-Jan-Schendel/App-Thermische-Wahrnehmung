@@ -179,7 +179,7 @@ with tab2: # subjektive Komfortbewertungen
 
     st.subheader("🧘 Vorhersage thermische Wahrnehmung")
 
-    st.html(slide_point("Idee: Vorhersage der subjektiven thermischen Wahrnehmung<br> (<b>thermal comfort, thermal sensation, thermal preference</b>) mit Hilfe von Featuren wie,"))
+    st.html(slide_point("Idee: Vorhersage der subjektiven thermischen Wahrnehmung<br> (<b>Thermischer Komfort, Thermisches Empfinden, Thermische Präferenz</b>) mit Hilfe von Featuren wie,"))
     links, mitte, rechts = st.columns(3)
     with links:
         st.html(slide_smallpoint("Innentemperatur"))
