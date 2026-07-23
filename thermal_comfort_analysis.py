@@ -21,7 +21,7 @@ def load_data():
 df = load_data()
 
 
-st.title(" 📊 Analyse der Termische Befinden und Einflussgrößen")
+st.title(" 📊 Analyse der Termischen Wahrnehmnung und Einflussgrößen")
 
 # ---------------------------------------------------------
 # Tabs definieren

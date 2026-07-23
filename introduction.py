@@ -25,6 +25,8 @@ with tab1:
 
     st.subheader("Ein datengetriebener Ansatz für Komfort & Energieeffizienz")
 
+    st.image("bild_intro.png", width=True)
+
     # ---------------------------------------------------------
     # THREE COLUMNS
     # ---------------------------------------------------------
