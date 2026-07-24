@@ -65,7 +65,7 @@ with tab_summary:
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""  
-    Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH entwickelt und von einem
+    Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH entwickelt und von einem
     interdisziplinären Team durchgeführt:
 
     - Sabrina | Data Analyst
@@ -78,7 +78,7 @@ with tab_summary:
     
     ### 🔍 Inhalt des Projekts
     - **Datenbereinigung und Harmonisierung** der ASHRAE‑Messdaten  
-    - **Globale Analyse** von thermischen Komfortvariablen (Thermischen Komfort, thermisches Empfinden, thermische Präferenz und thermsiche Akzeptanz)  
+    - **Globale Analyse** von thermischen Komfortvariablen (Thermischen Komfort, thermisches Empfinden, thermische Präferenz und thermische Akzeptanz)  
     - **Untersuchung relevanter Einflussfaktoren** (Physikalische Parameter, Klima, Kühltechnik etc.)  
     - **Visualisierung thermischer Zusammenhänge**, z. B. Korrelationen 
     - **Machine‑Learning‑Modelle**
