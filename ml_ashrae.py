@@ -1832,26 +1832,24 @@ with tab7: # Fazit
 
     st.subheader("🏁Fazit")
 
-    links, rechts = st.columns([3,1])
+    links, rechts = st.columns([3,1], vertical_alignment='center')
     with links:
         st.html(slide_point("<b>Subjektive Werte</b> sind im Gegensatz zu physikalischen Werten <b>oft nur schwer über Machine Learning zu bestimmen</b>."))
 
-    links, rechts = st.columns([3,1])
-    with links:
+
         st.html(slide_point("Eine Vorhersage der Werte für das thermische Empfinden ist stark geprägt von <b>Label Noise</b> und liefert <b>deshalb keine ausreichend genaue Vorhersagen</b>."))
 
-    links, rechts = st.columns([3,1])
-    with links:
+
         st.html(slide_point("Die <b>Kühlsungsstrategie konnte recht gut</b> aus den physichen Daten <b>vorhergesagt werden</b>."))
 
-    links, rechts = st.columns([3,1])
-    with links:
+
         st.html(slide_point("Eine durchgeführte Regression zur <b>Bestimmung des Kleidungsisolationswerte</b> zeigte Ergebnisse mit einer <b>durchschnittlichen Genauigkeit von etwa 0.12 clo</b>, was in etwas einer Strickjacke oder einem dünnen Shirt entspricht."))
 
-    links, rechts = st.columns([3,1])
-    with links:
+
         st.html(slide_point("Die durchgeführten Anomaliebetrachtungen zeigen auffällige Werte die noch genauer zu betrachten wären."))
 
-        links, rechts = st.columns([3,1])
-    with links:
+
         st.html(slide_point(" Ein erster Versuch zeigt kleine Verbesserungen der Vorhersagen durch Ausfiltern der auffälligen Werte."))
+
+#    with rechts:
+#        st.image("ML/images/Fazit.png")
