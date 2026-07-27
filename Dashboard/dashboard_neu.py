@@ -9,15 +9,18 @@ import altair as alt
 import pydeck as pdk
 import math
 
-
+# ============================================================
+# Seitenkonfigurationen
+# ============================================================
 st.set_page_config(layout="wide")
 
 # ============================================================
-# LOAD DATA
+# Funktionen definieren
 # ============================================================
+# --- Laden der Daten ---
 @st.cache_data
 def load_data():
-    df = pd.read_csv("db_bereinigt_final.csv")
+    df = pd.read_csv("Daten/db_bereinigt_final.csv")
     # Save original BEFORE cleaning
     df_original = df.copy()
     df["operative_temperature"] = pd.to_numeric(df["operative_temperature"], errors="coerce")
@@ -27,53 +30,48 @@ def load_data():
 
 df, df_original = load_data()
 
-# Mehrfarbige Kreise erstellen
+# --- Mehrfarbige Kreise für Klimazonen und Klimatypen erstellen ---
 def create_pie_segments(df, climate_column, radius=1.5):
-
+    # Leere Liste für die Segmente
     segments = []
-
+    # Über jede Zeile des Dataframes iterieren
     for _, row in df.iterrows():
-
         climate_zones = row[climate_column]
-
+        # Anzahl der Klimazonen bestimmen
         n = len(climate_zones)
-
+        # Winkel pro Segment berechnen
         angle_step = 360 / n
 
+        # Über jede Klimazone iterieren
         for i, climate_zone in enumerate(climate_zones):
-
+            # Anfangswinkel berechnen
             start_angle = i * angle_step
+            # Endwinkel berechnen
             end_angle = (i + 1) * angle_step
+            # Polygon beginnen
+            polygon = [[row["longitude"], row["latitude"]]]
 
-            polygon = [
-                [row["longitude"], row["latitude"]]
-            ]
-
-            for angle in range(
-                int(start_angle),
-                int(end_angle) + 1,
-                5
-            ):
+            # Randpunkte erzeugen
+            for angle in range(int(start_angle), int(end_angle) + 1, 5):
+                # Radius festlegen
                 lat_radius = radius
+                # Radius für die Länge korrigieren
                 lon_radius = radius / math.cos(math.radians(row["latitude"]))
-
-                lon = (row["longitude"] + lon_radius * math.cos(math.radians(angle))
-                )
-
-                lat = (row["latitude"] + lat_radius * math.sin(math.radians(angle))
-                )
-
+                # Neue Koordinaten berechnen
+                lon = (row["longitude"] + lon_radius * math.cos(math.radians(angle)))
+                lat = (row["latitude"] + lat_radius * math.sin(math.radians(angle)))
+                # Punkte an Polygon anhängen
                 polygon.append([lon, lat])
 
-            polygon.append(
-                [row["longitude"], row["latitude"]]
-            )
+            # Polygon schließen
+            polygon.append([row["longitude"], row["latitude"]])
 
+            # Segment speichern
             segments.append({
                 "country": row["country"],
                 climate_column: climate_zone,
                 "polygon": polygon,
-                "color": color_mapping.get(climate_zone)
+                "color": climate_colors.get(climate_zone)
             })
 
     return pd.DataFrame(segments)
@@ -89,6 +87,9 @@ for key in [
     if key not in st.session_state:
         st.session_state[key] = "Alle"
 
+# ============================================================
+# Seitentitel
+# ============================================================
 st.title("Thermische Wahrnehmung – Interaktives Analyse‑Dashboard")
 
 # ============================================================
@@ -171,40 +172,6 @@ df_filtered = df_filtered[
 
 ##################################################################################################################
 ##################################################################################################################
-#st.markdown("## 📊 Überblick über die Datenquelle")
-
-# ---------------------------------------------------------
-# Grundlegende Kennzahlen
-# ---------------------------------------------------------
-# total_rows = len(df_original)
-
-# total_building_types = df_filtered["building_type"].nunique() if "building_type" in df_filtered else None
-# total_countries = df_filtered["country"].nunique() if "country" in df_filtered else None
-# total_regions = df_filtered["region"].nunique() if "region" in df_filtered else None
-# total_cities = df_filtered["city"].nunique() if "city" in df_filtered else None
-
-# # Klima-Informationen
-# total_climates = df_filtered["climate"].nunique() if "climate" in df_filtered else None
-# total_climate_zones = df_filtered["climate_zone"].nunique() if "climate_zone" in df_filtered else None
-
-# # Jahreszeiten (nur Anzahl)
-# if "season" in df_filtered.columns:
-#     total_seasons = df_filtered["season"].dropna().nunique()
-# else:
-#     total_seasons = None
-
-# # Fehlwerte
-# missing_total = df_filtered.isna().sum().sum()
-# missing_percent = (missing_total / df_filtered.size) * 100
-
-# # Jahr-Spalte → Zeitraum-Range
-# if "year" in df_filtered.columns:
-#     df_filtered["year"] = pd.to_numeric(df_filtered["year"], errors="coerce")
-#     min_year = int(df_filtered["year"].min())
-#     max_year = int(df_filtered["year"].max())
-#     year_range = f"{min_year} – {max_year}"
-# else:
-#     year_range = "–"
 
 total_rows = len(df_original)
 
@@ -239,33 +206,34 @@ comfort_count = df_filtered[available_comfort_vars].dropna().shape[0]
 
 st.markdown("---")
 
-# ---------------------------------------------------------
+# ============================================================
 # KPI Cards – 5 pro Reihe
-# ---------------------------------------------------------
+# ============================================================
 col1, col2, col3, col4, col5 = st.columns(5)
-
+# --- Spalte 1 ---
 with col1:
     st.metric("📦 Einträge", f"{total_rows:,}")
     st.metric("⚠️ Fehlende Werte (%)", f"{missing_percent:.2f}%")
 
-
+# --- Spalte 2 ---
 with col2:
     st.metric("📍 Regionen", f"{total_regions:,}" if total_regions else "–")
     st.metric("🌡️ Klimatypen", f"{total_climates:,}" if total_climates else "–")
 
+# --- Spalte 3 ---
 with col3:
     st.metric("🌍 Länder", f"{total_countries:,}" if total_countries else "–")
-
     st.metric("🗺️ Klimazonen", f"{total_climate_zones:,}" if total_climate_zones else "–")
 
+# --- Spalte 4 ---
 with col4:
     st.metric("🏙️ Städte", f"{total_cities:,}" if total_cities else "–")
     st.metric("🍂 Jahreszeiten", f"{total_seasons:,}" if total_seasons else "–")
 
+# --- Spalte 5 ---
 with col5:
     st.metric("🗓️ Zeitraum", f"{year_range}" if year_range else "–")
     st.metric("🏢 Gebäude Typen", f"{total_building_types:,}" if total_building_types else "–")
-
 
 st.markdown("---")
 
@@ -280,19 +248,23 @@ y = variables[y_label]
 chart_type = st.sidebar.radio("Diagrammtyp", ["Scatter", "Linie"], index=0)
 
 
-#############################################################
-###############################################################
+
+#########################################################################################################
+#########################################################################################################
 
 
 # ---------------------------------------------------------
-# 4. Hauptbereich: X/Y-Plot
+# Hauptbereich: X/Y-Plot
 # ---------------------------------------------------------
-
+# --- Überschrift ---
 st.subheader("📊 Verteilungen nach Kategorie")
 
+# ---------------------------------------------------------
+# Spalten
+# ---------------------------------------------------------
 col1, spacer, col2 = st.columns([1, 0.2, 1])
 # ---------------------------------------------------------
-# 1. Kategorien definieren
+# Kategorien definieren für Filter Variable 1
 # ---------------------------------------------------------
 mapping_filter1 = {
     "Region": "region",
@@ -305,10 +277,11 @@ mapping_filter1 = {
     "Gender": "gender"
 }
 
+# ---------------------------------------------------------
+# Spalte 1: Filter Variable 1
+# ---------------------------------------------------------
 with col1:
-    # ---------------------------------------------------------
-    # 2. Variable auswählen
-    # ---------------------------------------------------------
+    # --- Variable auswählen ---
     selected_variable1 = st.selectbox(
         "Variable auswählen",
         list(mapping_filter1.keys()),
@@ -318,7 +291,7 @@ with col1:
 column1 = mapping_filter1[selected_variable1]
 
 # ---------------------------------------------------------
-# 1. Kategorien definieren
+# Kategorien definieren für Filter Variable 2
 # ---------------------------------------------------------
 mapping_filter2 = {
     "Thermischer Komfort": "thermal_comfort",
@@ -327,11 +300,11 @@ mapping_filter2 = {
     "Thermische Akzeptanz": "thermal_acceptability"
 }
 
-
+# ---------------------------------------------------------
+# Spalte 2: Filter Variable 2
+# ---------------------------------------------------------
 with col2:
-    # ---------------------------------------------------------
-    # 2. Variable auswählen
-    # ---------------------------------------------------------
+    # --- Variable auswählen ---
     selected_variable2 = st.selectbox(
         "Thermische Variable auswählen",
         list(mapping_filter2.keys()),
@@ -340,14 +313,24 @@ with col2:
 
 column2 = mapping_filter2[selected_variable2]
 
-################################################################################
+
+#########################################################################################################
+#########################################################################################################
+
+# ---------------------------------------------------------
+# Hauptbereich: Grafiken
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
+# Spalten
+# ---------------------------------------------------------
 col_plot1, spacer, col_plot2 = st.columns([2, 0.2, 2])
 col_map, col3 = st.columns([2, 0.2])
 
-
+# ---------------------------------------------------------
+# Spalte col_plot1 
+# ---------------------------------------------------------
 with col_plot1:  
-   
-
     # ---------------------------------------------------------
     # 3. Berechnungen basierend auf Sidebar-gefilterten Daten
     # ---------------------------------------------------------
@@ -365,10 +348,10 @@ with col_plot1:
     # ---------------------------------------------------------
     # 4. Grafik mit Anzahl-Labels
     # ---------------------------------------------------------
-
-
+    # --- Titel ---
     st.subheader(f"Anzahl Einträge je {selected_variable1}")
 
+    # --- Grafik ---
     chart = (
         alt.Chart(selection_df)
         .mark_bar(color="#4C72B0")
@@ -414,9 +397,10 @@ with col_plot1:
 
     st.altair_chart(chart + labels, use_container_width=True)
 
+# ---------------------------------------------------------
+# Spalte col_plot2 
+# ---------------------------------------------------------
 with col_plot2:
-    
-
     # ---------------------------------------------------------
     # 3. Berechnungen basierend auf Sidebar-gefilterten Daten
     # ---------------------------------------------------------
@@ -433,8 +417,10 @@ with col_plot2:
     # ---------------------------------------------------------
     # 4. Grafik mit Anzahl-Labels
     # ---------------------------------------------------------
+    # ---  Titel ---
     st.subheader(f"Anzahl Einträge {selected_variable2}")
 
+    # --- Grafik ---
     chart = (
         alt.Chart(selection_df)
         .mark_bar(color="#4C72B0")
@@ -465,9 +451,16 @@ with col_plot2:
 
     st.altair_chart(chart + labels, use_container_width=True)
 
+# ---------------------------------------------------------
+# Spalte col_map 
+# ---------------------------------------------------------
 with col_map:
+    # --- Titel ---
     st.subheader("🗺️ Geografische Verteilung der Messdaten")
 
+    # ---------------------------------------------------------
+    # Grafik für Variablen ohne Klimazone oder Klimatyp
+    # ---------------------------------------------------------
     if selected_variable1 not in ["Klimazone", "Klimatyp"]:
         view_state = pdk.ViewState(
             latitude=df_filtered["latitude"].mean() if len(df_filtered) else 0,
@@ -508,22 +501,21 @@ with col_map:
         )
 
     # ---------------------------------------------------------
-    # 🔎 3. Filter anwenden
+    # Grafik für Variablen Klimazone und Klimatyp 
     # ---------------------------------------------------------
     elif selected_variable1 in ["Klimazone", "Klimatyp"]:
 
-        # Klima/Klimazone anwenden
+        # ---------------------------------------------------------
+        # Grafik für Variablen Klimazone und Klimatyp erstellen
+        # ---------------------------------------------------------
+        # --- Filter Klima/Klimazone anwenden ---
         if selected_variable1 == "Klimatyp":
             selected_climate_column = "climate"
         else:
             selected_climate_column = "climate_zone"
 
-
-        # ---------------------------------------------------------
-        # 📌 4. Kombinationen von Ländern und Klimazonen erstellen
-        # ---------------------------------------------------------
-        # Land-Klima-Kombinationen erstellen
-
+        # --- Filter-Auswahl Klimatyp ---
+        # Land-Klimatyp-Kombinationen erstellen
         country_climate = (
             df_original[["country", "latitude", "longitude", selected_climate_column]]
             .groupby("country")
@@ -534,7 +526,6 @@ with col_map:
             })
             .reset_index()
         )
-
         # Klimanamen bereinigen
         country_climate[selected_climate_column] = (
             country_climate[selected_climate_column]
@@ -547,6 +538,7 @@ with col_map:
             )
         )
 
+        # --- Filter-Auswahl Klimazone ---
         # Land-Klimazonen-Kombinationen erstellen
         country_climate_zone = (
             df_original[["country", "latitude", "longitude", selected_climate_column]]
@@ -558,7 +550,6 @@ with col_map:
             })
             .reset_index()
         )
-
         # Klimanamen bereinigen
         country_climate_zone[selected_climate_column] = (
             country_climate_zone[selected_climate_column]
@@ -571,11 +562,11 @@ with col_map:
             )
         )
 
-        # Farben für Klimazonen vergeben
+        # --- Farben festlegen ---
+        # Farben für Klimatypen vergeben
         if selected_climate_column == "climate":
-
             color_mapping = {
-            # Tropische Klimate
+            # Tropical
             "wet equatorial": [220, 80, 120, 180],
             "tropical rainforest": [200, 60, 120, 180],
             "tropical monsoon": [230, 100, 140, 180],
@@ -584,7 +575,7 @@ with col_map:
             "tropical dry savanna": [210, 90, 140, 180],
             "tropical": [220, 120, 160, 180],
 
-            # Aride / trockene Klimate
+            # Dry
             "hot arid": [245, 210, 80, 180],
             "desert (hot arid)": [240, 190, 60, 180],
             "hot desert": [230, 170, 40, 180],
@@ -594,13 +585,13 @@ with col_map:
             "cold semi-arid": [190, 170, 100, 180],
             "subtropical hot and dry": [250, 180, 50, 180],
 
-            # Mediterrane Klimate
+            # Mediteranian
             "mediterranean": [180, 160, 70, 180],
             "hot-summer mediterranean": [200, 150, 60, 180],
             "warm-summer mediterranean": [170, 150, 80, 180],
             "cool-summer mediterranean": [140, 160, 100, 180],
 
-            # Gemäßigte Klimate
+            # Temperate
             "temperate": [80, 180, 90, 180],
             "humid subtropical": [60, 170, 100, 180],
             "temperature marine": [60, 150, 120, 180],
@@ -608,19 +599,19 @@ with col_map:
             "west coast marine": [50, 130, 190, 180],
             "subtropical highland": [100, 190, 100, 180],
 
-            # Kontinentale Klimate
+            # Continental
             "humid midlatitude": [120, 100, 200, 180],
             "warm-summer humid continental": [140, 100, 210, 180],
             "monsoon-influenced humid subtropical": [160, 120, 220, 180],
             "monsoon-influenced temperate oceanic": [130, 150, 220, 180],
             "monsoon-influenced hot-summer humid continental": [150, 90, 190, 180],
 
-            # Subarktisches Klima
+            # Subarctic
             "continental subarctic": [80, 90, 150, 180]
         }
-
+            
+        # Farben für Kliamzonen erstellen
         else:
-
             color_mapping = {
                 "Tropical": [220, 120, 120, 180],
                 "Dry": [245, 210, 80, 180],
@@ -629,9 +620,11 @@ with col_map:
             }
 
 
-        
+        # ---------------------------------------------------------
+        # Grafik für Variablen Klimazone und Klimatyp ausgeben
+        # ---------------------------------------------------------
+        # --- Grafik für Klimatypen ---
         if selected_climate_column == "climate":
-
             # Mehrfarbige Kreise für einzelne Klimata
             pie_data_climate = create_pie_segments(
                 country_climate,
@@ -647,7 +640,7 @@ with col_map:
                 stroked=False
             )
 
-
+        # --- Grafik für Klimazonen ---
         else:
             # Mehrfarbige Kreise für Klimazonen
             pie_data_climate_zone = create_pie_segments(
@@ -664,29 +657,23 @@ with col_map:
                 stroked=False
             )
 
-           
-
-        
-
-
         # ---------------------------------------------------------
-        # 🧭 7. Karte rendern (ohne Mapbox-Key!)
+        # Karte rendern (ohne Mapbox-Key!)
         # ---------------------------------------------------------
+        # --- Spalten ---
         col1, spacer, col2 = st.columns([3, 0.2, 0.5])
-        
+
+        # --- Spalte 1: Karte ---
         with col1:
-             # ---------------------------------------------------------
-            # 🌐 6. Kartenansicht definieren
-            # ---------------------------------------------------------
-            # Tooltip-Design
+            # --- Kartenansicht definieren ---
+            # Variable Klimatyp
             if selected_variable1 == "Klimatyp":
                 view_state_climate = pdk.ViewState(
                     latitude=country_climate["latitude"].mean() if len(country_climate) else 0,
                     longitude=country_climate["longitude"].mean() if len(country_climate) else 0,
                     zoom=1
                 )
-
-
+                # Tooltip-Design
                 tooltip_climate = {
                     "html": """
                     <b>{country}</b><br/>
@@ -696,14 +683,14 @@ with col_map:
                         "color": "white"
                     }
                 }
-
+            # Variable Klimazone
             else:
                 view_state_climate_zone = pdk.ViewState(
                     latitude=country_climate_zone["latitude"].mean() if len(country_climate_zone) else 0,
                     longitude=country_climate_zone["longitude"].mean() if len(country_climate_zone) else 0,
                     zoom=1
                 )
-
+                # Tooltip-Design
                 tooltip_climate_zone = {
                     "html": """
                     <b>{country}</b><br/>
@@ -714,6 +701,8 @@ with col_map:
                     }
                 }
 
+            # --- Ausgabe der Karte ---
+            # Variable Klimatyp
             if selected_variable1 == "Klimatyp":
                 st.pydeck_chart(
                     pdk.Deck(
@@ -723,7 +712,7 @@ with col_map:
                         map_style=None
                     )
                 )
-
+            # Variable Klimazone
             else:
                 st.pydeck_chart(
                     pdk.Deck(
@@ -736,26 +725,28 @@ with col_map:
 
         st.markdown("<br><br>", unsafe_allow_html=True)
 
+        # --- Spalte 2: Legende hinzufügen ---
         with col2:
-                    # Legende hinzufügen
-                    st.markdown("""
-                    **Klimazonen:**
-        
-                    🔴 Tropical  
-                    🟡 Dry  
-                    🟢 Temperate  
-                    🟣 Continental
-                    """)
+            st.markdown("""
+            **Klimazonen:**
+
+            🔴 Tropical  
+            🟡 Dry  
+            🟢 Temperate  
+            🟣 Continental
+            """)
 
         # ---------------------------------------------------------
-        # 🧭 8. Zuordnung Klimata zu Klimazonen
+        # Zuordnung Klimata zu Klimazonen
         # ---------------------------------------------------------
+        # --- Expander mit Zuordnungen und Weiteren Informationen---
         with st.expander("""ℹ️**Zuordnung von Klimatypen, Regionen und Ländern zu den Hauptklimazonen**"""):
-
+            # Zuordnungen 
             for zone in sorted(df["climate_zone"].dropna().unique()):
+                # --- Continental ---
                 if zone == "Continental":
+                    # Expander zu Continental
                     with st.expander(f"🟣 {zone}"):
-
                         zone_df = (
                             df[df["climate_zone"] == zone]
                             [["climate", "region", "country"]]
@@ -764,15 +755,17 @@ with col_map:
                                 by=["climate", "region", "country"]
                             )
                         )
-
+                        # Dataframe
                         st.dataframe(
                             zone_df,
                             use_container_width=True,
                             hide_index=True
                         )
+
+                # --- Dry ---
                 elif zone == "Dry":
+                    # Expander zu Dry
                     with st.expander(f"🟡 {zone}"):
-
                         zone_df = (
                             df[df["climate_zone"] == zone]
                             [["climate", "region", "country"]]
@@ -781,15 +774,17 @@ with col_map:
                                 by=["climate", "region", "country"]
                             )
                         )
-
+                        # Dataframe
                         st.dataframe(
                             zone_df,
                             use_container_width=True,
                             hide_index=True
                         )
+
+                # --- Temperate ---
                 elif zone == "Temperate":
+                    # Expander zu Temperate
                     with st.expander(f"🟢 {zone}"):
-
                         zone_df = (
                             df[df["climate_zone"] == zone]
                             [["climate", "region", "country"]]
@@ -798,15 +793,17 @@ with col_map:
                                 by=["climate", "region", "country"]
                             )
                         )
-
+                        # Dataframe
                         st.dataframe(
                             zone_df,
                             use_container_width=True,
                             hide_index=True
                         )
-                else:
-                    with st.expander(f"🔴 {zone}"):
 
+                # --- Tropical ---
+                else:
+                    # --- Expander zu Zuordnung ---
+                    with st.expander(f"🔴 {zone}"):
                         zone_df = (
                             df[df["climate_zone"] == zone]
                             [["climate", "region", "country"]]
@@ -815,7 +812,7 @@ with col_map:
                                 by=["climate", "region", "country"]
                             )
                         )
-
+                        # Dataframe
                         st.dataframe(
                             zone_df,
                             use_container_width=True,

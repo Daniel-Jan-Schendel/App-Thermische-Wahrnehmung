@@ -1,15 +1,21 @@
 import streamlit as st
 
+# ---------------------------------------------------------
+# Seitenkonfigurationen
+# --------------------------------------------------------- 
 st.set_page_config(
     page_title="Introduction",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# ---------------------------------------------------------
+# Seitentitel
+# ---------------------------------------------------------
 st.title("🏢 Thermische Wahrnehmung in Innenräumen")
 
 # -------------------------
-#       TABS
+# Tabs definieren
 # -------------------------
 tab1, tab2, tab3, tab4 = st.tabs([
     "1️⃣ Wahl des Themas",
@@ -17,19 +23,22 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "3️⃣ Team und Fragestellungen",
     "4️⃣ Tools"
 ])
-    
 
-# -------------------------
-# TAB 2 – Wahl des Themas
-# -------------------------
+#########################################################################################################
+#########################################################################################################
+
+# ---------------------------------------------------------
+# TAB 1 – Wahl des Themas
+# ---------------------------------------------------------
 with tab1:
-
+    # --- Titel ---
     st.subheader("Ein datengetriebener Ansatz für Komfort & Energieeffizienz")
 
+    # --- Bild zu Auftrag, Ansatz und Ziel ---
     st.image("bild_intro.png", width=1300)
-
     st.markdown("<br><br>", unsafe_allow_html=True)
 
+    # --- Text zu Themenwahl ---
     st.markdown(
     """
     #### ℹ️ **Thermische Wahrnehmung in Innenräumen ist ein wichtiges Thema** ➝ Es verbindet:
@@ -50,114 +59,23 @@ with tab1:
         ⚡ Energie (Effizienz, Nachhaltigkeit)
         """
         )
-        
 
-    # # ---------------------------------------------------------
-    # # THREE COLUMNS
-    # # ---------------------------------------------------------
+#########################################################################################################
+#########################################################################################################
 
-    # col1, col2, col3 = st.columns(3)
-
-    # # ---------------------------------------------------------
-    # # CARD STYLE (Streamlit-safe)
-    # # ---------------------------------------------------------
-
-    # card_style_blue = """
-    #     <div style="
-    #         background-color:#E3F2FD;
-    #         padding:20px;
-    #         border-radius:12px;
-    #         text-align:center;
-    #         border:1px solid #90CAF9;">
-    # """
-    # card_style_end = "</div>"
-
-    # card_style_green = """
-    #     <div style="
-    #         background-color:#E8F5E9;
-    #         padding:20px;
-    #         border-radius:12px;
-    #         text-align:center;
-    #         border:1px solid #A5D6A7;">
-    # """
-    # card_style_end = "</div>"
-
-    # card_style_orange = """
-    #     <div style="
-    #         background-color:#FFF3E0;
-    #         padding:20px;
-    #         border-radius:12px;
-    #         text-align:center;
-    #         border:1px solid #FFCC80;">
-    # """
-    # card_style_end = "</div>"
-
-    # # ---------------------------------------------------------
-    # # COLUMN 1 – Unser Auftrag
-    # # ---------------------------------------------------------
-    # with col1:
-    #     st.markdown(
-    #     card_style_blue
-    #     + """
-    #     <h3>🏢 Unser Auftrag</h3>
-    #     <p>
-    #         Ein fiktives führendes Unternehmen möchte prüfen,<br>
-    #         ob auf Basis von Daten ein intelligentes Gebäudesystem entwickelt werden kann,<br>
-    #         das den Komfort der Nutzer erhöht und<br>
-    #         gleichzeitig energieeffizient ist.
-    #     </p>
-    #     """
-    #     + card_style_end,
-    #     unsafe_allow_html=True)
-
-    # # ---------------------------------------------------------
-    # # COLUMN 2 – Unser Ansatz
-    # # ---------------------------------------------------------
-    # with col2:
-    #     st.markdown(
-    #     card_style_green
-    #     + """
-    #     <h3>🔍 Unser Ansatz </h3>
-    #     <p>
-    #     Wir analysieren die <strong>ASHRAE Global  
-    #     Thermal Comfort Database II</strong>, eine der  
-    #     weltweit größten Datenquellen zu  
-    #     thermischem Befinden in Innenräumen in 
-    #     verschiedenen Umgebungen.
-    #     </p>
-    #     """
-    #     + card_style_end,
-    #     unsafe_allow_html=True)
-
-
-    # # ---------------------------------------------------------
-    # # COLUMN 3 – Unser Ziel
-    # # ---------------------------------------------------------
-    # with col3:
-    #     st.markdown(
-    #     card_style_orange
-    #     + """
-    #     <h3>🎯 Unser Ziel  </h3>
-    #     <p>
-    #     Datenbasierte Erkenntnisse liefern, die  
-    #     als Grundlage für die Entwicklung eines  
-    #     <strong>intelligenten, adaptiven und nachhaltigen  
-    #     Gebäudesystems</strong> dienen können.
-    #     </p>
-    #     """
-    #     + card_style_end,
-    #     unsafe_allow_html=True)
-        
-
-    # st.markdown("<br><br>", unsafe_allow_html=True)
-
+# ---------------------------------------------------------
+# TAB 2 – Datenquelle und wichtige Variablen
+# ---------------------------------------------------------
 with tab2:
+    # ---------------------------------------------------------
+    # Datenquelle 
+    # ---------------------------------------------------------
+    # --- Titel ---
     st.subheader("🧾 Datenquelle: ASHRAE Global Thermal Comfort Database v2.1")
-
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # --- Text mit Informationen zu Datenquelle ---
     st.write("Erstellt von der *American Society of Heating, Refrigerating and Air‑Conditioning Engineers*")
-
     st.markdown(
     """
     #### **🔗 Dataset Source:**
@@ -166,6 +84,7 @@ with tab2:
     """
     )
 
+    # --- Expander mit weiteren Informationen zur Datenquelle ---
     with st.expander("Weitere Informationen zur Datenquelle"):
         st.markdown(
             """
@@ -175,24 +94,29 @@ with tab2:
             - Für dieses Projekt wurde der **originale Datensatz von ASHRAE** genutzt
         """
         )
-    st.markdown("<br><br>", unsafe_allow_html=True)
-
-#    - Besteht aus zwei verschiedenen Datenbanken db 1.0 und db 2.0 ➝ Update der Datenbank mit neuen Einträgen -> db 2.1
-#    - Ein finaler, zusammengeführter Datensatz mit insgesamt **109.033** Einträgen
-
-   
 
     st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
 
+    # ---------------------------------------------------------
+    # Wichtige Variablen
+    # ---------------------------------------------------------
+    # --- Titel ---
     st.markdown("""
         #### 🎯 Wichtige Variablen für Untersuchung der thermischen Wahrnehmung
     """
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # ---------------------------------------------------------
+    # Spalten
+    # ---------------------------------------------------------
     col1, spacer, col2 = st.columns([2, 0.5, 2])
     col3, spacer, col4 = st.columns([2, 0.5, 2])
 
+    # ---------------------------------------------------------
+    # Spalte 1: Thermischer Komfort
+    # ---------------------------------------------------------
     with col1:
         st.markdown("""
             ##### 1. Thermischer Komfort 
@@ -200,7 +124,9 @@ with tab2:
                 `  1             2            3           4           5            6   `
         """)
         st.markdown("<br>", unsafe_allow_html=True)
-
+    # ---------------------------------------------------------
+    # Spalte 2: Thermisches Empfinden
+    # ---------------------------------------------------------
     with col2:
         st.markdown("""
         ##### 2. Thermisches Empfinden
@@ -208,7 +134,9 @@ with tab2:
         `-3    -2    -1    0    +1    +2    +3 `
         """)
         st.markdown("<br>", unsafe_allow_html=True)
-    
+    # ---------------------------------------------------------
+    # Spalte 3: Thermische Akzeptanz
+    # ---------------------------------------------------------
     with col3:
         st.markdown("""
         ##### 3. Thermische Akzeptanz
@@ -216,7 +144,9 @@ with tab2:
         ○ Akzeptabel  
         """)
         st.markdown("<br>", unsafe_allow_html=True)
-
+    # ---------------------------------------------------------
+    # Spalte 4: Thermische Präferenz
+    # ---------------------------------------------------------
     with col4:
         st.markdown("""
         ##### 4. Thermische Präferenz 
@@ -225,23 +155,27 @@ with tab2:
         """)
         st.markdown("<br><br>", unsafe_allow_html=True)
 
+#########################################################################################################
+#########################################################################################################
 
-# -------------------------
-# TAB 3 - Team und Fragestellungen
-# -------------------------
+# ---------------------------------------------------------
+# TAB 3 – Team und Analysethemen
+# ---------------------------------------------------------
 with tab3:
+    # --- Titel ---
     st.markdown("""
         #### 👥 Team und Fragestellungen von Datenanalyse und Machine Learning
     """
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # --- Text zu Team ---
     st.markdown("""
         - Wir sind vier Personen mit **unterschiedlichen beruflichen Hintergründen**  
         - Unsere Gruppe besteht aus **zwei Data Analysts und zwei Data Scientists**
     """)
     
-     # ---- CARD STYLE ----
+    # ---- CARD STYLE ----
     card_style = """
         <style>
         .team-card {
@@ -283,12 +217,16 @@ with tab3:
         """
     
     st.markdown(card_style, unsafe_allow_html=True)
-
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # ---------------------------------------------------------
+    # Spalten
+    # ---------------------------------------------------------
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---- SABRINA ----
+    # ---------------------------------------------------------
+    # Spalte 1: Sabrina
+    # ---------------------------------------------------------
     with col1:
         st.markdown('<div class="team-card">Sabrina</div>', unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -301,8 +239,9 @@ with tab3:
             "<h1 style='text-align: center; margin: 0; font-size: 30px;'>⬇️</h1>",
             unsafe_allow_html=True,
         )
-
-    # ---- DIANELA ----
+    # ---------------------------------------------------------
+    # Spalte 2: Dianela
+    # ---------------------------------------------------------
     with col2:
         st.markdown('<div class="team-card">Dianela</div>', unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -315,8 +254,9 @@ with tab3:
             "<h1 style='text-align: center; margin: 0; font-size: 30px;'>⬇️</h1>",
             unsafe_allow_html=True,
         )
-
-    # ---- MIRTHA ----
+    # ---------------------------------------------------------
+    # Spalte 3: Mirtha
+    # ---------------------------------------------------------
     with col3:
         st.markdown('<div class="team-card">Mirtha</div>', unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -328,8 +268,9 @@ with tab3:
             "<h1 style='text-align: center; margin: 0; font-size: 30px;'>⬇️</h1>",
             unsafe_allow_html=True,
         )
-
-    # ---- DANIEL ----
+    # ---------------------------------------------------------
+    # Spalte 4: Daniel
+    # ---------------------------------------------------------
     with col4:
         st.markdown('<div class="team-card">Daniel</div>', unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -344,11 +285,17 @@ with tab3:
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
+    # ---------------------------------------------------------
+    # Spalten
+    # ---------------------------------------------------------
     col1, spacer, col2, spacer, col3, spacer, col4 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
     col5, spacer, col6, spacer, col7, spacer, col8 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
     
-    # - Fragestellung 1 -
+    # ---------------------------------------------------------
+    # Spalte 1: Klima-Analyse
+    # ---------------------------------------------------------
+    # --- Überschrift ---
     with col1:
         st.markdown(
             """
@@ -360,12 +307,13 @@ with tab3:
         )
         st.markdown("<br>", unsafe_allow_html=True)
         st.html("<div style='height: 10px;'></div>")   
-    
-    # with col5:
-    #     st.info("- Unterscheidet sich das thermische Befinden zwischen Klimazonen?")
-        
-    
-    # - Fragestellung 2 -
+    # --- Fragestellung ---
+    with col5:
+        st.info("- Unterscheidet sich das thermische Befinden zwischen Klimazonen?")
+    # ---------------------------------------------------------
+    # Spalte 2: Belüftungsart-Analyse
+    # ---------------------------------------------------------
+    # --- Überschrift ---
     with col2:
         st.markdown(
             """
@@ -377,13 +325,14 @@ with tab3:
         )
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
-
-    # with col6:
-    #     st.info("- Inwiefern beeinflusst die gewählte Belüftungsart das themische Befinden?")
-    #     st.info("- Welche Unterschiede gibt es bei Gender und Alter innerhalb der verschiedenen Kühlungssysteme?")
-
-
-    # - Fragestellung 3 -
+    # --- Fragestellung ---
+    with col6:
+        st.info("- Inwiefern beeinflusst die gewählte Belüftungsart das themische Befinden?")
+        st.info("- Welche Unterschiede gibt es bei Gender und Alter innerhalb der verschiedenen Kühlungssysteme?")
+    # ---------------------------------------------------------
+    # Spalte 3: Physikalische Parameter-Analyse
+    # ---------------------------------------------------------
+    # --- Überschrift ---
     with col3:
         st.markdown(
             """
@@ -393,13 +342,15 @@ with tab3:
             """,
             unsafe_allow_html=True
         )
-        #st.markdown("<br>", unsafe_allow_html=True)
         st.html("<div style='height: 10px;'></div>")   
-
-    # with col7:
-    #     st.info("- Wie hängen die subjektiven und physikalischen thermischen Komfortvariablen miteinander zusammen?")
-    #     st.markdown("<br>", unsafe_allow_html=True)
-
+    # --- Fragestellung ---
+    with col7:
+        st.info("- Wie hängen die subjektiven und physikalischen thermischen Komfortvariablen miteinander zusammen?")
+        st.markdown("<br>", unsafe_allow_html=True)
+    # ---------------------------------------------------------
+    # Spalte 4: Machine Learning
+    # ---------------------------------------------------------
+    # --- Überschrift ---
     with col4: 
         st.markdown(
             """
@@ -409,30 +360,32 @@ with tab3:
             """,
             unsafe_allow_html=True
         )
-        
-        #st.markdown("<br>", unsafe_allow_html=True)
         st.html("<div style='height: 33px;'></div>")    
+    # --- Fragestellung ---
+    with col8:
+        st.info("- Lässt sich thermisches Empfinden mit Hilfe von Machine Learning bestimmen?")
+        st.info("- Gibt es andere Kenngrößen die das Wohlbefinden beeinflussen die sich vorhersagen lassen?")
 
-    # with col8:
-    #     st.info("- Lässt sich thermisches Empfinden mit Hilfe von Machine Learning bestimmen?")
-    #     st.info("- Gibt es andere Kenngrößen die das Wohlbefinden beeinflussen die sich vorhersagen lassen?")
+#########################################################################################################
+#########################################################################################################
 
-
-# -------------------------
-# TAB 5 – Tools und Prozess
-# -------------------------
+# ---------------------------------------------------------
+# TAB 4 – Tools
+# ---------------------------------------------------------
 with tab4:
-    # Tools
+    # ---------------------------------------------------------
+    # Titel und Text
+    # ---------------------------------------------------------
     st.markdown("""
         #### 🛠️ Data Science & Analytics Tools
     """
     )
-
     st.write("Moderne Tools für Datenanalyse, Machine Learning und interaktive Dashboards")
-
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- STYLE ---
+    # ---------------------------------------------------------
+    # Style für Felder
+    # ---------------------------------------------------------
     style = """
     <style>
     .tech-card {
@@ -469,10 +422,14 @@ with tab4:
     """
     st.markdown(style, unsafe_allow_html=True)
 
-    # --- GRID 3 COLUMNS ---
+    # ---------------------------------------------------------
+    # Grid - 3 Spalten
+    # ---------------------------------------------------------
     col1, col2, col3 = st.columns(3)
 
+    # ---------------------------------------------------------
     # COLUMN 1
+    # ---------------------------------------------------------
     with col1:
         st.markdown('<div  class="tech-card">Python</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -483,7 +440,9 @@ with tab4:
         st.markdown('<div class="tech-card">PostgreSQL Neon</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # ---------------------------------------------------------
     # COLUMN 2
+    # ---------------------------------------------------------
     with col2:
         st.markdown('<div class="tech-card">Power BI</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -495,8 +454,9 @@ with tab4:
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('<div  class="tech-card">GitHub</div>', unsafe_allow_html=True)
-
+    # ---------------------------------------------------------
     # COLUMN 3
+    # ---------------------------------------------------------
     with col3:
         st.markdown('<div class="tech-card">Pandas</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -506,6 +466,3 @@ with tab4:
 
         st.markdown('<div class="tech-card">Streamlit</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
-
-
-    st.markdown("<br>", unsafe_allow_html=True)
