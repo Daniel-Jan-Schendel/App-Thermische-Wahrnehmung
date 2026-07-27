@@ -38,7 +38,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 1. Daten und Modell laden
+# Daten und Modell laden
+@st.cache_resource
+def load_resourcesTP():
+    data_dict = joblib.load('ML/joblib_modelle/finales_modell_thermal_preference.joblib')
+    #data_dict = joblib.load('joblib_modelle/finales_modell_thermal_preference.joblib')
+    return data_dict
+
+# Daten und Modell laden
 @st.cache_resource
 def load_resources():
     data_dict = joblib.load('ML/joblib_modelle/finales_klassifikations_modell_RandomForest.joblib')
@@ -83,7 +90,8 @@ def get_base64_image(path):
 
 st.title(":material/smart_toy: Machine Learning")
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🧘Thermische Wahrnehmung", "🧘 Modelle thermische Wahrnehmung", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
+#tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋Übersicht", "🧘Thermische Wahrnehmung", "🧘 Modelle thermische Wahrnehmung", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📋Übersicht", "🧘Thermische Wahrnehmung", "🧘 Modelle thermische Wahrnehmung", "🌡️Klassifikation - Thermische Wahrnehmung", "🌡️Klassifikation - Kühlungsstrategie", "👕Regression Kleidungsisolation", "🚨Anomaliebetrachtungen", "🏁Fazit"])
 
 FONT_SIZE_TEXT = "24px"
 FONT_SIZE_BULLET = "34px"
@@ -256,7 +264,7 @@ with tab3: # modelle Komfort
     @st.cache_data
     def load_data():
 
-        df_loaded = pd.read_csv("db_bereinigt_final.csv")
+        df_loaded = pd.read_csv("Daten/db_bereinigt_final.csv")
             
         return df_loaded
 
@@ -679,8 +687,211 @@ with tab3: # modelle Komfort
             plt.tight_layout() # Verhindert abgeschnittene Labels am Rand
             st.pyplot(fig)
 
+with tab4:
 
-with tab4: # classification cooling type
+    try:
+        resources = load_resourcesTP()
+        
+        # 1. Pipeline / Modell laden
+        modelTP = resources["pipeline"]
+        
+        # 2. Metriken-Brücke: Altes Skript sucht 'metrics', neues liefert 'classification_report'
+        if "metrics" in resources:
+            metricsTP = resources["metrics"]
+        elif "classification_report" in resources:
+            metricsTP = resources["classification_report"]
+        else:
+            metricsTP = "Keine Metriken verfügbar."
+
+        
+        # Klassennamenbrücke
+
+        if "shap_class_names" in resources:
+            target_namesTP = resources["shap_class_names"]
+            has_le = True  # Trickst das alte Skript aus, da Namen direkt da sind
+        elif "unique_labels" in resources:
+            target_namesTP = [f"Klasse {c}" for c in resources["unique_labels"]]
+            has_le = False
+        elif hasattr(modelTP, "classes_"):
+            target_namesTP = [f"Klasse {c}" for c in modelTP.classes_]
+            has_le = False
+        else:
+            target_namesTP = ["Klasse 0", "Klasse 1", "Klasse 2"]
+            has_le = False
+        
+
+    except Exception as e:
+        st.error(f"Kritischer Fehler beim Laden der Modelldatei: {e}")
+        st.stop()
+
+
+    # Dashboard Titel
+    st.title("🌡️ Vorhersage Thermal Preference")
+    st.write("(keine hohe Genauigkeit!!!)")
+
+    #tab1, tab2, tab3 = st.tabs(["🔮 Livevorhersage & SHAP", "📈 Modellperformance", "⚙️ Modellaufbau"])
+    tab1, tab2 = st.tabs(["🔮 Livevorhersage & SHAP", "📈 Modellperformance"])
+
+    # --- TAB 1: ECHTZEIT VORHERSAGE ---
+    with tab1:
+
+        # Layout in zwei Hauptbereiche unterteilen
+        col_sidebar, col_main = st.columns([1,3])
+
+        # 2. Sidebar für Benutzereingaben (Schieberegler)
+        with col_sidebar:
+            st.header("🎛️ Featureeingabe")
+            
+            air_tempTP = st.slider("Innentemperatur (air_temperature) [°C]", 10.0, 40.0, 23.0, step=0.1, format="%0.1f", key="air_temp_TP")
+            out_tempTP = st.slider("Außentemperatur (outdoor_air_temperature) [°C]", -30.0, 45.0, 20.0, step=0.1, format="%0.1f", key="out_temp_TP")
+            rel_humTP = st.slider("Relative Luftfeuchtigkeit (relative_humidity) [%]", 0.0, 100.0, 50.0, step=0.1, format="%0.1f", key="rel_humTP_TP")
+            air_speedTP = st.slider("Luftgeschwindigkeit (air_speed) [m/s]", 0.0, 4.0, 0.1, step=0.01, format="%0.2f", key="air_speed_TP")
+            cloTP = st.slider("Bekleidungsisolierung (clothing_ensemble_insulation) [clo]", 0.0, 3.0, 0.6, step=0.01, format="%0.2f", key="clo_TP")
+            metTP = st.slider("Metabolische Rate (metabolic_rate) [met]", 0.5, 4.0, 1.2, step=0.1, format="%0.1f", key="met_TP")
+            radiant_tempTP = st.slider("Strahlungstemperatur (radient temperature) [tr]", 10.0, 40.0, 23.0, step=0.1, format="%0.1f", key="radient_temp_TP")
+
+            input_dataTP = pd.DataFrame([{
+                'air_temperature': air_tempTP,
+                'outdoor_air_temperature': out_tempTP,
+                'relative_humidity': rel_humTP,
+                'air_speed': air_speedTP,
+                'clothing_ensemble_insulation': cloTP,
+                'metabolic_rate': metTP,
+                'radiant_temperature': radiant_tempTP
+            }])
+
+            input_dataTP = input_dataTP[modelTP.feature_names_in_]
+
+        # 3. Hauptbereich für Vorhersagen und Analysen
+        with col_main:
+            #tab1, tab2, tab3 = st.tabs(["🔮 Vorhersage", "📊 SHAP Analyse", "📈 Modellperformance"])
+
+                # Vorhersagen berechnen
+                num_predictionTP = modelTP.predict(input_dataTP)
+                pred_probaTP = modelTP.predict_proba(input_dataTP)
+                
+                # WICHTIG: Wahrscheinlichkeiten absolut flach klopfen (1D-Array erwingen)
+                # Das verhindert den "All arrays must be of the same length" Fehler komplett.
+                probabilitiesTP = np.array(pred_probaTP).flatten()
+                
+                text_predictionTP = str(num_predictionTP)
+                
+                # Metrik anzeigen
+                st.metric(label="🎯 Vorhergesagte thermische Präferenz", value=str(text_predictionTP[2:-2]))
+
+                # DataFrame absolut sicher aufbauen
+                st.markdown("**Klassenwahrscheinlichkeiten:** (ohne Verwendung von CalibratedClassifierCV)")
+                
+                # Falls die Längen im Extremfall immer noch nicht passen, passen wir die target_names dynamisch an
+                display_labelsTP = [str(c) for c in target_namesTP][:len(probabilitiesTP)]
+                
+                proba_df_TP = pd.DataFrame({
+                    "Klasse": display_labelsTP,
+                    "Wahrscheinlichkeit": probabilitiesTP
+                })
+                
+                proba_df_TP["Wahrscheinlichkeit"] = proba_df_TP["Wahrscheinlichkeit"].round(2)
+
+                # 1. Basis-Chart definieren
+                base = alt.Chart(proba_df_TP).encode(
+                    x=alt.X("Klasse:N", sort=None).axis(
+                        #labelFontSize=14,     # Schriftgröße der X-Achsen-Werte
+                        labelFontWeight="bold", # Fett gedruckt
+                        #titleFontSize=16,     # Schriftgröße des X-Achsen-Titels
+                        titleFontWeight="bold"
+                    ), 
+                    y=alt.Y("Wahrscheinlichkeit:Q", scale=alt.Scale(domain=[0, 1.1])).axis(
+                        #labelFontSize=14,     # Schriftgröße der Y-Achsen-Werte
+                        labelFontWeight="bold",
+                        #titleFontSize=16,     # Schriftgröße des Y-Achsen-Titels
+                        titleFontWeight="bold"
+                    )
+                )
+
+                # 2. Die Balken erstellen
+                bars = base.mark_bar()
+
+                text_balken = base.mark_text(
+                    align="center",
+                    baseline="bottom",
+                    dy=-5,
+                    #fontSize=14,
+                    fontWeight="bold"
+                ).encode(
+                    text=alt.Text("Wahrscheinlichkeit:Q", format=".1%")
+                )
+
+
+                chart = alt.layer(bars, text_balken).properties(width="container")
+                st.altair_chart(chart, use_container_width=True)
+
+
+
+
+    # --- TAB 2: MODELLPERFORMANCE ---
+    with tab2:
+        st.subheader("📈 Modellperformance & -metriken")
+        
+        y_testTP = resources["y_test"]
+        y_predTP = resources["y_pred"]    
+        f1_macro_testTP = f1_score(y_testTP, y_predTP, average='macro')
+
+        y_trainTP = resources["y_train"]
+        y_pred_trainTP = resources["y_pred_train"]    
+        f1_macro_trainTP = f1_score(y_trainTP, y_pred_trainTP, average='macro')
+
+        col_metric1, col_metric2 = st.columns(2)
+        with col_metric1:
+            st.metric(label="F1-Score (Train)", value=f"{f1_macro_trainTP:.2f}")
+        with col_metric2:
+            st.metric(label="F1-Score (Test)", value=f"{f1_macro_testTP:.2f}")
+
+                
+        st.markdown("---")
+
+        performance_left, performance_right = st.columns(2, vertical_alignment="center")
+
+        with performance_left:
+
+            st.markdown("**Classification Report:**")
+
+            st.code(classification_report(y_testTP, y_predTP, target_names=target_namesTP))
+
+
+
+        with performance_right:
+
+            st.write("**Confusion Matrix:**")
+            fig, ax = plt.subplots(figsize=(6, 5))
+
+            # Ermittle die tatsächlichen numerischen Klassen, die in den Daten stecken (z.B.)
+            import numpy as np
+            unique_numeric_labels = sorted(list(set(y_testTP)))
+            
+            # Hole die exakt passenden Textbeschriftungen aus deiner target_names Liste
+            #display_labels_filtered = [target_names[i] for i in unique_numeric_labels]
+
+            from sklearn.metrics import ConfusionMatrixDisplay
+            ConfusionMatrixDisplay.from_predictions(
+                y_testTP, 
+                y_predTP, 
+                labels=unique_numeric_labels,       # IDs für die mathematische Zuordnung (0, 1, 2)
+                #display_labels=display_labels_filtered, # Textnamen für die visuelle Achsenbeschriftung!
+                cmap="Blues", 
+                ax=ax
+            )
+
+            plt.title("Thermal preference")
+            plt.tight_layout()
+            ax.set_xticklabels(
+                ax.get_xticklabels(), 
+                rotation=90, 
+            #    ha="right"
+            )
+            st.pyplot(fig)
+
+
+with tab5: # classification cooling type
 
     # Dashboard Titel
     st.subheader("🌡️ Vorhersage Kühlungsstrategie (Cooling Type)")
@@ -1025,6 +1236,26 @@ with tab4: # classification cooling type
             # prüfen, ob es ein neues Explanation-Objekt oder ein altes Array ist
             if hasattr(shap_values, "values"):
                 # SHAP-Objekt (3 Dimensionen: [Samples, Features, Klassen])
+
+
+
+                # Berechne den Index des Features mit dem größten (absoluten) SHAP-Einfluss
+                # für die aktuell gewählte Klasse über alle Datensätze hinweg
+                if "shap_values" in locals() or "shap_values" in globals():
+                    # Falls shap_values ein Objekt mit .values ist (neue SHAP-API)
+                    if hasattr(shap_values, "values"):
+                        matrix = shap_values.values[:, :, gewaehlte_klasse]
+                    else:
+                        # Falls shap_values eine reine numpy-Liste/Array ist (alte SHAP-API)
+                        matrix = shap_values[gewaehlte_klasse]
+
+                    # Finde das Feature mit dem höchsten durchschnittlichen absoluten SHAP-Wert
+                    max_feature = int(np.argmax(np.mean(np.abs(matrix), axis=0)))
+                else:
+                    # Fallback: Falls shap_values gar nicht existiert, setze es standardmäßig auf 0
+                    max_feature = 0
+
+
                 shap.plots.scatter(
                     shap_values[:, max_feature, gewaehlte_klasse], 
                     color=shap_values[:, :, gewaehlte_klasse], 
@@ -1101,7 +1332,7 @@ with tab4: # classification cooling type
         st.html(slide_point("Mit den 6 Features (Lufttemperatur, Außentemperatur, relative Luftfeuchte, Luftgeschwindigkeit, Kleidungsisolationswert und der metabolischen Rate) zeigten sich die besten untersuchten Ergebnisse."))
 
 
-with tab5: # Regression clo
+with tab6: # Regression clo
 
     st.subheader("👕 Vorhersage der Bekleidungsisolationswertes (clothing_ensemble_insulation)")
 
@@ -1535,7 +1766,7 @@ with tab5: # Regression clo
         st.html(slide_point("Eine starke Filterung auf eine bestimmtes Klima, eine bestimmte Jahreszeit und Belüftungsart reduziert den Datensatz stark, führt aber zu homegeneren und besseren Ergebnissen auf Kosten von möglicher Verallgemeinerung (Modell 7)."))
 
 
-with tab6: # Anomalie
+with tab7: # Anomalie
     st.subheader("Anomaliebetrachtungen")
 
     reg_links, mitte, reg_rechts = st.columns([1.25,0.1,0.9])
@@ -1628,7 +1859,7 @@ with tab6: # Anomalie
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - gelbe und grüne Linien zeigen erste Unterschiede zwischen anomalieungefilterten und -gefilterten Rechnungen")
 
 
-with tab7: # Fazit
+with tab8: # Fazit
 
     st.subheader("🏁Fazit")
 
