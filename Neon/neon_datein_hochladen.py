@@ -6,7 +6,7 @@ import time
 String1 = "postgresql://neondb_owner:npg_fWR8OHIJyC1Z@ep-summer-art-as4axoig.c-4.eu-central-1.aws.neon.tech/neondb?sslmode=require"
 
 # PATH
-CSV_PATH = r"E:\DatenBank\db_bereinigt_final.csv"
+CSV_PATH =  pd.read_csv("db_bereinigt_final.csv")
 
 try:
     print("🔌 Verbindung zum PROJEKT und Einlesen der lokalen CSV‑Datei...")
