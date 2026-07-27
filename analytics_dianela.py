@@ -254,7 +254,7 @@ with tab1:
             # Formatierung des Durchschnittsalters mit Komma für die deutsche Dezimalstelle (z.B. 21,2)
             avg_age_str = f"{avg_age_seg:.1f}".replace(".", ",")
             
-            # Schöne Formatierung für die Anzeige der Belüftungsart im Titel
+            # Formatierung für die Anzeige der Belüftungsart im Titel
             belueftung_title = belueftung.replace('-', ' ').title()
             st.markdown(f"### ⚡ Belüftungsart: {belueftung_title}")
             st.markdown(
@@ -273,13 +273,11 @@ with tab1:
             with col_r1_1: ####
                 if has_c1:
                     plot_comfort_variable(df_final_t1["thermal_comfort_cat"], tc_labels, tc_colors, f"Thermal Comfort ({gebaeude} - {belueftung_title})")
-                   # st.markdown("**Analyse:** Zeigt die Verteilung des thermischen Komfortindex spezifisch für diese Raumkonfiguration.")
                 else:
                     st.container()
             with col_r1_2:
                 if has_c2:####
                     plot_comfort_variable(df_final_t1["thermal_sensation_cat"], tsv_labels, tsv_colors, f"Thermal Sensation ({gebaeude} - {belueftung_title})")
-                    #st.markdown("**Analyse:** Dokumentiert die sensorische Wahrnehmung der operativen Temperatur im Raum.")
             
             # Evaluierung der Zeilenmenge für die zweite Reihe
             has_c3 = not pd.to_numeric(df_final_t1["thermal_preference_cat"], errors="coerce").dropna().empty
@@ -290,13 +288,11 @@ with tab1:
             with col_r2_1:
                 if has_c3:####
                     plot_comfort_variable(df_final_t1["thermal_preference_cat"], tp_labels, tp_colors, f"Thermal Preference ({gebaeude} - {belueftung_title})")
-                    #st.markdown("**Analyse:** Spiegelt den direkten Wunsch der Nutzer nach Temperaturänderungen (kühler/wärmer) wider.")
                 else:
                     st.container()
             with col_r2_2:
                 if has_c4:####
                     plot_comfort_variable(df_final_t1["thermal_acceptability_cat"], ta_labels, ta_colors, f"Thermal Acceptability ({gebaeude} - {belueftung_title})")
-                    #st.markdown("**Analyse:** Kennzeichnet den prozentualen Anteil der Stimmen, die das Raumklima als akzeptabel bewerten.")
                 else:
                     st.container()
             
@@ -316,21 +312,19 @@ with tab2:
     with col_t2_f1:
         geo_option = st.selectbox("Geografische Verteilung anzeigen nach:", list(geo_map.keys()), key="geo_opt_t1") 
         geo_colname = geo_map[geo_option] 
+
      ### Button ####
         # ============================================================================== 
         # 🎛️ INJECTION TAB 2: RESET-BUTTON DIREKT UNTER COOLING TYPE
         # ============================================================================== 
         def trigger_system_reset_t2(): 
             st.session_state.reset_trigger_t2 = True 
-        
-        #col_btn_t2_1, col_btn_t2_center, col_btn_t2_2 = st.columns([1, 0.4, 1])
-        
+                
         st.button(
                 "🔄 Filter zurücksetzen", 
                 on_click=trigger_system_reset_t2, 
                 key="btn_reset_tab2",
                 help="Setzt alle Filter aller Reiter sofort auf die Standardeinstellungen zurück.", 
-                #use_container_width= true
         )
         ######       
     with col_t2_f2:
@@ -338,9 +332,6 @@ with tab2:
         sorted_geo_values_t1 = custom_geo_sort(raw_geo_values_t1)
         geo_choice = st.selectbox(f"{geo_option} auswählen:", sorted_geo_values_t1, key="geo_cho_t1") 
     with col_t2_f3:
-        #df['building_type'] = df['building_type'].fillna('Unknown')
-        #lista_building_types = sorted(df['building_type'].unique().tolist())
-        #building_choice = st.selectbox("Building Type auswählen:", lista_building_types, key="bld_t1")
         df['building_type'] = df['building_type'].fillna('Unknown')
         lista_building_types = sorted(df['building_type'].unique().tolist())
         try:
@@ -429,8 +420,6 @@ with tab2:
 # 👥 TAB 3: DEMOGRAFISCHE KOMFORTANALYSE (STRIKT GENDER & ALTER IN 2x2 GRID)
 # ==============================================================================
 with tab3:
-    # Synchronisation der Datenquelle mit dem Hauptdatensatz
-    #df = df_bereinigt
     
     st.subheader("Analyse-Leitfaden: Beeinflusst die Belüftungsart den aktuellen Parameter?")
     
@@ -446,6 +435,7 @@ with tab3:
         raw_geo_values_t2 = df[geo_colname_t2].dropna().unique().tolist()
         sorted_geo_values_t2 = custom_geo_sort(raw_geo_values_t2)
         geo_choice_t2 = st.selectbox(f"{geo_option_t2} auswählen:", sorted_geo_values_t2, key="geo_cho_t2") 
+
     ### Button ###
     # ============================================================================== 
     # 🎛️ INJECTION TAB 3: RESET-BUTTON DIREKT UNTER REGION
@@ -459,7 +449,6 @@ with tab3:
         on_click=trigger_system_reset_t3, 
         key="btn_reset_tab3", # Key única para el Tab 3
         help="Setzt alle Filter aller Reiter sofort auf die Standardeinstellungen zurück.", 
-        #use_container_width=True 
     )
     ######
     with col_t3_f3:
@@ -471,7 +460,6 @@ with tab3:
         except ValueError:
             default_bldg_index = 0
             
-        # 🌟 FIXX: Cambiado a building_choice_t3 para que conecte con la máscara de Pandas del Tab 3
         building_choice_t3 = st.selectbox(
             "Building Type auswählen:", 
             lista_building_types, 
@@ -479,12 +467,6 @@ with tab3:
             key="bld_t3"
         )    
     with col_t3_f4:
-        # Genderspezifische Zuordnung inklusive automatischer Bereinigung von Nullwerten
-        #df['gender'] = df['gender'].fillna('indefizierte / unbekannt')
-        #lista_genders = sorted(df['gender'].unique().tolist())
-        #gender_choice = st.selectbox("Gender auswählen:", lista_genders, key="gen_t2")
-
-       
         df['gender'] = df['gender'].fillna('unknown')
         
         # Erstellt die exakte Wunsch-Reihenfolge basierend auf den vorhandenen Werten
@@ -526,7 +508,6 @@ with tab3:
         df['age'] = pd.to_numeric(df['age'], errors='coerce')
         edad_min = float(df['age'].min()) if not pd.isna(df['age'].min()) else 0.0
         edad_max = float(df['age'].max()) if not pd.isna(df['age'].max()) else 100.0
-        #rango_edad = st.slider("Alter (Age) Bereich:", min_value=edad_min, max_value=edad_max, value=(edad_min, edad_max), step=1.0, key="sld_t2")
          
         rango_edad = st.slider(
         "Alter (Age) Bereich:", 
@@ -536,7 +517,6 @@ with tab3:
         step=1.0, 
         key="sld_t3"
         )
-
 
         # 🌟 AKTUALISIERTE FILTERPIPELINE FÜR TAB 2 (Inklusive Cooling Type)
         edad_min_sel, edad_max_sel = rango_edad
@@ -548,7 +528,6 @@ with tab3:
             (df['age'] >= edad_min_sel) &
             (df['age'] <= edad_max_sel)
         ]
-
            
     # Ausführung der kaskadierenden Datenfilterung im Hintergrund
     edad_min_sel, edad_max_sel = rango_edad
@@ -563,7 +542,7 @@ with tab3:
     st.markdown("---")
     st.header(f"👥 Demografisches Profil ({gender_choice}, Age: {int(edad_min_sel)}-{int(edad_max_sel)})")
     
-    # 🌟 FILA 1 DEMOGRAFÍA: Steuerung und automatische Zentrierung bei fehlenden Daten
+    # 🌟 FILA 1 DEMOGRAFISCHE: Steuerung und automatische Zentrierung bei fehlenden Daten
     t2_has_data1 = not pd.to_numeric(df_t2_filtered["thermal_comfort_cat"], errors="coerce").dropna().empty
     t2_has_data2 = not pd.to_numeric(df_t2_filtered["thermal_sensation_cat"], errors="coerce").dropna().empty
     
@@ -588,7 +567,7 @@ with tab3:
 
     st.markdown("---")
 
-    # 🌟 FILA 2 DEMOGRAFÍA: Steuerung und automatische Zentrierung bei fehlenden Daten
+    # 🌟 FILA 2 DEMOGRAFISCHE: Steuerung und automatische Zentrierung bei fehlenden Daten
     t2_has_data3 = not pd.to_numeric(df_t2_filtered["thermal_preference_cat"], errors="coerce").dropna().empty
     t2_has_data4 = not pd.to_numeric(df_t2_filtered["thermal_acceptability_cat"], errors="coerce").dropna().empty
     
