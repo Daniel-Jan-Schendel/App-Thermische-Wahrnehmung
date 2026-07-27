@@ -20,7 +20,7 @@ pg = st.navigation(
         st.Page("analytics_clima.py", title="Klima-Analyse", icon=":material/analytics:"),
         st.Page("analytics_dianela.py", title="Belüftungsart-Analyse", icon=":material/analytics:"),
         st.Page("thermal_comfort_analysis.py", title="Physikalische Parameter-Analyse", icon=":material/analytics:"),
-        st.Page("ml_ashrae.py", title="Machine Learning Modelling", icon=":material/smart_toy:"),
+        st.Page("ML/ml_ashrae.py", title="Machine Learning Modelling", icon=":material/smart_toy:"),
         st.Page("dashboard_neu.py", title="Dashboard", icon=":material/analytics:"),
         st.Page("zusammenfassung.py", title="Zusammenfassung", icon=":material/menu_book:")
     ]
