@@ -167,7 +167,7 @@ df["thermal_acceptability_cat"] = df["thermal_acceptability"].map(ta_map)
 
 with tab1:
     # Laden und Vorbereiten der globalen Big-Data-Struktur im Tab-Scope
-    df_global = pd.read_csv("db_bereinigt_final.csv")
+    df_global = pd.read_csv("Daten/db_bereinigt_final.csv")
     
     # Absolute kategoriale Zuweisung der Komfortmetriken
     df_global["thermal_sensation_cat"] = df_global["thermal_sensation"].apply(map_tsv) 
