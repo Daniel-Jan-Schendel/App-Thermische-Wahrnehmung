@@ -155,7 +155,7 @@ tab1, tab2, tab3 = st.tabs(["Globale Übersicht", "Belüftungsart", "Alter und G
 # ==============================================================================
 # 💾 3. DATENLADUNG & VARIABLEN-MAPPING
 # ==============================================================================
-df = pd.read_csv("db_bereinigt_final.csv")
+df = pd.read_csv("Daten/db_bereinigt_final.csv")
 df["thermal_sensation_cat"] = df["thermal_sensation"].apply(map_tsv) 
 df["thermal_preference_cat"] = df["thermal_preference"].map(tp_map) 
 df["thermal_comfort_cat"] = df["thermal_comfort"].apply(map_tc) 
