@@ -687,7 +687,8 @@ with tab3: # modelle Komfort
             plt.tight_layout() # Verhindert abgeschnittene Labels am Rand
             st.pyplot(fig)
 
-with tab4:
+
+with tab4: # classification thermal preference
 
     try:
         resources = load_resourcesTP()
@@ -1165,6 +1166,24 @@ with tab5: # classification cooling type
                 st.markdown("**Globale Featurewichtigkeit (Gesamter Datensatz):**")
                 fig_global, ax_global = plt.subplots(figsize=(8, 4))
                 shap.summary_plot(shap_values, show=False, class_names=target_names, plot_size=(8, 4))
+
+                containers = ax_global.containers
+
+                # Falls Container existieren, berechnen wir die kumulierten Breiten
+                if containers:
+                    # Erstellt ein Array mit Nullen in der Länge der Anzahl an Features
+                    total_widths = np.zeros(len(containers[0]))
+                    
+                    # Addiere die Breiten aller Klassensegmente auf
+                    for c in containers:
+                        widths = [rect.get_width() for rect in c]
+                        total_widths += widths
+                    
+                    # Nutze den letzten Container als Basis für die Positionierung,
+                    # überschreibe aber die Labels mit der berechneten Gesamtsumme
+                    labels = [f"{w:.2f}" for w in total_widths]
+                    ax_global.bar_label(containers[-1], labels=labels, padding=5, weight='bold')
+
                 plt.tight_layout()
                 plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
                 st.pyplot(fig_global, use_container_width=True)
@@ -1651,6 +1670,8 @@ with tab6: # Regression clo
                     fig_bar, ax_bar = plt.subplots(figsize=(7, 5))
 
                     shap.summary_plot(historical_shap, X_test_summary, plot_type="bar", show=False)
+                    container = ax_bar.containers[0]
+                    ax_bar.bar_label(container, fmt="%.2f", padding=3)
                     plt.tight_layout()
                     plt.xlabel("Einfluss auf die Modellvorhersage (Durchschnitt)")
 
