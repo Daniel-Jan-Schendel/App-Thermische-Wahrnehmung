@@ -1,0 +1,4 @@
+outdoor_air_temperature,air_temperature,relative_humidity,season,building_type,air_speed,metabolic_rate,climate_zone,cooling_type,Ziel,berechnet,delta_abs,country
+29.22,31.7,57.1,hot/wet,multifamily housing,0.13,0.7,Tropical,naturally ventilated,2.34,0.48,1.86,india
+20.5,24.5,22.7,winter,office,0.1457459471949615,0.6484641638225255,Dry,naturally ventilated,1.87,1.14,0.73,pakistan
+-16.299999999999997,16.9,43.9,winter,others,0.01,1.6,Temperate,mixed mode,0.21,1.01,0.8,china
