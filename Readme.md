@@ -27,7 +27,7 @@ Diese App soll Wissenschaftler:innen, Studierende und Analyst:innen darin unters
   - Klimatische/geografische Variablen
   - Belüftungsart 
   - Physikalische Parameter
-- :material/smart_toy: Machine Learning  
+- 🤖 Machine Learning  
 - 🧭 Filterung u.a. nach Belüftungsart, Klimatypen, Alter etc.
 - 🧮 Integration mit Neon oder einer anderen Datenbank möglich 
 
