@@ -41,14 +41,14 @@ st.set_page_config(
 # Daten und Modell laden
 @st.cache_resource
 def load_resourcesTP():
-    data_dict = joblib.load('ML/joblib_modelle/finales_modell_thermal_preference.joblib')
+    data_dict = joblib.load('Machine_Learning/joblib_modelle/finales_modell_thermal_preference.joblib')
     #data_dict = joblib.load('joblib_modelle/finales_modell_thermal_preference.joblib')
     return data_dict
 
 # Daten und Modell laden
 @st.cache_resource
 def load_resources():
-    data_dict = joblib.load('ML/joblib_modelle/finales_klassifikations_modell_RandomForest.joblib')
+    data_dict = joblib.load('Machine_Learning/joblib_modelle/finales_klassifikations_modell_RandomForest.joblib')
     return data_dict
 
 try:
@@ -137,7 +137,7 @@ with tab1: # Übersicht
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
-            st.image("ML/images/Problem_label_noise_thermal_comfort.png")
+            st.image("Machine_Learning/images/Problem_label_noise_thermal_comfort.png")
 
     col1, col2 = st.columns([3,1], vertical_alignment="center")
     with col1:
@@ -146,7 +146,7 @@ with tab1: # Übersicht
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
-            st.image("ML/images/random_forest_sketch.jpg")
+            st.image("Machine_Learning/images/random_forest_sketch.jpg")
 
     col1, col2 = st.columns([3,1], vertical_alignment="center")
     with col1:
@@ -156,7 +156,7 @@ with tab1: # Übersicht
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
-            st.image("ML/images/random_forest_regressor.png")
+            st.image("Machine_Learning/images/random_forest_regressor.png")
 
     col1, col2 = st.columns([3,1], vertical_alignment="center")
     with col1:
@@ -166,7 +166,7 @@ with tab1: # Übersicht
     with col2:
         links, mitte, rechts = st.columns([1,2,1])
         with mitte:
-            st.image("ML/images/DBSCAN.png")
+            st.image("Machine_Learning/images/DBSCAN.png")
 
 
 with tab2: # subjektive Komfortbewertungen
@@ -198,18 +198,18 @@ with tab2: # subjektive Komfortbewertungen
     links, rechts = st.columns([1,1])
 
     with links:
-        st.image("ML/images/Problem_label_noise_thermal_comfort.png", caption="Beispiel Label Noise thermal comfort mit 6 Klassen")
+        st.image("Machine_Learning/images/Problem_label_noise_thermal_comfort.png", caption="Beispiel Label Noise thermal comfort mit 6 Klassen")
 
     with rechts:
-        st.image("ML/images/Problem_label_noise_thermal_preference.png", caption="Beispiel Label Noise thermal preference mit 3 Klassen")
+        st.image("Machine_Learning/images/Problem_label_noise_thermal_preference.png", caption="Beispiel Label Noise thermal preference mit 3 Klassen")
 
     links, links_links, p1, mitte_links, p2, mitte, p3, mitte_rechts, rechts = st.columns([0.5,2,0.1,2,0.1,2,0.1,2,0.5], vertical_alignment='center')
     with links_links:
-        st.image("ML/images/verteilung_target_thermal_comfort.png", caption="Beispielverteilung - Thermal Comfort Basismodell - Klassenimbalance")
+        st.image("Machine_Learning/images/verteilung_target_thermal_comfort.png", caption="Beispielverteilung - Thermal Comfort Basismodell - Klassenimbalance")
     with mitte_links:
-        st.image("ML/images/classification_report_random_forest_thermal_comfort_basis_.png", caption="Beispiel Classifcation Report - Thermal Comfort Basismodell")
+        st.image("Machine_Learning/images/classification_report_random_forest_thermal_comfort_basis_.png", caption="Beispiel Classifcation Report - Thermal Comfort Basismodell")
     with mitte:
-        st.image("ML/images/confusion_matrix_thermal_comfort.png", caption="Beispiel Confusion matrix - Thermal Comfort")
+        st.image("Machine_Learning/images/confusion_matrix_thermal_comfort.png", caption="Beispiel Confusion matrix - Thermal Comfort")
     with mitte_rechts:
         st.html(slide_point("<center>Label Noise und Klassenimbalance machen es dem Random Forest schwer.</center>"))
 
@@ -224,7 +224,7 @@ with tab2: # subjektive Komfortbewertungen
     st.html(slide_point("Auf Grund der Daten lassen sich keine verlässlichen Vorhersagen bezüglich der subjektiven Komfortbewertungen treffen."))
 
     # Tabelle der Modelle für die thermische Wahrnehmung
-    svg_path = "ML/images/tabelle_thermal.svg"
+    svg_path = "Machine_Learning/images/tabelle_thermal.svg"
 
     # Datei als Text/String einlesen
     with open(svg_path, "r", encoding="utf-8") as f:
@@ -250,10 +250,10 @@ with tab2: # subjektive Komfortbewertungen
 
     links, rechts = st.columns([1,1])
     with links:
-        st.image("ML/images/VergleichModelle_thermal_comfort_F1.png", caption="Beispielvergleich der Ergebnisse unterschiedlicher Algorithmen- Thermal comfort")    
+        st.image("Machine_Learning/images/VergleichModelle_thermal_comfort_F1.png", caption="Beispielvergleich der Ergebnisse unterschiedlicher Algorithmen- Thermal comfort")    
 
     with rechts:
-        st.image("ML/images/VergleichModelle_thermal_preference_F1.png", caption="Beispielvergleich der Ergebnisse unterschiedlicher Algorithmen- Thermal Preference")    
+        st.image("Machine_Learning/images/VergleichModelle_thermal_preference_F1.png", caption="Beispielvergleich der Ergebnisse unterschiedlicher Algorithmen- Thermal Preference")    
 
 
 with tab3: # modelle Komfort
@@ -567,7 +567,7 @@ with tab3: # modelle Komfort
         st.session_state['experiment'] = experiment_data
         
         # MODELL + ERGEBNISSE LOKAL IM ORDNER SPEICHERN ===
-        local_filename = "ML/joblib_modelle/ashrae_thermal_classification_model.joblib"
+        local_filename = "Machine_Learning/joblib_modelle/ashrae_thermal_classification_model.joblib"
         joblib.dump(experiment_data, local_filename)
         
         st.info(f"💾 Das Gesamtpaket wurde als **'{local_filename}'** im Projektordner gespeichert.")
@@ -610,7 +610,7 @@ with tab3: # modelle Komfort
                 st.download_button(
                     label="📥 Gesamtpaket (.joblib) für Browser herunterladen",
                     data=joblib_bytes,
-                    file_name="ML/joblib_modelle/ashrae_thermal_classification_bundle.joblib",
+                    file_name="Machine_Learning/joblib_modelle/ashrae_thermal_classification_bundle.joblib",
                     mime="application/octet-stream",
                     help="Herunterladen von Pipeline, Parametern, Testdaten, Classification Report und SHAP-Werten."
                 )
@@ -1324,7 +1324,7 @@ with tab5: # classification cooling type
         
         links, mitte_links, mitte_rechts, rechts = st.columns([1,3,3,1], vertical_alignment='center')
         with mitte_links:
-            st.image("ML/images/VergleichModelle_cooling_type.png", caption="Modellvergleich: Macro F1-Score")
+            st.image("Machine_Learning/images/VergleichModelle_cooling_type.png", caption="Modellvergleich: Macro F1-Score")
 
         with mitte_rechts:
             st.html(slide_point("Das beste Modell ergibt sich über ein RandomForest."))
@@ -1334,10 +1334,10 @@ with tab5: # classification cooling type
 
         Fscore_left, Fscore_middle, Fscore_right = st.columns([1,3,3.5])
         with Fscore_middle:
-            st.image("ML/images/pairplot_cooling_type.png", caption="Modellvergleich: Macro F1-Score")
+            st.image("Machine_Learning/images/pairplot_cooling_type.png", caption="Modellvergleich: Macro F1-Score")
 
 
-        svg_path = "ML/images/tabelle_cooling_type.svg"
+        svg_path = "Machine_Learning/images/tabelle_cooling_type.svg"
 
         # Datei als svg einlesen
         with open(svg_path, "r", encoding="utf-8") as f:
@@ -1413,7 +1413,7 @@ with tab6: # Regression clo
     @st.cache_resource
     def load_saved_pipeline():
         # Lädt Modell aus der Datei
-        return joblib.load('ML/joblib_modelle/finales_regressions_modell_HistGradientBoosting.joblib')
+        return joblib.load('Machine_Learning/joblib_modelle/finales_regressions_modell_HistGradientBoosting.joblib')
 
     try:
         model_container = load_saved_pipeline()
@@ -1766,14 +1766,14 @@ with tab6: # Regression clo
         
         links, mitte_links, mitte_rechts, rechts = st.columns([1,3,3,1], vertical_alignment='center')
         with mitte_links:
-            st.image("ML/images/VergleichModelle_clo_MAE.png", caption="Modellvergleich: MAE")
+            st.image("Machine_Learning/images/VergleichModelle_clo_MAE.png", caption="Modellvergleich: MAE")
         
         with mitte_rechts:
             st.html(slide_point("Auch in dieser Regressionsbetrachtung zeigen die Ensemblemethoden die besten Werte."))
             st.html(slide_point("Die Abweichung im Random Forest, sowie im HistGradientBoost, liegt im Mittel bei einem clo-Wert von 0.12, was einer praxistauglichen Vorhersage entspricht."))
             st.html(slide_point("Dast HistGradientBoost wird auf Grund der besseren Geschwindigkeit und geringeren Dateigrößes des Modells bevorzugt."))
 
-        svg_path = "ML/images/tabelle_regression_clo.svg"
+        svg_path = "Machine_Learning/images/tabelle_regression_clo.svg"
 
         with open(svg_path, "r", encoding="utf-8") as f:
             svg_code = f.read()
@@ -1816,7 +1816,7 @@ with tab7: # Anomalie
                 </small>
                  """, unsafe_allow_html=True)
 
-    df_regression_anomalie = pd.read_csv("ML/df_regression_anomalie.csv")
+    df_regression_anomalie = pd.read_csv("Machine_Learning/df_regression_anomalie.csv")
 
     st.dataframe(df_regression_anomalie.sort_values('delta_abs', ascending=False), height=150, use_container_width=True)
 
@@ -1826,7 +1826,7 @@ with tab7: # Anomalie
 
     dbscan_left, dbscan_right = st.columns([1.1,1.9], vertical_alignment="center")
     with dbscan_left:
-        st.image("ML/images/k-Abstand_dbscan.png", caption="k-Abstand")
+        st.image("Machine_Learning/images/k-Abstand_dbscan.png", caption="k-Abstand")
         
         st.markdown("""
                     * DBSCAN algorithmusbedingt nur sinnvoll mit kontinuierlichen Werten
@@ -1838,12 +1838,12 @@ with tab7: # Anomalie
                     * nur 3 Übereinstimmungen zwischen den 74 DBSCAN-Anomalien und den 100 Werten der Regression 
                     """)
 
-        df_anomalie_schnittmenge = pd.read_csv("ML/anomalien_schnittmenge.csv")
+        df_anomalie_schnittmenge = pd.read_csv("Machine_Learning/anomalien_schnittmenge.csv")
 
     st.dataframe(df_anomalie_schnittmenge, height=150, use_container_width=True)
 
     with dbscan_right:
-        st.image("ML/images/DBSCAN.png", caption="Anomalieuntersuchung über DBSCAB")
+        st.image("Machine_Learning/images/DBSCAN.png", caption="Anomalieuntersuchung über DBSCAB")
 
     st.html("<div style='margin-bottom: 50px;'></div>")
 
@@ -1851,7 +1851,7 @@ with tab7: # Anomalie
 
     forest_left, forest_right = st.columns([1.1,1.9], vertical_alignment="center")
     with forest_left:
-        st.image("ML/images/anomalie_score_isolation_forest.png", caption="Anomaliescore")
+        st.image("Machine_Learning/images/anomalie_score_isolation_forest.png", caption="Anomaliescore")
         st.markdown("""
             * Isolation Forest sowohl für kontinuierliche, wie auch für kategorische Werte, geeignet
             * Trainset auf Anomalien geprüft
@@ -1859,7 +1859,7 @@ with tab7: # Anomalie
             * Entfernen der 342 Werte aus Trainset verbessert Vorhersagen leicht (MAE-Wert sinkt um 0,01)
             """)
     with forest_right:
-        st.image("ML/images/isolation_forest.png", caption="Anomalieuntersuchung über Isolation Forest")
+        st.image("Machine_Learning/images/isolation_forest.png", caption="Anomalieuntersuchung über Isolation Forest")
 
     st.html("<div style='margin-bottom: 50px;'></div>")
 
@@ -1868,7 +1868,7 @@ with tab7: # Anomalie
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - SHAP-Analyse der Datenpunkte zur Überprüfung der Anomalien")
     st.markdown("&nbsp;&nbsp;&nbsp;&nbsp; - Einfluss auf ML-Modelle testen (erste Ergebnisse zeigten leichten Einfluss mit rausgefilterten Anomaliewerten)")
 
-    svg_path = "ML/images/tabelle_regression_clo_anomalie.svg"
+    svg_path = "Machine_Learning/images/tabelle_regression_clo_anomalie.svg"
 
     # Datei als Text/String einlesen
     with open(svg_path, "r", encoding="utf-8") as f:
