@@ -1,79 +1,114 @@
-# ASHRAE Thermal Comfort App
+# App Thermische Wahrnehmung basierend auf ASHRAE-Daten
 
-The **ASHRAE Thermal Comfort App** is an interactive Streamlit application designed to explore, visualize, and analyze thermal comfort data based on ASHRAE standards and the Global Thermal Comfort Database.  
-This tool supports researchers, students, and building performance analysts in understanding environmental conditions, comfort responses, and adaptive comfort behavior across different climates and building types.
 
----
+## 🔍 Projektbeschreibung
 
-## 🔍 Features
+Thermische Wahrnehmung in Innenräumen: Datenanalyse und Machine Learning Modellierung
 
-- 📂 Upload and process thermal comfort datasets (CSV/Excel)  
-- 🔗 Merge and clean metadata and measurement tables  
-- 📊 Interactive visualizations for:
-  - Air temperature  
-  - Relative humidity  
-  - PMV/PPD  
-  - Adaptive comfort models  
-- 🌍 Bilingual interface (English/German)  
-- 🧭 Filtering by building type, climate, season, and study  
-- 🧮 Ready for integration with MongoDB or other databases  
-- 🧱 Modular structure for easy extension
+In diesem Projekt wurde eine interaktive Streamlit application entwickelt, um Daten zur thermischen Wahrnehmung in Innenräumen basierend auf der ASHRAE Global Thermal Comfort Database II zu erkunden, zu visualisieren und zu analysieren.
+Diese App soll Wissenschaftler:innen, Studierende und Analyst:innen darin unterstützen, Umgebungsbedingungen, Komfortbewertungen und adaptives Verhalten über verschiedene Klima- und Gebäudetypen hinweg zu verstehen.   
+
 
 ---
 
-## 🎯 Purpose
+## Datenquelle
 
-This project aims to support academic research and teaching in:
+- **ASHRAE Global Thermal Comfort Database v2.1**
+- Link: https://datadryad.org/dataset/doi:10.6078/D1F671 (Stand 16.06.2026)
 
-- Building science  
-- Indoor environmental quality  
-- Human thermal comfort  
-- Data analysis and visualization  
+- Umfassende Datenbank zur Untersuchung des thermischen Komforts in Gebäuden weltweit
+- Zusammenstellung von Feldstudien aus dem Zeitraum 1995–2016
 
-It provides a practical way to explore how thermal comfort data is collected, structured, and interpreted according to ASHRAE guidelines.
+
+## 🔍 Projektinhalte
+
+- 📂 Hochladen, zusammenführen und bearbeiten der Tabellen metadata und measurement (CSV)  
+- 📊 Datenanalyse und interaktive Visualisierungen für:
+  - Klimatische/geografische Variablen
+  - Belüftungsart 
+  - Physikalische Parameter
+- :material/smart_toy: Machine Learning  
+- 🧭 Filterung u.a. nach Belüftungsart, Klimatypen, Alter etc.
+- 🧮 Integration mit Neon oder einer anderen Datenbank möglich 
 
 ---
 
-## 🛠️ Technologies Used
+## 🎯 Projektziel
 
-- **Python 3.10+**  
+- Das Projekt soll zeigen, wie subjektive thermische Wahrnehmung und physikalische Parameter zusammenwirken und welche globalen Muster sich in großen Datensätzen erkennen lassen
+- Die Streamlit‑App dient als interaktive Plattform, um diese Erkenntnisse verständlich und zugänglich zu machen
+
+
+---
+
+## 🛠️ Verwendete Tools
+
+- **Python**  
 - **Streamlit**  
 - **Pandas**  
 - **Plotly / Matplotlib**  
 - **NumPy**  
-- **MongoDB (optional)**  
+- **PostgreSQL Neon**  
+- **Power BI**
+- **Jupyter Notebook**
+- **scikit-learn**
 
 ---
 
-## 📁 Project Structure
+## 📁 Projektstruktur
 
 ASHRAE_Thermal_Comfort_APP/
 │
-├── app.py
-├── pages/
-├── data/
+├── app_projekt.py
+├── startseite/
+├── einfuehrung/
+├── datenbereinigung/
+├── datenbank/
+├── datenanalyse/
+├── machine_learning/
+├── dashboard/
+├── zusammenfassung_fazit/
+├── daten/
 ├── requirements.txt
-└── README.md
+└── Readme.md
 
 ---
 
-## 🚀 How to Run the App
+## 🚀 Starten der App
 
-1. Install dependencies:
+1. Installieren der notwendigen Bibliotheken:
 pip install -r requirements.txt
 
-2. Run the Streamlit app:
-streamlit run app.py
+2. Starten der Streamlit app:
+streamlit run app_projekt.py
 
 ---
 
-## 👥 Contributors
+## 👥 Team
 
-This project is developed as part of a collaborative research and academic effort.  
-Contributors include members of our study group working on thermal comfort analysis and building performance evaluation.
+Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH entwickelt und wurde in einem interdisziplinären Team durchgeführt:
+
+- Sabrina Hüschenbett     | Data Analyst
+- Dianela Mujica          | Data Analyst  
+- Mirtha Pillaca Quispe   | Data Scientist  
+- Daniel-Jan Schendel     | Data Scientist
+
 
 ---
 
-## 📄 License
 
-This repository is private and intended for academic collaboration only.
+## Projektzeitraum
+
+06.07. - 24.07.2026
+
+
+---
+
+
+## 📄 Lizenz
+
+Dieses Projekt ist privat und ist nur für Bildungszwecke gedacht.
+
+Lizenzen:
+- Code: MIT License (see LICENSE)
+- Data: Bitte die Originallizenz und Nutzungsbedingungen der Datenquelle beachten.

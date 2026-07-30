@@ -1,7 +1,5 @@
 import warnings 
 import streamlit as st
-from styles import apply_styles
-import base64
 
 # ---------------------------------------------------------
 # Titel der App
@@ -18,16 +16,16 @@ st.set_page_config(page_title="ASHRAE", layout="wide", initial_sidebar_state="ex
 # --------------------------------------------------------- 
 pg = st.navigation(
     [
-        st.Page("Startseite.py", title="Startseite", icon=":material/home:"),
-        st.Page("Einführung/introduction.py", title="Einführung", icon=":material/info:"),
+        st.Page("Startseite/Startseite.py", title="Startseite", icon=":material/home:"),
+        st.Page("Einfuehrung/introduction.py", title="Einführung", icon=":material/info:"),
         st.Page("Datenbereinigung/datenbereinigung_app.py", title="Datenbereinigung", icon=":material/menu_book:"),
-        st.Page("database.py", title="Datenbank", icon=":material/dashboard:"),
-        st.Page("analytics_clima.py", title="Klima-Analyse", icon=":material/analytics:"),
-        st.Page("analytics_belueftung.py", title="Belüftungsart-Analyse", icon=":material/analytics:"),
-        st.Page("thermal_comfort_analysis.py", title="Physikalische Parameter-Analyse", icon=":material/analytics:"),
+        st.Page("Datenbank/database.py", title="Datenbank", icon=":material/dashboard:"),
+        st.Page("Datenanalyse/analytics_clima.py", title="Klima-Analyse", icon=":material/analytics:"),
+        st.Page("Datenanalyse/analytics_belueftung.py", title="Belüftungsart-Analyse", icon=":material/analytics:"),
+        st.Page("Datenanalyse/thermal_comfort_analysis.py", title="Physikalische Parameter-Analyse", icon=":material/analytics:"),
         st.Page("ML/ml_ashrae.py", title="Machine Learning Modelling", icon=":material/smart_toy:"),
-        st.Page("Dashboard/dashboard_neu.py", title="Dashboard", icon=":material/analytics:"),
-        st.Page("Zusammenfassung und Fazit/zusammenfassung.py", title="Zusammenfassung", icon=":material/menu_book:")
+        st.Page("Dashboard/dashboard.py", title="Dashboard", icon=":material/analytics:"),
+        st.Page("Zusammenfassung_Fazit/zusammenfassung.py", title="Zusammenfassung", icon=":material/menu_book:")
     ]
 )
 

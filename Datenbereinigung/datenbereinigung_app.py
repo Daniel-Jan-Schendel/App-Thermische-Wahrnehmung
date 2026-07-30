@@ -20,7 +20,7 @@ st.title("🔍 Bereinigung des Datensatzes")
 # Bereinigter Datensatz
 df_bereinigt = pd.read_csv("Daten/db_bereinigt_final.csv")
 # Datensatz vor Standardisierung von thermal_comfort und thermal_sensation
-df = pd.read_csv("Daten/db_bereinigt.csv")
+df = pd.read_csv("Daten/db_measurements_v210.csv")
 
 # ---------------------------------------------------------
 # Tabs definieren

@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS public.dim_buildings (
-    building_id INT PRIMARY KEY, region VARCHAR(50), country VARCHAR(100), city VARCHAR(100),
-    latitude NUMERIC, longitude NUMERIC, climate VARCHAR(100), building_type VARCHAR(100), cooling_type VARCHAR(100)
-);
-
-CREATE TABLE IF NOT EXISTS public.fact_thermal_records (
-    record_id INT PRIMARY KEY, building_id INT, contributor VARCHAR(150), year INT, records INT, database NUMERIC, quality_assurance VARCHAR(50), index INT, timestamp TEXT, season VARCHAR(50), age NUMERIC, gender VARCHAR(20), metabolic_rate NUMERIC, clothing_ensemble_insulation NUMERIC, air_temperature NUMERIC, air_temperature_1_1 NUMERIC, air_temperature_0_6 NUMERIC, air_temperature_0_1 NUMERIC, operative_temperature NUMERIC, radiant_temperature NUMERIC, globe_temperature NUMERIC, globe_temperature_1_1 NUMERIC, globe_temperature_0_6 NUMERIC, globe_temperature_0_1 NUMERIC, relative_humidity NUMERIC, air_speed NUMERIC(5,4), air_speed_1_1 NUMERIC(5,4), air_speed_0_6 NUMERIC(5,4), air_speed_0_1 NUMERIC(5,4), activity_10 VARCHAR(50), activity_20 VARCHAR(50), activity_30 VARCHAR(50), activity_60 VARCHAR(50), thermal_sensation NUMERIC, thermal_acceptability VARCHAR(50), thermal_preference VARCHAR(50), thermal_comfort NUMERIC, air_movement_acceptability VARCHAR(50), air_movement_preference VARCHAR(50), blind_curtain VARCHAR(50), fan VARCHAR(50), "window" VARCHAR(50), door VARCHAR(50), heater VARCHAR(50), outdoor_air_temperature NUMERIC, outdoor_relative_humidity NUMERIC, standard_effective_temperature NUMERIC, predicted_mean_vote NUMERIC, predicted_percentage_dissatisfied NUMERIC, calculated_predicted_mean_vote NUMERIC, calculated_predicted_percentage_dissatisfied NUMERIC
-);

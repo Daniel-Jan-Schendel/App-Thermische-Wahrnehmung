@@ -9,7 +9,7 @@ graphviz
 requests
 python-dotenv
 streamlit-echarts
-#io
+io
 dotenv
 sqlalchemy
 shap
@@ -19,9 +19,8 @@ multiprocess
 joblib
 missingno
 altair
-streamlit_echarts 
-seaborn
-sklearn
 pydeck
 math
 scipy
+Pillow
+tabulate
