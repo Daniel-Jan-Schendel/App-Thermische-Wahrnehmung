@@ -23,7 +23,7 @@ st.title("Datenbank")
 # ---------------------------------------------------------
 # TABS (ONLY ON MAIN PAGE)
 # ---------------------------------------------------------
-tab_1, tab_2, tab_3, tab_4 = st.tabs(["📘 Neon PostgreSQL – Datenbank", "🧱 Datenbank-Architektur & Optimierung", "📊 Power BI-Integration", "Verfahren"])
+tab_1, tab_2, tab_3, tab_4 = st.tabs(["📘 Neon PostgreSQL – Datenbank", "🧱 Datenbank-Architektur & Optimierung", "📊 Power BI-Integration", "📋 Verfahren"])
 
 # ---------------------------------------------------------
 # SOURCE TAB
