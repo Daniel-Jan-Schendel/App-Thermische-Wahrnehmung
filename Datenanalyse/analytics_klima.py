@@ -563,7 +563,7 @@ with tab2:
     # ---------------------------------------------------------
     st.subheader("📊 Gibt es Unterschiede in der thermischen Wahrnehmung nach Klimatyp, Klimazone, Region und Land?")
     st. markdown("""
-    - Gibt es Unterschiede zwischen den Ausprägungen der Gruppen innerhalb der Variablen (z.B. zwsichen verschiedenen Klimatypen)?
+    - Gibt es Unterschiede zwischen den Ausprägungen der Gruppen innerhalb der klimatischen/geografischen Variablen (z.B. zwischen verschiedenen Klimatypen)?
     - Wie ausgeprägt sind diese Unterschiede je nach Variable (z.B. Sind die Unterschiede nach Klimatypen größer als nach Klimazonen)?
     """
     )

@@ -309,7 +309,11 @@ with tab3:
         st.html("<div style='height: 10px;'></div>")   
     # --- Fragestellung ---
     with col5:
-        st.info("- Unterscheidet sich das thermische Befinden zwischen klimatischen/geografischen Gruppen?")
+        st.info("""
+        - Gibt es Unterschiede in der thermischen Wahrnehmung nach Klimatyp, Klimazone, Region und Land?
+        - Wie ausgeprägt sind diese Unterschiede je nach klimatischer/geografischer Variable?
+        """
+        )
     # ---------------------------------------------------------
     # Spalte 2: Belüftungsart-Analyse
     # ---------------------------------------------------------
