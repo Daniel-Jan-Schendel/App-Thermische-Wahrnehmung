@@ -17,6 +17,9 @@ env/
 # Streamlit
 .streamlit/secrets.toml
 
+# VS Code
+.vscode/
+
 # OS files
 .DS_Store
 Thumbs.db
