@@ -1021,7 +1021,15 @@ with tab5: # classification cooling type
                     st.markdown("### 🔍 Live-SHAP-Wasserfalldiagramm")
                     
                     # Numerischen Index der echten Live-Vorhersage (0, 1 oder 2)
-                    predicted_class_idx = int(num_prediction) if hasattr(num_prediction, "__len__") else int(num_prediction)
+                    if hasattr(num_prediction, "item"):
+                        predicted_class_idx = int(num_prediction.item())
+                    elif hasattr(num_prediction, "__len__") and len(num_prediction) > 0:
+                        # Fallback für Listen oder mehrdimensionale Arrays (nimmt das erste Element)
+                        val = num_prediction[0]
+                        predicted_class_idx = int(val.item()) if hasattr(val, "item") else int(val)
+                    else:
+                        predicted_class_idx = int(num_prediction)
+                    
                     predicted_class_name = target_names[predicted_class_idx]
                     
                     # ZWINGENDE SYNCHRONISATION: Wenn sich die Vorhersage geändert hat, 
@@ -1045,13 +1053,13 @@ with tab5: # classification cooling type
 
                     # Rohe SHAP-Werte für das aktuelle Slider-Beispiel berechnen
                     single_shap = explainer(input_data)
-                    
-                    fig_local, ax_local = plt.subplots(figsize=(8, 4))
-                    
-                    if len(single_shap.shape) == 3: 
 
-                        
-                        # --- MATHEMATISCHE KALIBRIERUNG AUF PREDICT_PROBA !!! --- # Für Umrechnung SHAP-Values in reale W-Keiten
+                    fig_local, ax_local = plt.subplots(figsize=(8, 4))
+
+                    if len(single_shap.shape) == 3: 
+                        # =====================================================================
+                        # MULTI-KLASSEN-FALL (Ihre Kalibrierung)
+                        # =====================================================================
                         true_end_prob = probabilities[class_idx_local]
                         
                         if hasattr(single_shap.base_values, "ndim") and single_shap.base_values.ndim > 1:
@@ -1069,22 +1077,135 @@ with tab5: # classification cooling type
                             calibrated_values = raw_values * scaling_factor
                         else:
                             calibrated_values = raw_values
-                        
-                        prob_shap = shap.Explanation(
-                            values=calibrated_values,
-                            base_values=raw_base_value,
-                            data=input_data.values[0],  # GEÄNDERT: .values[0] statt .values
-                            feature_names=feature_names
-                        )
-                        
-                        # Waterfall-Plot zeichnen
-                        shap.plots.waterfall(prob_shap, show=False)
-                        
+                            
+                        plot_values = calibrated_values
+                        base_val_for_plot = raw_base_value
+                        prob_for_plot = true_end_prob
+
                     else:
-                        # Binärer Fallback
-                        shap.plots.waterfall(single_shap, show=False)
+                        # =====================================================================
+                        # BINÄRER FALLBACK (Sicher gegen den "0-dimensional array"-Fehler)
+                        # =====================================================================
+                        # Werte für die erste Instanz extrahieren
+                        if len(single_shap.values.shape) > 1:
+                            plot_values = single_shap.values[0]
+                        else:
+                            plot_values = single_shap.values
+                            
+                        # Basiswert auslesen und zwingend in Python-Skalar konvertieren
+                        if hasattr(single_shap.base_values, "item"):
+                            base_val_for_plot = single_shap.base_values.item()
+                        elif isinstance(single_shap.base_values, (list, np.ndarray)) and len(single_shap.base_values) > 0:
+                            base_val_for_plot = single_shap.base_values[0]
+                        else:
+                            base_val_for_plot = single_shap.base_values
+                            
+                        # Bei binären Modellen nutzen wir oft direkt die Wahrscheinlichkeit der positiven Klasse
+                        prob_for_plot = probabilities[1] if hasattr(probabilities, "__len__") and len(probabilities) > 1 else probabilities
+
+                    # Daten sortieren (Wichtigste Merkmale nach oben)
+                    indices = np.argsort(np.abs(plot_values))[::-1]
+                    
+                    # Begrenzung auf Top 10 Merkmale
+                    top_n = min(10, len(indices))
+                    selected_indices = indices[:top_n][::-1]  # Umdrehen für die barh-Treppen-Reihenfolge
+                    
+                    # Daten als native Python-Grundtypen extrahieren
+                    bars_values = [float(plot_values[i]) for i in selected_indices]
+                    bars_names = [str(feature_names[i]) for i in selected_indices]
+                    
+                    # Eingabewerte sicher extrahieren (egal ob DataFrame oder Array)
+                    if hasattr(input_data, "iloc"):
+                        feature_inputs = [float(input_data.iloc[0, i]) for i in selected_indices]
+                    else:
+                        flat_input = np.asarray(input_data).flatten()
+                        feature_inputs = [float(flat_input[i]) for i in selected_indices]
+                    
+                    # KETTE FÜR DEN WATERFALL-PLOT BERECHNEN
+                    left_positions = np.zeros(len(bars_values))
+                    current_start = float(base_val_for_plot)
+                    
+                    for idx in range(len(bars_values)):
+                        left_positions[idx] = current_start
+                        current_start += bars_values[idx]
+                    
+                    # Label-Text generieren: "Merkmal = Wert"
+                    y_labels = [f"{name} = {val:.2f}" for name, val in zip(bars_names, feature_inputs)]
+                    y_pos = np.arange(len(selected_indices))
+                    
+                    # SHAP-Farben zuweisen (Dunkelrot / Hellblau)
+                    colors = ['#ff0051' if val > 0 else '#008bfb' for val in bars_values]
+                    
+                    # Balken mit dem 'left'-Parameter zeichnen (Treppenstruktur)
+                    bars = ax_local.barh(y_pos, bars_values, left=left_positions, color=colors, height=0.55)
+                    
+                    # START- UND ENDPUNKT ALS TEXT AN DEN ACHSEN ERGÄNZEN
+                    extended_y_pos = np.concatenate([[-0.8], y_pos, [len(y_pos) - 0.2]])
+                    extended_y_labels = [f"E[f(X)] = {float(base_val_for_plot):.2%}"] + y_labels + [f"f(X) = {float(prob_for_plot):.2%}"]
+                    
+                    ax_local.set_yticks(extended_y_pos)
+                    ax_local.set_yticklabels(extended_y_labels, fontsize=10)
+                    
+                    # Ticks für Start und Ende fett markieren
+                    ax_local.get_yticklabels()[0].set_weight("bold")
+                    ax_local.get_yticklabels()[-1].set_weight("bold")
+                    
+                    # VISUELLE ANKERLINIEN UND TEXT-BOXEN IN DER GRAFIK
+                    # Vertikale Linie + Box für den Startwert (ganz unten)
+                    ax_local.axvline(float(base_val_for_plot), color='gray', linestyle='--', linewidth=1)
+                    ax_local.text(float(base_val_for_plot), -0.7, f'{float(base_val_for_plot):.2%}', 
+                                  va='center', ha='center', fontsize=9, fontweight='bold', 
+                                  bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor='gray', alpha=0.8))
+                    
+                    # Punktlinie vom Basiswert zum allerersten Balken
+                    ax_local.plot([float(base_val_for_plot), float(base_val_for_plot)], [-0.8, 0], color='gray', linestyle=':', linewidth=0.8)
+                    
+                    # Werte an den Balkenspitzen und Verbindungslinien einzeichnen
+                    for idx, bar in enumerate(bars):
+                        width = bar.get_width()
+                        start_pos = left_positions[idx]
+                        end_pos = start_pos + width
                         
+                        align = 'left' if width < 0 else 'right'
+                        h_offset = -0.01 if width < 0 else 0.01
+                        ax_local.text(end_pos + h_offset, bar.get_y() + bar.get_height()/2, 
+                                      f'{width:+.2f}', 
+                                      va='center', ha=align, fontsize=9, fontweight='bold', color='black')
+                        
+                        # Gestrichelte Verbindungslinie zum nächsten Balken
+                        if idx < len(bars) - 1:
+                            ax_local.plot([end_pos, end_pos], [bar.get_y() + bar.get_height(), bar.get_y() + bar.get_height() + 0.45], 
+                                          color='gray', linestyle=':', linewidth=0.8)
+                        else:
+                            # Verbindungslinie vom allerletzten Balken zum f(X)-Endpunkt ganz oben
+                            ax_local.plot([end_pos, end_pos], [bar.get_y() + bar.get_height(), len(bars) - 0.2], 
+                                          color='gray', linestyle=':', linewidth=0.8)
+                    
+                    # Vertikale Linie + Box für den finalen Vorhersagewert (ganz oben)
+                    ax_local.axvline(float(prob_for_plot), color='#ff0051' if float(prob_for_plot) > float(base_val_for_plot) else '#008bfb', 
+                                     linestyle='-', linewidth=1.2, alpha=0.7)
+                    ax_local.text(float(prob_for_plot), len(bars) - 0.2, f'{float(prob_for_plot):.2%}', 
+                                  va='center', ha='center', fontsize=9, fontweight='bold', color='white',
+                                  bbox=dict(boxstyle='round,pad=0.3', facecolor='#222222', edgecolor='none'))
+                    
+                    # Achsenbegrenzungen dynamisch optimieren
+                    all_points = list(left_positions) + [float(base_val_for_plot), float(prob_for_plot)]
+                    ax_local.set_xlim(min(all_points) - 0.05, max(all_points) + 0.05)
+                    ax_local.set_ylim(-1.2, len(bars))
+                    
+                    # Optische Verschönerungen im sauberen SHAP-Look
+                    ax_local.set_title(
+                        f"Einfluss auf Klasse: {selected_class_local}", 
+                        fontsize=11, fontweight='bold', pad=15
+                    )
+                    
+                    ax_local.spines['top'].set_visible(False)
+                    ax_local.spines['right'].set_visible(False)
+                    ax_local.spines['left'].set_color('#cccccc')
+                    ax_local.spines['bottom'].set_color('#cccccc')
+                    
                     plt.tight_layout()
+                    
                     st.pyplot(fig_local)
                     plt.close()
 
@@ -1531,63 +1652,172 @@ with tab6: # Regression clo
                                         'season', 'building_type', 'air_speed', 
                                         'metabolic_rate', 'climate_zone', 'cooling_type']
                     
+                    target_class_idx = predicted_class_idx if 'predicted_class_idx' in locals() else 0
+                    
                     # Strikter 1D-Vektor
                     live_values = np.zeros(len(original_features))
                     
                     for i, orig_feat in enumerate(original_features):
                         matching_cols = [col for col in neue_daten_df.columns if orig_feat in col]
                         matching_indices = [neue_daten_df.columns.get_loc(col) for col in matching_cols]
-                        # Mathematisch exakte Summe der SHAP-Beiträge extrahieren
-                        live_values[i] = float(np.sum(live_shap_raw.values[0, matching_indices]))
+                        
+                        # Sicheres Auslesen je nach Dimension (Multi-Klasse vs. Binär)
+                        if len(live_shap_raw.values.shape) == 3:
+                            # 3D: [Instanz 0, Features, Klasse]
+                            shap_contribs = live_shap_raw.values[0, matching_indices, target_class_idx]
+                        else:
+                            # 2D: [Instanz 0, Features]
+                            shap_contribs = live_shap_raw.values[0, matching_indices]
+                            
+                        live_values[i] = float(np.sum(shap_contribs))
 
-                    # FEHLERFREIE EXTRAKTION DES BASE VALUES ALS REINER FLOAT-SKALAR
                     try:
-                        base_value_scalar = float(live_shap_raw.base_values)
-                    except (TypeError, IndexError):
-                        try:
+                        if hasattr(live_shap_raw.base_values, "ndim") and live_shap_raw.base_values.ndim > 0:
+                            # Wenn es ein Array ist, nimm den Wert für die Zielklasse oder das erste Element
+                            if len(live_shap_raw.base_values) > target_class_idx:
+                                base_value_scalar = float(live_shap_raw.base_values[target_class_idx])
+                            else:
+                                base_value_scalar = float(live_shap_raw.base_values[0])
+                        elif hasattr(live_shap_raw.base_values, "item"):
+                            base_value_scalar = float(live_shap_raw.base_values.item())
+                        else:
                             base_value_scalar = float(live_shap_raw.base_values)
-                        except:
-                            base_value_scalar = float(saved_explainer.expected_value)
+                    except:
+                        # Fallback über den Explainer selbst
+                        if hasattr(saved_explainer, "expected_value"):
+                            exp_val = saved_explainer.expected_value
+                            if hasattr(exp_val, "__len__") and len(exp_val) > target_class_idx:
+                                base_value_scalar = float(exp_val[target_class_idx])
+                            elif hasattr(exp_val, "item"):
+                                base_value_scalar = float(exp_val.item())
+                            else:
+                                base_value_scalar = float(exp_val)
+                        else:
+                            base_value_scalar = 0.0
 
-                    # Echter, finaler Vorhersagewert der Gesamtpipeline
+                    try:
+                        final_prediction_value = float(probabilities[target_class_idx]) if 'probabilities' in locals() else float(vorhersage)
+                    except:
+                        final_prediction_value = float(base_value_scalar + np.sum(live_values))
+                    
+
                     final_prediction_value = float(vorhersage)
                     
-                    # Mathematischer Abgleich der Lücke (Pipeline-Bias / Rundungsfehler)
+                    # Berechne die Werte so, dass sie mathematisch zwingend exakt bei 'vorhersage' enden
                     actual_shap_sum = np.sum(live_values)
                     expected_shap_sum = final_prediction_value - base_value_scalar
-                    missing_diff = expected_shap_sum - actual_shap_sum
                     
-                    # INTELLIGENTE KORREKTUR: Verteilen der Differenz gleichmäßig auf die 10 echten Balken.
-                    # Dadurch verschwindet das 11. Feature komplett, aber f(x) schließt trotzdem perfekt ab!
-                    live_values = live_values + (missing_diff / len(original_features))
+                    if abs(actual_shap_sum) > 1e-5:
+                        live_values = live_values * (expected_shap_sum / actual_shap_sum)
+                    else:
+                        live_values = np.zeros(len(original_features))
+                        live_values[0] = expected_shap_sum # Falls Summe 0, schlägt das erste Feature die Brücke
+                    # =====================================================================
 
-                    # Die echten Werte für die Achsenbeschriftung mitsenden (Länge exakt 10)
-                    display_data = np.array([
+
+                    display_data = [
                         outdoor_air_temperature, air_temperature, relative_humidity, 
-                        #season, country, building_type, air_speed, 
                         season, building_type, air_speed, 
                         metabolic_rate, climate_zone, cooling_type
-                    ], dtype=object)
+                    ]
 
-                    # mathematisch geschlossenes SHAP-Explanation-Objekt bauen (Strikte 10er-Struktur)
-                    from shap import Explanation
-                    live_shap_clean = Explanation(
-                        values=live_values,              # 1D-Vektor (Länge 10)
-                        base_values=base_value_scalar,   # Garantiert skalarer Float-Startwert
-                        data=display_data,                # 1D-Vektor der echten Beschriftungen
-                        feature_names=original_features  # Exakt die 10 echten Namen
+                    fig, ax = plt.subplots(figsize=(10, 6.5))
+                    
+                    indices = np.argsort(np.abs(live_values))
+                    y_pos = np.arange(len(indices))
+                    bars_values = [float(live_values[idx]) for idx in indices]
+                    bars_names = [str(original_features[idx]) for idx in indices]
+                    bars_inputs = [display_data[idx] for idx in indices]
+                    
+                    # REKONSTRUKTION DER KETTE (Garantierte Landung bei final_prediction_value)
+                    left_positions = np.zeros(len(bars_values))
+                    current_start = base_value_scalar
+                    
+                    for idx in range(len(bars_values)):
+                        left_positions[idx] = current_start
+                        current_start += bars_values[idx]
+                    
+                    y_labels = []
+                    for name, val in zip(bars_names, bars_inputs):
+                        if isinstance(val, (int, float)):
+                            y_labels.append(f"{name} = {val:.2f}")
+                        else:
+                            y_labels.append(f"{name} = {str(val)}")
+                    
+                    colors = ['#ff0051' if val > 0 else '#008bfb' for val in bars_values]
+                    bars = ax.barh(y_pos, bars_values, left=left_positions, color=colors, height=0.55)
+                    
+                    # START- UND ENDPUNKT ALS TEXT AN DEN ACHSEN (Explizit mit den Live-Variablen)
+                    extended_y_pos = np.concatenate([[-0.8], y_pos, [len(y_pos) - 0.2]])
+                    extended_y_labels = [f"E[f(X)] = {base_value_scalar:.2f}"] + y_labels + [f"f(X) = {final_prediction_value:.2f}"]
+                     
+                    ax.set_yticks(extended_y_pos)
+                    ax.set_yticklabels(extended_y_labels, fontsize=10)
+
+                    # Die Labels für Start und Ende fett hervorheben
+                    ax.get_yticklabels()[0].set_weight("bold")
+                    ax.get_yticklabels()[-1].set_weight("bold")
+                    
+                    # 2. ERGÄNZUNG: VISUELLE ANKERLINIEN UND TEXTE IN DER GRAFIK
+                    # Vertikale Linie für den Startwert (ganz unten)
+                    ax.axvline(base_value_scalar, color='gray', linestyle='--', linewidth=1)
+                    ax.text(base_value_scalar, -0.7, f'{base_value_scalar:.2f}', 
+                            va='center', ha='center', fontsize=9, fontweight='bold', 
+                            bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor='gray', alpha=0.8))
+                    
+                    # Gestrichelte Verbindungslinie vom Basiswert zum allerersten Balken
+                    ax.plot([base_value_scalar, base_value_scalar], [-0.8, 0], color='gray', linestyle=':', linewidth=0.8)
+                    
+                    # Werte und Verbindungslinien für die echten Balken hinzufügen
+                    for idx, bar in enumerate(bars):
+                        width = bar.get_width()
+                        start_pos = left_positions[idx]
+                        end_pos = start_pos + width
+                        
+                        align = 'left' if width < 0 else 'right'
+                        h_offset = -0.01 if width < 0 else 0.01
+                        ax.text(end_pos + h_offset, bar.get_y() + bar.get_height()/2, 
+                                f'{width:+.2f}', 
+                                va='center', ha=align, fontsize=9, fontweight='bold', color='black')
+                        
+                        # Gestrichelte Verbindungslinie zum nächsten Balken
+                        if idx < len(bars) - 1:
+                            ax.plot([end_pos, end_pos], [bar.get_y() + bar.get_height(), bar.get_y() + bar.get_height() + 0.45], 
+                                    color='gray', linestyle=':', linewidth=0.8)
+                        else:
+                            # Verbindungslinie vom allerletzten Balken zum f(X)-Endpunkt ganz oben
+                            ax.plot([end_pos, end_pos], [bar.get_y() + bar.get_height(), len(bars) - 0.2], 
+                                    color='gray', linestyle=':', linewidth=0.8)
+                    
+                    # Vertikale Linie und Text-Box für den finalen Vorhersagewert (ganz oben)
+                    ax.axvline(final_prediction_value, color='#ff0051' if final_prediction_value > base_value_scalar else '#008bfb', 
+                               linestyle='-', linewidth=1.2, alpha=0.7)
+                    ax.text(final_prediction_value, len(bars) - 0.2, f'{final_prediction_value:.2f}', 
+                            va='center', ha='center', fontsize=9, fontweight='bold', color='white',
+                            bbox=dict(boxstyle='round,pad=0.3', facecolor='#222222', edgecolor='none'))
+                    
+                    # Grenzen dynamisch anpassen
+                    all_points = list(left_positions) + [base_value_scalar, final_prediction_value]
+                    ax.set_xlim(min(all_points) - 0.2, max(all_points) + 0.2)
+                    ax.set_ylim(-1.2, len(bars))
+                    
+                    # Titel im sauberen SHAP-Look
+                    title_class = predicted_class_name if 'predicted_class_name' in locals() else f"Klasse {target_class_idx}"
+                    ax.set_title(
+                        f"Live-Feature-Einfluss für Vorhersage: {title_class}", 
+                        fontsize=11, fontweight='bold', pad=15
                     )
                     
-                    fig, ax = plt.subplots(figsize=(12, 8))
-                    shap.plots.waterfall(live_shap_clean, max_display=10, show=False)
+                    # Rahmenlinien entfernen
+                    ax.spines['top'].set_visible(False)
+                    ax.spines['right'].set_visible(False)
+                    ax.spines['left'].set_color('#cccccc')
+                    ax.spines['bottom'].set_color('#cccccc')
+                    
                     plt.tight_layout()
                     
-                    # STREAMLIT REPARATUR: Spaltenverhältnis explizit als Liste übergeben!
-                    # 1 Teil links Platzhalter, 3 Teile Mitte für Grafik, 1 Teil rechts Platzhalter
-                    col_links, col_grafik, col_rechts = st.columns([1, 3, 1])
-                    with col_grafik:
-                        # use_container_width=False sorgt dafür, dass die Grafik kompakt bleibt
-                        st.pyplot(fig, use_container_width=False)
+
+                    st.pyplot(fig, use_container_width=False)
 
                     
                 except Exception as shap_error:
