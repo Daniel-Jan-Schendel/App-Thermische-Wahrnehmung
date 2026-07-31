@@ -3,9 +3,9 @@
 
 ## 🔍 Projektbeschreibung
 
-Thermische Wahrnehmung in Innenräumen: Datenanalyse und Machine Learning Modellierung
+### Thermische Wahrnehmung in Innenräumen: Datenanalyse und Machine Learning Modellierung
 
-In diesem Projekt wurde eine interaktive Streamlit application entwickelt, um Daten zur thermischen Wahrnehmung in Innenräumen basierend auf der ASHRAE Global Thermal Comfort Database II zu erkunden, zu visualisieren und zu analysieren.
+In diesem Projekt wurde eine interaktive Streamlit application entwickelt, um Daten zur thermischen Wahrnehmung in Innenräumen basierend auf der ASHRAE Global Thermal Comfort Database II zu analysieren und zu visualisieren.
 Diese App soll Wissenschaftler:innen, Studierende und Analyst:innen darin unterstützen, Umgebungsbedingungen, Komfortbewertungen und adaptives Verhalten über verschiedene Klima- und Gebäudetypen hinweg zu verstehen.   
 
 
@@ -22,7 +22,7 @@ Diese App soll Wissenschaftler:innen, Studierende und Analyst:innen darin unters
 
 ## 🔍 Projektinhalte
 
-- 📂 Hochladen, zusammenführen und bearbeiten der Tabellen metadata und measurement (CSV)  
+- 📂 Hochladen, zusammenführen und bearbeiten der Tabellen metadata und measurements (CSV)  
 - 📊 Datenanalyse und interaktive Visualisierungen für:
   - Klimatische/geografische Variablen
   - Belüftungsart 
@@ -77,16 +77,18 @@ ASHRAE_Thermal_Comfort_APP/
 ## 🚀 Starten der App
 
 1. Installieren der notwendigen Bibliotheken:
+
 pip install -r requirements.txt
 
 2. Starten der Streamlit app:
+
 streamlit run app_projekt.py
 
 ---
 
 ## 👥 Team
 
-Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung zu Data Analyst bzw. Data Scientist des Data Science Institute DSI Education GmbH entwickelt und wurde in einem interdisziplinären Team durchgeführt:
+Dieses Projekt wurde im Rahmen der beruflichen Weiterbildung in Data Analytics bzw. Data Science des Data Science Institute DSI Education GmbH entwickelt und wurde in einem interdisziplinären Team durchgeführt:
 
 - Sabrina Hüschenbett     | Data Analyst
 - Dianela Mujica          | Data Analyst  

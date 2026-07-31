@@ -182,10 +182,11 @@ st.title("🌍 Analyse klimatische/geografische Variablen und thermische Wahrneh
 # ---------------------------------------------------------
 # tabs definieren
 # ---------------------------------------------------------
-tab1, tab2, tab3 = st.tabs([
-    "🌍 Klimatische Verteilung",
+tab1, tab2, tab3, tab4 = st.tabs([
+    "🌍 Geografische Verteilung",
     "🔍 Untersuchung der Unterschiede nach klimatischen/geografischen Variablen", 
-    "📊 Betrachtung der Unterschiede nach klimatischen/geografischen Variablen"
+    "📊 Betrachtung der Unterschiede",
+    "📘 Zusammenfassung"
     ])
 
 #########################################################################################################
@@ -201,14 +202,21 @@ with tab1:
     # --- Nur Zeilen behalten, die gültige Koordinaten haben ---
     df = df.dropna(subset=["latitude", "longitude"])
     # --- Überschrift ---
-    st.subheader("Klimatische Verteilung")
+    st.subheader("Geografische Verteilung")
+
+    # --- Text ---
+    st.markdown("""
+    - Die Klimatypen wurden 4 Hauptklimazonen zugeordnet 
+    - Die Karte zeigt die geografische Verteilung der Hauptklimazonen bzw. der Klimatypen
+    """
+    )
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
     # Filter-Widget (Kima/Klimazone)
     # ---------------------------------------------------------
     climate_filter = st.selectbox(
-        "Variable auswählen",
+        "Klimatische Variable auswählen",
         ["Klimazone", "Klimatyp"],
         key="climate_variable"
     )
@@ -410,44 +418,50 @@ with tab1:
             }
         }
 
-    # ---------------------------------------------------------
-    # Legende hinzufügen
-    # ---------------------------------------------------------
-    st.markdown("""
-    **Klimazonen:**
-
-    🔴 Tropical  
-    🟡 Dry  
-    🟢 Temperate  
-    🟣 Continental
-    """)
+    col1, spacer, col2 = st.columns([2, 0.2, 0.5])
 
     # ---------------------------------------------------------
-    # Karte rendern
+    # Spalte 1: Karte rendern
     # ---------------------------------------------------------
-    # --- Klimatypen ---
-    if climate_filter == "Klimatyp":
-        st.pydeck_chart(
-            pdk.Deck(
-                layers=[layer_climate],
-                initial_view_state=view_state_climate,
-                tooltip=tooltip_climate,
-                map_style=None
+    with col1:
+        # --- Klimatypen ---
+        if climate_filter == "Klimatyp":
+            st.pydeck_chart(
+                pdk.Deck(
+                    layers=[layer_climate],
+                    initial_view_state=view_state_climate,
+                    tooltip=tooltip_climate,
+                    map_style=None
+                )
             )
-        )
 
-    # --- Klimazonen ---
-    else:
-        st.pydeck_chart(
-            pdk.Deck(
-                layers=[layer_climate_zone],
-                initial_view_state=view_state_climate_zone,
-                tooltip=tooltip_climate_zone,
-                map_style=None 
+        # --- Klimazonen ---
+        else:
+            st.pydeck_chart(
+                pdk.Deck(
+                    layers=[layer_climate_zone],
+                    initial_view_state=view_state_climate_zone,
+                    tooltip=tooltip_climate_zone,
+                    map_style=None 
+                )
             )
-        )
-    st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
 
+
+    # ---------------------------------------------------------
+    # Spalte 2: Legende hinzufügen
+    # ---------------------------------------------------------
+    with col2:
+        st.markdown("""
+        **Klimazonen:**
+
+        🔴 Tropical  
+        🟡 Dry  
+        🟢 Temperate  
+        🟣 Continental
+        """)
+
+    
     # ---------------------------------------------------------
     # Zuordnung Klimatypen zu Klimazonen
     # ---------------------------------------------------------
@@ -531,7 +545,7 @@ with tab1:
                 )
 
     # --- Expander mit Hinweis zu Klimazonen-Zuweisung ---
-    with st.expander("Weitere Informationen zu Klimatypen und Klimazonen"):
+    with st.expander("ℹ️ Weitere Informationen zu Klimatypen und Klimazonen"):
         st.markdown("""  
         - Hinweise:
             - Die **5. Hauptklimazone Polar** ist hier nicht mit aufgeführt, da es für diese Klimazone in diesem Datensatz keine Daten gibt
@@ -560,6 +574,9 @@ with tab2:
     # ---------------------------------------------------------
     st.subheader("📊 Gibt es Unterschiede in der thermischen Wahrnehmung nach Klimatyp, Klimazone, Region und Land?")
     st. markdown("""
+     #### ❓ Fragestellungen der Analyse:
+
+
     - Gibt es Unterschiede zwischen den Ausprägungen der Gruppen innerhalb der klimatischen/geografischen Variablen (z.B. zwischen verschiedenen Klimatypen)?
     - Wie ausgeprägt sind diese Unterschiede je nach Variable (z.B. Sind die Unterschiede nach Klimatypen größer als nach Klimazonen)?
     """
@@ -681,6 +698,8 @@ with tab2:
             use_container_width=True
         )
 
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
     # --- Spalte Ergebnisse ---
     with col_results:
         st.markdown("""
@@ -693,7 +712,7 @@ with tab2:
         st.markdown("""
 
 
-        - **Stärkste Unterschiede bei thermischen Wahrnehmungsvariablen: bei thermischem Komfort und thermischer Akzeptanz**          
+        - **Stärkste Unterschiede** bei thermischen Wahrnehmungsvariablen: bei **thermischem Komfort und thermischer Akzeptanz**          
         - Unterschiede nach klimatischen/geografischen Variablen:
             - **Stärkste Unterschiede bei Klimatyp** ➝ mittlere bis schwach ausgeprägte Unterschiede
                         
@@ -702,7 +721,7 @@ with tab2:
         ➡️ Unterschiede in thermischer Wahrnehmung zeigen sich deutlicher bei **feinerer klimatischer Klassifikation** als bei übergeordneten Klimazonen oder Länder-/Regionszugehörigkeit
     """
     )
-
+        
     # ---------------------------------------------------------
     # Ergebnis-Dataframe für statistischen Zusammenhang ausgeben
     # --------------------------------------------------------- 
@@ -723,7 +742,7 @@ with tab2:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # Expander mit Informationen zum Lesen der Unterschiede
-        with st.expander("Informationen zum Lesen der Unterschiede"):
+        with st.expander("ℹ️ Informationen zum Lesen der Unterschiede"):
             st.markdown("""                  
             - **Erklärung der Werte:**
                 - **p-Wert**: gibt an, ob ein Zusammenhang statistisch signifikant ist 
@@ -763,7 +782,7 @@ with tab3:
     # Text
     # ---------------------------------------------------------
     st.markdown("""
-        Statistische Untersuchung hat gezeigt, dass es Unterschiede zwischen den Gruppen der klimatischen und geografischen Variablen hinsichtlich thermischer Wahrnehmung gibt
+        ℹ️ Die statistische Untersuchung hat gezeigt, dass es Unterschiede zwischen den Gruppen der klimatischen und geografischen Variablen hinsichtlich thermischer Wahrnehmung gibt
         
         **➝ Wie sehen diese Unterschiede aus?**
     """
@@ -867,7 +886,6 @@ with tab3:
             st.subheader(f"Thermischer Komfort und {selected_variable_environment}")
             # --- Balkendiagramm ausgeben lassen ---
             thermal_stats = create_bars(y_domain=[0, 6])
-            
 
             # --- Ergebnisse ---
             with col_results:
@@ -925,8 +943,9 @@ with tab3:
         elif selected_variable_thermal == "Thermisches Empfinden":
             # --- Titel für Diagramm Thermisches Empfinden ---
             st.subheader(f"Thermisches Empfinden und {selected_variable_environment}")
+            # --- Balkendiagramm ausgeben lassen ---
             thermal_stats = create_bars(y_domain=[-3, 3])
-
+            
             # --- Ergebnisse ---
             with col_results:
                 # Ergebnisse für Klimatypen
@@ -963,7 +982,8 @@ with tab3:
                             - **Cyprus und Philippines:** kühlere Wahrnehmung (Median = -1)
                     """
                     )
-                    
+                st.markdown("<br><br>", unsafe_allow_html=True)
+
             # Ergebnistabelle und Bedeutung der Ergebnisse
             with col_results:
                 # Expander mit Details
@@ -1307,9 +1327,8 @@ with tab3:
         with st.expander("ℹ️ Allgemeine Hinweise zum Lesen und zur Interpretation der Diagramme"):
             st.markdown("""
             - **Hinweise zum Lesen der Diagramme:**
-                        
                 - Balken: stellen Mittelwerte dar
-                - Punkte: stellen Mediane dar
+                - Rote Punkte: stellen Mediane dar
                         
             - **Hinweise zur Interpretation der Diagramme:**
                         
@@ -1328,15 +1347,25 @@ with tab3:
     # ---------------------------------------------------------
     # Zusammenfassung
     # ---------------------------------------------------------
+with tab4:
     # --- Überschrift ---
-    st.subheader("ℹ️ Zusammenfassung")
-
+    st.subheader("ℹ️ Zusammenfassung der Ergebnisse")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
     # --- Text ---
     st.info("""
-    - Ergebnisse zeigen, dass es **Unterschiede in der thermischen Wahrnehmung zwischen den Gruppen der klimatischen und geografischen Variablen** gibt ➝ erklären jedoch nur einen Teil der Variation der thermischen Wahrnehmung
-    - Unterschiede sind **mittel bis sehr schwach** ausgeprägt
+    - Die Ergebnisse zeigen, dass es **Unterschiede in der thermischen Wahrnehmung zwischen den Gruppen der klimatischen und geografischen Variablen** gibt ➝ erklären jedoch nur einen Teil der Variation der thermischen Wahrnehmung
+
+
+    - Die Unterschiede sind **mittel bis sehr schwach** ausgeprägt
+
+
     - **Stärkste Unterschiede** zeigen sich bei den **Klimatypen**
+
+
     - **Relevanz für Ziel des Projekts:** Um ideale Bedingungen für Gebäude zu schaffen, sollten die klimatischen und geografischen Gegebenheiten berücksichtigt werden
+
+
     - **Mögliche nächste Untersuchungsfrage:** Was bewirkt die Unterschiede in der thermischen Wahrnehmung zwischen den Gruppen der klimatischen/geografischen Variablen?
     """
     )
