@@ -331,7 +331,7 @@ with tab3:
         st.markdown("<br>", unsafe_allow_html=True)
     # --- Fragestellung ---
     with col6:
-        st.info("- Inwiefern beeinflusst die gewählte Belüftungsart das themische Befinden?")
+        st.info("- Inwiefern beeinflusst die gewählte Belüftungsart die themische Wahrnehmung?")
         st.info("- Welche Unterschiede gibt es bei Gender und Alter innerhalb der verschiedenen Kühlungssysteme?")
     # ---------------------------------------------------------
     # Spalte 3: Physikalische Parameter-Analyse

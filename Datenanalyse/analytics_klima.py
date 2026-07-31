@@ -11,11 +11,13 @@ import plotly.express as px
 import math
 
 
-
+# ---------------------------------------------------------
+# Seitenkonfigurationen
+# --------------------------------------------------------- 
 st.set_page_config(page_title="Analyse Klima", layout="wide", initial_sidebar_state="expanded")
 
 # ---------------------------------------------------------
-# 📌 Funktionen definieren
+# Funktionen definieren
 # ---------------------------------------------------------
 # Funktion für Interpretation der Effektgröße
 def interpret_effect(v):
@@ -80,11 +82,6 @@ def create_pie_segments(df, climate_column, radius=1.5):
 # --- Funktion für Balkendiagramm ---
 def create_bars(y_domain):
     plot_df = df.copy()
-
-    # --- Fehlende Werte entfernen ---
-    plot_df = plot_df.dropna(
-        subset=[selected_environment_column]
-    )
     
     # --- Berechnungen für Diagramm und Ergebnistabelle ---
     thermal_stats = (
@@ -173,29 +170,29 @@ def create_bars(y_domain):
     return thermal_stats
 
 # ---------------------------------------------------------
-# 📌 Daten laden
+# Daten laden
 # ---------------------------------------------------------
 df = pd.read_csv("Daten/db_bereinigt_final.csv")
 
 # ---------------------------------------------------------
-# 📌 Seitentitel
+# Seitentitel
 # ---------------------------------------------------------
 st.title("🌍 Analyse klimatische/geografische Variablen und thermische Wahrnehmung")
 
 # ---------------------------------------------------------
-# 📌 tabs definieren
+# tabs definieren
 # ---------------------------------------------------------
 tab1, tab2, tab3 = st.tabs([
-    "Klimatische Verteilung",
-    "Untersuchung der Unterschiede nach klimatischen/geografischen Variablen", 
-    "Betrachtung der Unterschiede nach klimatischen/geografischen Variablen"
+    "🌍 Klimatische Verteilung",
+    "🔍 Untersuchung der Unterschiede nach klimatischen/geografischen Variablen", 
+    "📊 Betrachtung der Unterschiede nach klimatischen/geografischen Variablen"
     ])
 
 #########################################################################################################
 #########################################################################################################
 
 # ---------------------------------------------------------
-# 📌 Klimatische Verteilung
+# Tab 1: Klimatische Verteilung
 # ---------------------------------------------------------
 with tab1:
     # ---------------------------------------------------------
@@ -555,7 +552,7 @@ with tab1:
 #########################################################################################################
 
 # ---------------------------------------------------------
-# 📌 Untersuchung der Unterschiede zwischen klimatischen/geografischen Gruppen
+# Tab 2: Untersuchung der Unterschiede zwischen klimatischen/geografischen Gruppen
 # ---------------------------------------------------------
 with tab2:
     # ---------------------------------------------------------
@@ -576,7 +573,7 @@ with tab2:
     col_tests, col4 = st.columns([2, 1])
 
     # ---------------------------------------------------------
-    # Mapping-Dictionary
+    # Mapping-Dictionaries
     # ---------------------------------------------------------
     # Mapping-Dictionary Klima
     environment_mapping = {
@@ -753,7 +750,7 @@ with tab2:
 #########################################################################################################
 
 # ---------------------------------------------------------
-# 📌 Betrachtung der Unterschiede zwischen klimatischen Gruppen
+# Tab 3: Betrachtung der Unterschiede zwischen klimatischen Gruppen
 # ---------------------------------------------------------
 with tab3:
     # ---------------------------------------------------------
@@ -877,7 +874,7 @@ with tab3:
                 # Ergebnisse für Klimatypen
                 if selected_variable_environment == "Klimatyp":
                     st.markdown("""  
-                    - Thermischer Komfort wird **überwiegend positiv** bewertet
+                    - Thermischer Komfort wird **überwiegend tendenziell positiv** bewertet
                     - Bewertung des thermischen Komforts **unterscheidet sich zwischen den Klimatypen stärker als zwischen den Hauptklimazonen**        
 
                         - **Subtropcial highland:** bewertet Komfort tendenziell am besten mit "sehr komfortabel"(Median = 6)
