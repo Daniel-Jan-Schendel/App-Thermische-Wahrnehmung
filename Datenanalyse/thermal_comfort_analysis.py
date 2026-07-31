@@ -486,7 +486,7 @@ with tab3:
     st.markdown("""
     ### 🧊🌡️ Was bedeutet die Neutraltemperatur?
 
-    Die Neutraltemperatur ist eine zentrale Kenngröße der thermischen Wahrnehmungsanalyse. Sie beschreibt die operative Raumtemperatur, bei der Personen weder Wärme‑ noch Kälteempfindungen berichten und sich in einem thermisch neutralen Zustand befinden.
+    Die Neutraltemperatur ist eine zentrale Kenngröße der thermischen Wahrnehmungsanalyse. Sie beschreibt die operative Raumtemperatur, bei der Personen weder Wärme‑ noch Kälteempfindungen angeben und sich in einem thermisch neutralen Zustand befinden.
     
     ---  """)
 
@@ -749,7 +749,7 @@ with tab4:
     st.markdown("""
     Die folgenden Heatmaps zeigen, wie häufig diese Strategien in den ausgewählten **Gruppen** 
     angewendet werden. Dadurch lassen sich **Muster** erkennen, die direkt mit den zuvor 
-    untersuchten **Einflussgrößen der thermischen Wahrnehmung** verknüpft sind – und verdeutlichen, 
+    untersuchten **Einflussgrößen der thermischen Wahrnehmung** verknüpft sind und verdeutlichen, 
     wie unterschiedliche Gruppen auf **thermische Situationen** reagieren.
 
     """)
@@ -835,7 +835,7 @@ with tab4:
     with st.expander("🔍 Wichtigste Einflussvariable"):
 
         st.markdown("""
-        **season** → Kleidung ändert sich stark zwischen Sommer/Winter  
+        **season** → Kleidung ändert sich stark zwischen Sommer / Winter  
         **climate_zone** → Klimazone bestimmt typische Kleidung  
         **gender** → Geschlechtsspezifische Kleidungsgewohnheiten  
         **building_type** → Innenraumumgebung beeinflusst CLO  
@@ -1118,8 +1118,8 @@ with tab5:
     unzureichende Kühlung hin.
     - **Messpunkte unterhalb der Komfortzonen** weisen auf **Unterkühlung**, erhöhte 
     Luftbewegung oder ineffiziente Heizstrategien hin.
-    - Die **Streuung der Punkte** zeigt, wie unterschiedlich Gebäude, Klimazonen oder 
-    Nutzungsarten auf die Außentemperatur reagieren.
+    - Die **Streuung der Punkte** zeigt die Auswirkung von unterschiedlichen Gebäudetypen, Klimazonen oder 
+    Nutzungsarten auf die Außentemperatur.
 
     Durch die Gruppierung wird sichtbar, **welche Kategorien besonders gut oder schlecht 
     mit dem adaptiven Modell übereinstimmen** und wo potenzieller Optimierungsbedarf besteht.
