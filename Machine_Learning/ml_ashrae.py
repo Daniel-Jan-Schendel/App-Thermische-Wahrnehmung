@@ -104,17 +104,19 @@ SMALL_BULLET_COLOR = "#7f8c8d"
 INDENT_WIDTH = "40px"
 
 def slide_point(text):
+    # var(--text-color) passt sich automatisch an Hell/Dunkel an
     return f"""
-    <div style='font-size: {FONT_SIZE_TEXT}; color: {TEXT_COLOR}; line-height: 1.6; margin-bottom: 12px; display: flex; align-items: center;'>
-        <span style='font-size: {FONT_SIZE_BULLET}; color: {BULLET_COLOR}; margin-right: 15px;'>•</span> 
+    <div style="font-size: {FONT_SIZE_TEXT}; color: var(--text-color); line-height: 1.6; margin-bottom: 12px; display: flex; align-items: center;">
+        <span style="font-size: {FONT_SIZE_BULLET}; color: {BULLET_COLOR}; margin-right: 15px;">•</span>
         <div>{text}</div>
     </div>
     """
 
 def slide_smallpoint(text):
     return f"""
-    <div style='font-size: {SMALL_FONT_SIZE_TEXT}; color: {TEXT_COLOR}; line-height: 1.6; margin-bottom: 8px; margin-left: {INDENT_WIDTH}; display: flex; align-items: center;'>
-        <span style='font-size: {SMALL_FONT_SIZE_BULLET}; color: {SMALL_BULLET_COLOR}; margin-right: 12px;'>–</span><div>{text}</div>
+    <div style="font-size: {SMALL_FONT_SIZE_TEXT}; color: var(--text-color); line-height: 1.6; margin-bottom: 8px; margin-left: {INDENT_WIDTH}; display: flex; align-items: center;">
+        <span style="font-size: {SMALL_FONT_SIZE_BULLET}; color: {SMALL_BULLET_COLOR}; margin-right: 12px;">–</span>
+        <div>{text}</div>
     </div>
     """
 
